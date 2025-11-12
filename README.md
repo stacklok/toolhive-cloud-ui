@@ -24,15 +24,38 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 This project includes Docker support for containerized deployments.
 
-### Build the Docker image
+### Using Makefile (Recommended)
 
 ```bash
-docker build -t toolhive-cloud-ui .
+# Show all available commands
+make help
+
+# Build Docker image
+make build
+
+# Start container
+make start
+
+# View logs
+make logs
+
+# Stop container
+make stop
+
+# Clean up (remove container and image)
+make clean
+
+# Rebuild from scratch
+make rebuild
 ```
 
-### Run the container
+### Using Docker commands directly
 
 ```bash
+# Build the Docker image
+docker build -t toolhive-cloud-ui .
+
+# Run the container
 docker run -p 3000:3000 toolhive-cloud-ui
 ```
 
