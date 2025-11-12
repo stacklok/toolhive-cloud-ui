@@ -2,6 +2,7 @@
 
 # Variables
 IMAGE_NAME := toolhive-cloud-ui
+IMAGE_TAG := latest
 CONTAINER_NAME := toolhive-cloud-ui
 PORT := 3000
 
@@ -12,12 +13,12 @@ help:
 
 ## Build the production docker image
 build:
-	@echo "Building ${IMAGE_NAME} Docker image..."
-	@docker build -t $(IMAGE_NAME) .
+	@echo "Building ${IMAGE_NAME}:${IMAGE_TAG} Docker image..."
+	@docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 ## Start the production docker container
 start:
-	@docker run -d -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	@docker run -d -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME):$(IMAGE_TAG)
 	@echo "Container $(CONTAINER_NAME) running at http://localhost:$(PORT)"
 
 ## Stop the production docker container
@@ -35,7 +36,7 @@ logs:
 
 ## Remove container and image
 clean: stop
-	@docker rmi $(IMAGE_NAME) > /dev/null 2>&1 || true
+	@docker rmi $(IMAGE_NAME):$(IMAGE_TAG) > /dev/null 2>&1 || true
 	@echo "Cleanup complete"
 
 ## Run development server locally
