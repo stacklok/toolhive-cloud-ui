@@ -1,6 +1,11 @@
 name: Security Checks
+
 on:
-  workflow_call:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
 permissions:
   contents: read
 jobs:
