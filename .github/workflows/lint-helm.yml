@@ -12,6 +12,9 @@ on:
             - "helm/**"
             - ".github/workflows/lint-helm.yml"
 
+permissions:
+    contents: read
+
 jobs:
     lint-chart:
         name: Lint Helm Chart

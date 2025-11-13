@@ -12,6 +12,9 @@ on:
             - "helm/**"
             - ".github/workflows/helm-test.yml"
 
+permissions:
+    contents: read
+
 jobs:
     test-helm-chart:
         name: Test Helm Chart with Kind
@@ -34,7 +37,7 @@ jobs:
                   cache-to: type=gha,mode=max
 
             - name: Create Kind cluster
-              uses: helm/kind-action@026472392573094226832982b6a5182641d20195 # v1.0.0
+              uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
               with:
                   cluster_name: toolhive-test
                   node_image: kindest/node:v1.28.0
