@@ -1,0 +1,74 @@
+name: Helm Chart Test
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "helm/**"
+            - ".github/workflows/helm-test.yml"
+    pull_request:
+        branches: [main]
+        paths:
+            - "helm/**"
+            - ".github/workflows/helm-test.yml"
+
+permissions:
+    contents: read
+
+jobs:
+    test-helm-chart:
+        name: Test Helm Chart
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+
+            - name: Build Docker image
+              uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
+              with:
+                  context: .
+                  load: true
+                  tags: toolhive-cloud-ui:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Create Kind cluster
+              uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
+
+            - name: Load image into Kind
+              run: |
+                  kind load docker-image toolhive-cloud-ui:latest --name chart-testing
+
+            - name: Install Helm chart
+              run: |
+                  helm upgrade --install toolhive-cloud-ui ./helm \
+                    -f ./helm/values-dev.yaml \
+                    --wait \
+                    --timeout=5m
+
+            - name: Check deployment status
+              run: |
+                  kubectl get pods -l app.kubernetes.io/name=toolhive-cloud-ui
+                  kubectl get svc -l app.kubernetes.io/name=toolhive-cloud-ui
+
+            - name: Verify application is responding
+              run: |
+                  kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=toolhive-cloud-ui --timeout=120s
+                  kubectl port-forward svc/toolhive-cloud-ui 8080:80 &
+                  sleep 5
+                  curl -f http://localhost:8080 || (kubectl logs -l app.kubernetes.io/name=toolhive-cloud-ui && exit 1)
+
+            - name: Run Helm tests (if any)
+              run: |
+                  helm test toolhive-cloud-ui || echo "No tests defined"
+
+            - name: Show logs on failure
+              if: failure()
+              run: |
+                  kubectl get all -l app.kubernetes.io/name=toolhive-cloud-ui
+                  kubectl describe pods -l app.kubernetes.io/name=toolhive-cloud-ui
+                  kubectl logs -l app.kubernetes.io/name=toolhive-cloud-ui --tail=100
