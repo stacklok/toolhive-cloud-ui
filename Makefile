@@ -5,6 +5,7 @@ IMAGE_NAME := toolhive-cloud-ui
 IMAGE_TAG := latest
 CONTAINER_NAME := toolhive-cloud-ui
 PORT := 3000
+RELEASE_NAME := toolhive-cloud-ui
 
 ## Show this help message
 help:
@@ -94,7 +95,7 @@ kind-build:
 ## Deploy to Kind with Helm
 kind-deploy: kind-build
 	@echo "Deploying to Kind..."
-	@helm upgrade --install toolhive-cloud-ui ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
+	@helm upgrade --install $(RELEASE_NAME) ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
 	@echo "Deployment complete!"
 	@echo ""
 	@echo "To access the application, run:"
@@ -103,17 +104,17 @@ kind-deploy: kind-build
 
 ## Uninstall from Kind
 kind-uninstall:
-	@helm uninstall toolhive-cloud-ui || true
+	@helm uninstall $(RELEASE_NAME) || true
 	@echo "Uninstalled from Kind"
 
 ## View logs
 kind-logs:
-	@kubectl logs -f deployment/toolhive-cloud-ui
+	@kubectl logs -f deployment/$(RELEASE_NAME)
 
 ## Port-forward to localhost
 kind-port-forward:
 	@echo "Forwarding to http://localhost:8080"
-	@kubectl port-forward svc/toolhive-cloud-ui 8080:80
+	@kubectl port-forward svc/$(RELEASE_NAME) 8080:80
 
 ## Full setup: create cluster and deploy
 kind-setup: kind-create kind-deploy
