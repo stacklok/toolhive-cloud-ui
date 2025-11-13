@@ -2,12 +2,7 @@ name: Docker Build and Push
 
 on:
   push:
-    branches: ["**"]
-  pull_request:
-    branches: ["**"]
-  # Uncomment below to only run on tags (releases)
-  # push:
-  #   tags: ["v*"]
+    tags: ["v*"]
 
 permissions:
   contents: read
@@ -33,4 +28,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
