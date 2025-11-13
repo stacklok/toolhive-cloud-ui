@@ -38,14 +38,10 @@ jobs:
 
             - name: Create Kind cluster
               uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
-              with:
-                  cluster_name: toolhive-test
-                  node_image: kindest/node:v1.28.0
-                  wait: 120s
 
             - name: Load image into Kind
               run: |
-                  kind load docker-image toolhive-cloud-ui:latest --name toolhive-test
+                  kind load docker-image toolhive-cloud-ui:latest --name chart-testing
 
             - name: Install Helm chart
               run: |
