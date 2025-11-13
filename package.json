@@ -10,7 +10,8 @@
     "lint": "biome check",
     "format": "biome format --write",
     "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "16.0.3",
@@ -27,10 +28,17 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.2.0",
+    "lint-staged": "^15.5.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.8"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
   }
 }
