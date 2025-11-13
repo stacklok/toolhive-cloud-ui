@@ -9,7 +9,7 @@ keywords:
   - react
   - frontend
   - ui
-home: https://github.com/toolhive/cloud-ui
+home: https://github.com/stacklok/toolhive-cloud-ui
 sources:
-  - https://github.com/toolhive/cloud-ui
+  - https://github.com/stacklok/toolhive-cloud-ui
 kubeVersion: ">=1.24.0-0"
