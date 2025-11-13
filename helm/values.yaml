@@ -4,8 +4,8 @@ replicaCount: 1
 image:
   # -- Image repository
   repository: toolhive-cloud-ui
-  # -- Image pull policy (Never for local development with minikube)
-  pullPolicy: Never
+  # -- Pull from registry if available, use local image if not
+  pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
   tag: ""
 

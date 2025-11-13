@@ -1,4 +1,4 @@
-# Development values for local Kubernetes (Kind/Minikube)
+# Development values for local Kubernetes Kind
 # Usage: helm install toolhive-cloud-ui ./helm -f ./helm/values-dev.yaml
 
 # -- Number of replicas for development
@@ -7,8 +7,8 @@ replicaCount: 1
 image:
   # -- Image repository
   repository: toolhive-cloud-ui
-  # -- Never pull from registry, use local image
-  pullPolicy: Never
+  # -- Pull from registry if available, use local image if not
+  pullPolicy: IfNotPresent
   # -- Override with "latest" for local development
   tag: "latest"
 
