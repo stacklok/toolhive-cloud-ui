@@ -63,9 +63,9 @@ minikube-deploy: minikube-build
 	@helm upgrade --install toolhive-ui ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
 	@echo "Deployment complete!"
 	@echo ""
-	@echo "To access the application:"
-	@echo "1. Add to /etc/hosts: echo \"\$$(minikube ip) toolhive-ui.local\" | sudo tee -a /etc/hosts"
-	@echo "2. Open http://toolhive-ui.local"
+	@echo "To access the application, run:"
+	@echo "  make minikube-port-forward"
+	@echo "Then open: http://localhost:8080"
 
 ## Uninstall from minikube
 minikube-uninstall:

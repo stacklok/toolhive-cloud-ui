@@ -63,28 +63,6 @@ service:
   # -- NodePort (only used if type is NodePort, range: 30000-32767)
   nodePort: null
 
-ingress:
-  # -- Enable ingress controller resource
-  enabled: true
-  # -- IngressClass that will be used (nginx, traefik, etc.)
-  className: "nginx"
-  # -- Additional annotations for the Ingress resource
-  annotations:
-    {}
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
-  # -- Ingress hosts configuration
-  hosts:
-    - host: toolhive-ui.local
-      paths:
-        - path: /
-          pathType: Prefix
-  # -- TLS configuration
-  tls: []
-  #  - secretName: toolhive-ui-tls
-  #    hosts:
-  #      - toolhive-ui.local
-
 # -- Resource limits and requests for the container
 resources:
   limits:

@@ -75,10 +75,10 @@ The Helm chart is located in the `helm/` directory and includes:
 
 - Deployment with configurable replicas
 - Service (ClusterIP/NodePort/LoadBalancer)
-- Ingress with customizable rules
 - Horizontal Pod Autoscaler (optional)
 - Configurable resource limits
 - Health checks (startup, liveness and readiness probes)
+- Security contexts following Pod Security Standards
 
 ## Learn More
 

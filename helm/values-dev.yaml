@@ -17,15 +17,6 @@ service:
   port: 80
   targetPort: 3000
 
-ingress:
-  enabled: true
-  className: "nginx"
-  hosts:
-    - host: toolhive-ui.local
-      paths:
-        - path: /
-          pathType: Prefix
-
 # Reduced resources for development environment
 resources:
   limits:
