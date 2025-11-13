@@ -14,4 +14,5 @@ sources:
   - https://github.com/toolhive/cloud-ui
 maintainers:
   - name: ToolHive Team
+    email: team@stacklok.com
 kubeVersion: ">=1.24.0-0"
