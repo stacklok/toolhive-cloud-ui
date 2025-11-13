@@ -17,7 +17,7 @@ jobs:
 
       - name: Install commitlint
         run: |
-          pnpm i -D -w commitlint @commitlint/config-conventional
+          pnpm i -D commitlint @commitlint/config-conventional
 
       - name: Validate PR title
         run: echo "${{ github.event.pull_request.title }}" | pnpm dlx commitlint -x '@commitlint/config-conventional'
