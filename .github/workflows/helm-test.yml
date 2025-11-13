@@ -17,7 +17,7 @@ permissions:
 
 jobs:
     test-helm-chart:
-        name: Test Helm Chart with Kind
+        name: Test Helm Chart
         runs-on: ubuntu-latest
 
         steps:
