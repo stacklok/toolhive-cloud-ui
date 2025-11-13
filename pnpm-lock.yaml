@@ -52,7 +52,7 @@ importers:
         specifier: ^27.2.0
         version: 27.2.0
       lint-staged:
-        specifier: ^15.2.11
+        specifier: ^15.5.2
         version: 15.5.2
       tailwindcss:
         specifier: ^4
