@@ -1,4 +1,4 @@
-# Valori per ambiente di sviluppo su minikube
+# Development values for minikube environment
 # Usage: helm install toolhive-ui ./helm -f ./helm/values-dev.yaml
 
 # -- Number of replicas for development
@@ -26,7 +26,7 @@ ingress:
         - path: /
           pathType: Prefix
 
-# Risorse ridotte per ambiente di sviluppo
+# Reduced resources for development environment
 resources:
   limits:
     cpu: 500m
@@ -35,7 +35,7 @@ resources:
     cpu: 100m
     memory: 128Mi
 
-# Probe più veloci e permissive per sviluppo
+# Faster and more permissive probes for development
 startupProbe:
   httpGet:
     path: /
@@ -66,7 +66,7 @@ readinessProbe:
   successThreshold: 1
   failureThreshold: 3
 
-# Variabili d'ambiente per sviluppo (esempio)
+# Environment variables for development (example)
 env: []
 # - name: NEXT_PUBLIC_API_URL
 #   value: "http://api.toolhive-ui.local"
