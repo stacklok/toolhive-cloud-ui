@@ -38,5 +38,5 @@ jobs:
 
             - name: Validate templates
               run: |
-                  helm template toolhive-cloud-ui ./helm --debug
-                  helm template toolhive-cloud-ui ./helm -f ./helm/values-dev.yaml --debug
+                  helm template toolhive-cloud-ui ./helm --kube-version 1.28.0 --debug
+                  helm template toolhive-cloud-ui ./helm -f ./helm/values-dev.yaml --kube-version 1.28.0 --debug
