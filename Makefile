@@ -8,8 +8,27 @@ PORT := 3000
 
 ## Show this help message
 help:
-	@echo "Available commands:"
-	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## //' | awk 'NR%2==1{printf "\033[36m%-15s\033[0m ",$$1} NR%2==0{print}'
+	@echo "ToolHive Cloud UI - Available Commands"
+	@echo ""
+	@echo "Docker (Local Development):"
+	@echo "  make build          - Build production Docker image"
+	@echo "  make start          - Start Docker container"
+	@echo "  make stop           - Stop Docker container"
+	@echo "  make logs           - View container logs"
+	@echo "  make clean          - Remove container and image"
+	@echo "  make rebuild        - Clean and rebuild"
+	@echo ""
+	@echo "Kind (Kubernetes):"
+	@echo "  make kind-setup     - Create cluster and deploy (first time)"
+	@echo "  make kind-create    - Create Kind cluster"
+	@echo "  make kind-deploy    - Build and deploy to Kind"
+	@echo "  make kind-port-forward - Port-forward to localhost:8080"
+	@echo "  make kind-logs      - View application logs"
+	@echo "  make kind-uninstall - Uninstall from Kind"
+	@echo "  make kind-delete    - Delete Kind cluster"
+	@echo ""
+	@echo "Development:"
+	@echo "  make dev            - Run Next.js dev server"
 
 ## Build the production docker image
 build:
@@ -51,33 +70,52 @@ shell:
 rebuild: clean build
 	@echo "Rebuild complete"
 
-## Build image for minikube
-minikube-build:
-	@echo "Building image for minikube..."
-	@eval $$(minikube docker-env) && docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
-	@echo "Image built in minikube Docker daemon"
+## Create Kind cluster
+kind-create:
+	@echo "Creating Kind cluster..."
+	@kind create cluster --name toolhive || echo "Cluster already exists"
+	@kubectl cluster-info --context kind-toolhive
+	@echo "Kind cluster ready!"
 
-## Deploy to minikube with Helm
-minikube-deploy: minikube-build
-	@echo "Deploying to minikube..."
-	@helm upgrade --install toolhive-ui ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
+## Delete Kind cluster
+kind-delete:
+	@echo "Deleting Kind cluster..."
+	@kind delete cluster --name toolhive
+	@echo "Cluster deleted"
+
+## Build and load image into Kind
+kind-build:
+	@echo "Building Docker image..."
+	@docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@echo "Loading image into Kind cluster..."
+	@kind load docker-image $(IMAGE_NAME):$(IMAGE_TAG) --name toolhive
+	@echo "Image loaded successfully"
+
+## Deploy to Kind with Helm
+kind-deploy: kind-build
+	@echo "Deploying to Kind..."
+	@helm upgrade --install toolhive-cloud-ui ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
 	@echo "Deployment complete!"
 	@echo ""
 	@echo "To access the application, run:"
-	@echo "  make minikube-port-forward"
+	@echo "  make kind-port-forward"
 	@echo "Then open: http://localhost:8080"
 
-## Uninstall from minikube
-minikube-uninstall:
-	@helm uninstall toolhive-ui || true
-	@echo "Uninstalled from minikube"
+## Uninstall from Kind
+kind-uninstall:
+	@helm uninstall toolhive-cloud-ui || true
+	@echo "Uninstalled from Kind"
 
-## View minikube logs
-minikube-logs:
-	@kubectl logs -f deployment/toolhive-ui-toolhive-cloud-ui
+## View logs
+kind-logs:
+	@kubectl logs -f deployment/toolhive-cloud-ui
 
 ## Port-forward to localhost
-minikube-port-forward:
+kind-port-forward:
 	@echo "Forwarding to http://localhost:8080"
-	@kubectl port-forward svc/toolhive-ui-toolhive-cloud-ui 8080:80
+	@kubectl port-forward svc/toolhive-cloud-ui 8080:80
+
+## Full setup: create cluster and deploy
+kind-setup: kind-create kind-deploy
+	@echo "Setup complete!"
 

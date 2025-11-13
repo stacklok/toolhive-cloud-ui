@@ -51,25 +51,38 @@ make rebuild
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
-## Kubernetes / Minikube Deployment
+## Kubernetes / Kind Deployment
 
-This project includes a complete Helm chart for deploying to Kubernetes (optimized for minikube).
+This project includes a complete Helm chart for deploying to Kubernetes (optimized for Kind).
 
-### Quick Start with Minikube
+### Quick Start with Kind
 
 ```bash
-# Deploy to minikube (includes build and deployment)
-make minikube-deploy
+# Create cluster and deploy (first time)
+make kind-setup
+
+# Or step by step:
+# 1. Create Kind cluster
+make kind-create
+
+# 2. Deploy application
+make kind-deploy
+
+# 3. Access the application
+make kind-port-forward
+# Then open: http://localhost:8080
 
 # View logs
-make minikube-logs
-
-# Port-forward to localhost:8080
-make minikube-port-forward
+make kind-logs
 
 # Uninstall
-make minikube-uninstall
+make kind-uninstall
+
+# Delete cluster
+make kind-delete
 ```
+
+### Helm Chart
 
 The Helm chart is located in the `helm/` directory and includes:
 
@@ -79,6 +92,13 @@ The Helm chart is located in the `helm/` directory and includes:
 - Configurable resource limits
 - Health checks (startup, liveness and readiness probes)
 - Security contexts following Pod Security Standards
+
+### CI/CD
+
+The chart is automatically tested on every push using GitHub Actions with Kind:
+
+- **Helm Lint**: Validates chart syntax and best practices
+- **Integration Test**: Deploys to Kind cluster and verifies the app responds
 
 ## Learn More
 
