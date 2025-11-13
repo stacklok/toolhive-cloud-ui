@@ -1,0 +1,23 @@
+name: Lint PR title
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  lint-pr-title:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - uses: ./.github/actions/setup
+
+      - name: Install commitlint
+        run: |
+          pnpm i -D -w commitlint @commitlint/config-conventional
+
+      - name: Validate PR title
+        run: echo "${{ github.event.pull_request.title }}" | pnpm dlx commitlint -x '@commitlint/config-conventional'
