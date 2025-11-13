@@ -51,3 +51,33 @@ shell:
 rebuild: clean build
 	@echo "Rebuild complete"
 
+## Build image for minikube
+minikube-build:
+	@echo "Building image for minikube..."
+	@eval $$(minikube docker-env) && docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@echo "Image built in minikube Docker daemon"
+
+## Deploy to minikube with Helm
+minikube-deploy: minikube-build
+	@echo "Deploying to minikube..."
+	@helm upgrade --install toolhive-ui ./helm -f ./helm/values-dev.yaml --wait --timeout=5m
+	@echo "Deployment complete!"
+	@echo ""
+	@echo "To access the application:"
+	@echo "1. Add to /etc/hosts: echo \"\$$(minikube ip) toolhive-ui.local\" | sudo tee -a /etc/hosts"
+	@echo "2. Open http://toolhive-ui.local"
+
+## Uninstall from minikube
+minikube-uninstall:
+	@helm uninstall toolhive-ui || true
+	@echo "Uninstalled from minikube"
+
+## View minikube logs
+minikube-logs:
+	@kubectl logs -f deployment/toolhive-ui-toolhive-cloud-ui
+
+## Port-forward to localhost
+minikube-port-forward:
+	@echo "Forwarding to http://localhost:8080"
+	@kubectl port-forward svc/toolhive-ui-toolhive-cloud-ui 8080:80
+

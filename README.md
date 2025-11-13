@@ -47,8 +47,38 @@ make clean
 
 # Rebuild from scratch
 make rebuild
+```
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
+
+## Kubernetes / Minikube Deployment
+
+This project includes a complete Helm chart for deploying to Kubernetes (optimized for minikube).
+
+### Quick Start with Minikube
+
+```bash
+# Deploy to minikube (includes build and deployment)
+make minikube-deploy
+
+# View logs
+make minikube-logs
+
+# Port-forward to localhost:8080
+make minikube-port-forward
+
+# Uninstall
+make minikube-uninstall
+```
+
+The Helm chart is located in the `helm/` directory and includes:
+
+- Deployment with configurable replicas
+- Service (ClusterIP/NodePort/LoadBalancer)
+- Ingress with customizable rules
+- Horizontal Pod Autoscaler (optional)
+- Configurable resource limits
+- Health checks (startup, liveness and readiness probes)
 
 ## Learn More
 

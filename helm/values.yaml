@@ -1,0 +1,176 @@
+# -- Number of replicas for the deployment
+replicaCount: 1
+
+image:
+  # -- Image repository
+  repository: toolhive-cloud-ui
+  # -- Image pull policy (Never for local development with minikube)
+  pullPolicy: Never
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Secrets for image pull (if using private registry)
+imagePullSecrets: []
+
+# -- Override the name of the chart
+nameOverride: ""
+
+# -- Override the full name of the resources
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: false
+  # -- Automatically mount a ServiceAccount's API credentials
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use (if not set and create is true, a name is generated using the fullname template)
+  name: ""
+
+# -- Annotations to add to the pod
+podAnnotations: {}
+
+# -- Labels to add to the pod
+podLabels: {}
+
+# -- Security context for the pod
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Security context for the container
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1001
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  # -- Kubernetes service type
+  type: ClusterIP
+  # -- Service port
+  port: 80
+  # -- Container target port
+  targetPort: 3000
+  # -- NodePort (only used if type is NodePort, range: 30000-32767)
+  nodePort: null
+
+ingress:
+  # -- Enable ingress controller resource
+  enabled: true
+  # -- IngressClass that will be used (nginx, traefik, etc.)
+  className: "nginx"
+  # -- Additional annotations for the Ingress resource
+  annotations:
+    {}
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  # -- Ingress hosts configuration
+  hosts:
+    - host: toolhive-ui.local
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- TLS configuration
+  tls: []
+  #  - secretName: toolhive-ui-tls
+  #    hosts:
+  #      - toolhive-ui.local
+
+# -- Resource limits and requests for the container
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# -- Startup probe configuration (checks if app is ready to start)
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 30
+
+# -- Liveness probe configuration (checks if app is alive)
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+# -- Readiness probe configuration (checks if app can receive traffic)
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+
+autoscaling:
+  # -- Enable Horizontal Pod Autoscaler
+  enabled: false
+  # -- Minimum number of replicas
+  minReplicas: 1
+  # -- Maximum number of replicas
+  maxReplicas: 5
+  # -- Target CPU utilization percentage
+  targetCPUUtilizationPercentage: 80
+  # -- Target memory utilization percentage
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Additional volumes for the pod
+volumes: []
+# - name: config
+#   configMap:
+#     name: app-config
+
+# -- Additional volume mounts for the container
+volumeMounts: []
+# - name: config
+#   mountPath: /etc/config
+#   readOnly: true
+
+# -- Node labels for pod assignment
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+tolerations: []
+
+# -- Affinity rules for pod assignment
+affinity: {}
+
+# -- Environment variables for the container
+env: []
+# - name: NEXT_PUBLIC_API_URL
+#   value: "https://api.example.com"
+# - name: NODE_ENV
+#   value: "production"
+
+# -- Environment variables from ConfigMaps or Secrets
+envFrom: []
+# - configMapRef:
+#     name: app-config
+# - secretRef:
+#     name: app-secrets
+

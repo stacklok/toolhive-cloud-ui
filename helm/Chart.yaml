@@ -1,0 +1,17 @@
+apiVersion: v2
+name: toolhive-cloud-ui
+description: A Helm chart for ToolHive Cloud UI - Next.js application
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - nextjs
+  - react
+  - frontend
+  - ui
+home: https://github.com/toolhive/cloud-ui
+sources:
+  - https://github.com/toolhive/cloud-ui
+maintainers:
+  - name: ToolHive Team
+kubeVersion: ">=1.24.0-0"

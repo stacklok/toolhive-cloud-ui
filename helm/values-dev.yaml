@@ -1,0 +1,75 @@
+# Valori per ambiente di sviluppo su minikube
+# Usage: helm install toolhive-ui ./helm -f ./helm/values-dev.yaml
+
+# -- Number of replicas for development
+replicaCount: 1
+
+image:
+  # -- Image repository
+  repository: toolhive-cloud-ui
+  # -- Never pull from registry, use local image for minikube
+  pullPolicy: Never
+  # -- Override with "latest" for local development
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: toolhive-ui.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+# Risorse ridotte per ambiente di sviluppo
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Probe più veloci e permissive per sviluppo
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 3
+  timeoutSeconds: 2
+  successThreshold: 1
+  failureThreshold: 20
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  timeoutSeconds: 2
+  successThreshold: 1
+  failureThreshold: 3
+
+# Variabili d'ambiente per sviluppo (esempio)
+env: []
+# - name: NEXT_PUBLIC_API_URL
+#   value: "http://api.toolhive-ui.local"
+# - name: NODE_ENV
+#   value: "development"
+
