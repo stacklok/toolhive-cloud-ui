@@ -11,7 +11,8 @@
     "format": "biome format --write",
     "test": "vitest",
     "type-check": "tsc --noEmit",
-    "prepare": "husky"
+    "prepare": "husky",
+    "oidc": "node dev/oidc-provider.mjs"
   },
   "dependencies": {
     "better-auth": "1.4.0-beta.20",
@@ -32,6 +33,7 @@
     "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.0.0",
+    "oidc-provider": "^9.5.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
