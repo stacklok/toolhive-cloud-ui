@@ -59,6 +59,10 @@ const configuration = {
 	features: {
 		devInteractions: { enabled: true }, // Enable dev interactions for easy testing
 	},
+	claims: {
+		email: ["email", "email_verified"],
+		profile: ["name"],
+	},
 	ttl: {
 		AccessToken: 3600, // 1 hour
 		RefreshToken: 86400 * 30, // 30 days
