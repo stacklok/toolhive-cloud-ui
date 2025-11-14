@@ -4,7 +4,8 @@
   "private": true,
   "packageManager": "pnpm@10.22.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n \"OIDC,Next\" -c \"blue,green\" \"pnpm oidc\" \"pnpm dev:next\"",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -30,6 +31,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
     "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.0.0",
