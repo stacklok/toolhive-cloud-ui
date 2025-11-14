@@ -1,0 +1,53 @@
+services:
+  # Keycloak Identity Provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    environment:
+      # Admin credentials
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Database (dev mode uses H2)
+      KC_DB: dev-mem
+      # Hostname configuration
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+    ports:
+      - "8080:8080"
+    volumes:
+      # Import pre-configured realm on startup
+      - ./dev-auth/keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/localhost/8080' || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 40s
+    networks:
+      - toolhive
+
+  # Next.js Application
+  # Using host network so app can access Keycloak on localhost:8080
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # Better Auth configuration
+      BETTER_AUTH_SECRET: "local-dev-secret-change-in-production-min-32-chars"
+      BETTER_AUTH_URL: "http://localhost:3003"
+      # Trusted origins
+      TRUSTED_ORIGINS: "http://localhost:3003"
+      # OIDC/Keycloak configuration
+      # Using localhost:8080 - accessible from both browser and container
+      OIDC_ISSUER_URL: "http://localhost:8080/realms/toolhive"
+      OIDC_CLIENT_ID: "toolhive-cloud-ui"
+      OIDC_CLIENT_SECRET: "toolhive-client-secret"
+      # Override container port since we're using host network
+      PORT: "3003"
+    network_mode: "host"
+
+networks:
+  toolhive:
+    driver: bridge

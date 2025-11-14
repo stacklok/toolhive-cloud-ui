@@ -32,6 +32,15 @@ The provider is pre-configured with:
 - **Supported Scopes**: openid, email, profile
 - **Redirect URIs**: Ports 3000-3003 supported
 
+## Production-like Setup
+
+For a production-like local environment with Keycloak, see [`DOCKER_DEPLOYMENT.md`](../DOCKER_DEPLOYMENT.md) in the root directory.
+
+The Docker Compose setup includes:
+- Keycloak as a real identity provider
+- Next.js app in production mode
+- Proper authentication flow (no auto-login)
+
 ## For Production
 
 Replace this with a real OIDC provider (Okta, Keycloak, Auth0, etc.) by updating the environment variables in `.env.local`:
