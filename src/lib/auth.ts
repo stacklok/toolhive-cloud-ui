@@ -2,23 +2,34 @@ import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 
 // Read from environment variables to support any OIDC provider
-const OIDC_ISSUER = process.env.OIDC_ISSUER_URL;
-const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID;
-const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET;
-const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
+const OIDC_ISSUER = process.env.OIDC_ISSUER_URL || "";
+const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
+const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
+const BETTER_AUTH_SECRET =
+  process.env.BETTER_AUTH_SECRET || "build-time-placeholder";
 const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 
-// Validate required environment variables
-if (!BETTER_AUTH_SECRET) {
-  throw new Error(
-    "[Better Auth] BETTER_AUTH_SECRET is required. Set it in .env.local to a strong, random value.",
-  );
+// Validate required environment variables (warnings only during build)
+const isBuild = process.env.NEXT_PHASE === "phase-production-build";
+
+if (!process.env.BETTER_AUTH_SECRET) {
+  const message =
+    "[Better Auth] BETTER_AUTH_SECRET is required. Set it in .env.local to a strong, random value.";
+  if (isBuild) {
+    console.warn(message);
+  } else {
+    throw new Error(message);
+  }
 }
 
 if (!OIDC_ISSUER || !OIDC_CLIENT_ID || !OIDC_CLIENT_SECRET) {
-  throw new Error(
-    "[Better Auth] OIDC configuration is incomplete. Set OIDC_ISSUER_URL, OIDC_CLIENT_ID, and OIDC_CLIENT_SECRET in .env.local",
-  );
+  const message =
+    "[Better Auth] OIDC configuration is incomplete. Set OIDC_ISSUER_URL, OIDC_CLIENT_ID, and OIDC_CLIENT_SECRET in .env.local";
+  if (isBuild) {
+    console.warn(message);
+  } else {
+    throw new Error(message);
+  }
 }
 
 console.log("[Better Auth] OIDC Configuration:", {
