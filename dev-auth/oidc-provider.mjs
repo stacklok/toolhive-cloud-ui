@@ -34,7 +34,7 @@ const configuration = {
   cookies: {
     keys: ["some-secret-key-for-dev"],
   },
-  findAccount: async (ctx, id) => {
+  findAccount: async (_ctx, id) => {
     const account = accounts[id];
     if (!account) return undefined;
 
@@ -52,7 +52,7 @@ const configuration = {
   },
   // Simple interaction - auto-login for dev
   interactions: {
-    url(ctx, interaction) {
+    url(_ctx, interaction) {
       return `/interaction/${interaction.uid}`;
     },
   },
@@ -74,7 +74,7 @@ const oidc = new Provider(ISSUER, configuration);
 // Simple interaction endpoint for dev - auto-login as test-user
 oidc.use(async (ctx, next) => {
   if (ctx.path.startsWith("/interaction/")) {
-    const uid = ctx.path.split("/")[2];
+    const _uid = ctx.path.split("/")[2];
     const interaction = await oidc.interactionDetails(ctx.req, ctx.res);
 
     if (interaction.prompt.name === "login") {
