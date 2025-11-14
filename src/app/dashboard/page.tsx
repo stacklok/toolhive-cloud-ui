@@ -28,7 +28,7 @@ export default async function DashboardPage() {
               User Info:
             </p>
             <p className="text-zinc-600 dark:text-zinc-400">
-              Email: <strong>{session.user.email}</strong>
+              Email: <strong>{session.user.email || "Not provided"}</strong>
             </p>
             <p className="text-zinc-600 dark:text-zinc-400">
               User ID: <strong>{session.user.id}</strong>
