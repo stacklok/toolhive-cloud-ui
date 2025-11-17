@@ -19,10 +19,8 @@ export const auth = betterAuth({
   baseURL: BASE_URL,
   trustedOrigins,
   session: {
-    expiresIn: 60 * 60 * 24 * 7,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60,
     },
   },
   plugins: [
@@ -31,9 +29,6 @@ export const auth = betterAuth({
         {
           providerId: OIDC_PROVIDER_ID,
           discoveryUrl: `${OIDC_ISSUER}/.well-known/openid-configuration`,
-          authorizationUrl: `${OIDC_ISSUER}/v1/authorize`,
-          tokenUrl: `${OIDC_ISSUER}/v1/token`,
-          userInfoUrl: `${OIDC_ISSUER}/v1/userinfo`,
           redirectURI: `${BASE_URL}/api/auth/oauth2/callback/${OIDC_PROVIDER_ID}`,
           clientId: process.env.OIDC_CLIENT_ID || "",
           clientSecret: process.env.OIDC_CLIENT_SECRET || "",
