@@ -16,10 +16,13 @@
     "oidc": "node dev-auth/oidc-provider.mjs"
   },
   "dependencies": {
-    "better-auth": "1.4.0-beta.21",
+    "better-auth": "1.4.0-beta.20",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "tailwind-merge": "3.4.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.5",

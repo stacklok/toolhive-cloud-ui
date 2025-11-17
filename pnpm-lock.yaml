@@ -9,8 +9,14 @@ importers:
   .:
     dependencies:
       better-auth:
-        specifier: 1.4.0-beta.21
-        version: 1.4.0-beta.21(next@16.0.3(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: 1.4.0-beta.20
+        version: 1.4.0-beta.20(next@16.0.3(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      class-variance-authority:
+        specifier: 0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
       next:
         specifier: 16.0.3
         version: 16.0.3(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -20,6 +26,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      tailwind-merge:
+        specifier: 3.4.0
+        version: 3.4.0
     devDependencies:
       '@biomejs/biome':
         specifier: 2.3.5
@@ -181,8 +190,8 @@ packages:
     resolution: {integrity: sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==}
     engines: {node: '>=6.9.0'}
 
-  '@better-auth/core@1.4.0-beta.21':
-    resolution: {integrity: sha512-i4HXGUbah2OPQ/n6XdCMJAu2ay4Ca+ZyrAuc7rSRJVmx+M5NdkTQzEeQVTzH+fXSD6kKvyUDu73Pt4Y+HTWOsQ==}
+  '@better-auth/core@1.4.0-beta.20':
+    resolution: {integrity: sha512-0LO/j7Rur5vRVF8ELkXd4Ko8ewh+ONhzWVQqHgzOfmXCFODFjtwrFNRN0cinDFnyauCzJ4ADMc+lWqrZUc8ktQ==}
     peerDependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -191,10 +200,10 @@ packages:
       kysely: ^0.28.5
       nanostores: ^1.0.1
 
-  '@better-auth/telemetry@1.4.0-beta.21':
-    resolution: {integrity: sha512-6Mx6Le5yy67DqIuopTqebSeTItYVbkT6/5c91LUyjpVOT36iqG9MaNlq0SUfcjNDbWKaCnXyF5bUC16yspy9FQ==}
+  '@better-auth/telemetry@1.4.0-beta.20':
+    resolution: {integrity: sha512-1HyiSKDoCp/KyO4C9P2mVXDGjeEHch1z1CfhDh+et17LtDLFbiCZZvnP8dbXYhx+LGO0MTUhfn8f4zIE4UT7Gw==}
     peerDependencies:
-      '@better-auth/core': 1.4.0-beta.21
+      '@better-auth/core': 1.4.0-beta.20
 
   '@better-auth/utils@0.3.0':
     resolution: {integrity: sha512-W+Adw6ZA6mgvnSnhOki270rwJ42t4XzSK6YWGF//BbVXL6SwCLWfyzBc1lN2m/4RM28KubdBKQ4X5VMoLRNPQw==}
@@ -1008,8 +1017,8 @@ packages:
     resolution: {integrity: sha512-73lC1ugzwoaWCLJ1LvOgrR5xsMLTqSKIEoMHVtL9E/HNk0PXtTM76ZIm84856/SF7Nv8mPZxKoBsgpm0tR1u1Q==}
     hasBin: true
 
-  better-auth@1.4.0-beta.21:
-    resolution: {integrity: sha512-L2kLhq4gNc8bJtkcICnt9V0Bx1aiq1w0BAgM/zW6YSk1GeJUrODmONP6bbtGvlMsDhUAvP4Ob3Xv5VJxwnT+DA==}
+  better-auth@1.4.0-beta.20:
+    resolution: {integrity: sha512-fvwCl998QlcY1jjs1aFk1g7S2msSAeyz8ahyb+vMz+3V7RFc1t1n2A5I16D9C4m0/QvjDzMVj+0vFI8auNXMZA==}
     peerDependencies:
       '@lynx-js/react': '*'
       '@sveltejs/kit': '*'
@@ -1067,6 +1076,9 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
+
   cli-cursor@5.0.0:
     resolution: {integrity: sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==}
     engines: {node: '>=18'}
@@ -1081,6 +1093,10 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -1776,6 +1792,9 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
+
   tailwindcss@4.1.17:
     resolution: {integrity: sha512-j9Ee2YjuQqYT9bbRTfTZht9W/ytp5H+jJpZKiYdP/bpnXARAuELt9ofP0lPnmHjbga7SNQIxdTAXCmtKVYjN+Q==}
 
@@ -2162,7 +2181,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@better-auth/core@1.4.0-beta.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)':
+  '@better-auth/core@1.4.0-beta.20(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -2173,9 +2192,9 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.12
 
-  '@better-auth/telemetry@1.4.0-beta.21(@better-auth/core@1.4.0-beta.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1))':
+  '@better-auth/telemetry@1.4.0-beta.20(@better-auth/core@1.4.0-beta.20(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1))':
     dependencies:
-      '@better-auth/core': 1.4.0-beta.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/core': 1.4.0-beta.20(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
 
@@ -2776,10 +2795,10 @@ snapshots:
 
   baseline-browser-mapping@2.8.26: {}
 
-  better-auth@1.4.0-beta.21(next@16.0.3(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  better-auth@1.4.0-beta.20(next@16.0.3(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      '@better-auth/core': 1.4.0-beta.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)
-      '@better-auth/telemetry': 1.4.0-beta.21(@better-auth/core@1.4.0-beta.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1))
+      '@better-auth/core': 1.4.0-beta.20(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/telemetry': 1.4.0-beta.20(@better-auth/core@1.4.0-beta.20(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.0.26)(jose@6.1.1)(kysely@0.28.8)(nanostores@1.0.1))
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.1
@@ -2830,6 +2849,10 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
+  class-variance-authority@0.7.1:
+    dependencies:
+      clsx: 2.1.1
+
   cli-cursor@5.0.0:
     dependencies:
       restore-cursor: 5.1.0
@@ -2846,6 +2869,8 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
+
+  clsx@2.1.1: {}
 
   color-convert@2.0.1:
     dependencies:
@@ -3529,6 +3554,8 @@ snapshots:
       has-flag: 4.0.0
 
   symbol-tree@3.2.4: {}
+
+  tailwind-merge@3.4.0: {}
 
   tailwindcss@4.1.17: {}
 
