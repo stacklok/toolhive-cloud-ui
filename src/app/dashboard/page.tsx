@@ -1,14 +1,32 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+"use client";
 
-export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { signOut, useSession } from "@/lib/auth-client";
 
-  if (!session) {
-    redirect("/login");
+export default function DashboardPage() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/sign-in");
+    }
+  }, [session, isPending, router]);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Sign-out error:", error);
+      setIsSigningOut(false);
+    }
+  };
+
+  if (isPending || !session) {
+    return null;
   }
 
   return (
@@ -36,14 +54,14 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <form action="/api/auth/sign-out" method="POST">
-          <button
-            type="submit"
-            className="rounded-full bg-red-600 px-6 py-3 text-white transition-colors hover:bg-red-700"
-          >
-            Sign Out
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          className="rounded-full bg-red-600 px-6 py-3 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+        >
+          {isSigningOut ? "Signing Out..." : "Sign Out"}
+        </button>
       </main>
     </div>
   );

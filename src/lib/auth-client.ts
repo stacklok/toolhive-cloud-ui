@@ -7,5 +7,18 @@ export const authClient = createAuthClient({
   plugins: [genericOAuthClient()],
 });
 
-// You can also export specific methods if you prefer
-export const { signIn, signOut, useSession } = authClient;
+export const { signIn, useSession } = authClient;
+
+export const signOut = async (options?: { redirectTo?: string }) => {
+  const redirectUri = options?.redirectTo || "/sign-in";
+
+  // Note: This does NOT logout from Okta SSO session
+  // User will be automatically re-authenticated on next sign-in (SSO behavior)
+  await authClient.signOut({
+    fetchOptions: {
+      onSuccess: () => {
+        window.location.href = redirectUri;
+      },
+    },
+  });
+};

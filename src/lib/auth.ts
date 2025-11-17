@@ -1,3 +1,4 @@
+import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 
@@ -37,9 +38,9 @@ export const auth = betterAuth({
           clientId: process.env.OIDC_CLIENT_ID || "",
           clientSecret: process.env.OIDC_CLIENT_SECRET || "",
           scopes: ["openid", "email", "profile"],
-          pkce: false,
+          pkce: true,
         },
       ],
     }),
   ],
-});
+} as BetterAuthOptions);

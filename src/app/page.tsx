@@ -33,13 +33,13 @@ export default function Home() {
         ) : (
           <div className="flex flex-col items-center gap-4">
             <p className="text-zinc-600 dark:text-zinc-400">
-              Please log in to access the application
+              Please sign in to access the application
             </p>
             <Link
-              href="/login"
+              href="/sign-in"
               className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
             >
-              Log In
+              Sign In
             </Link>
           </div>
         )}
