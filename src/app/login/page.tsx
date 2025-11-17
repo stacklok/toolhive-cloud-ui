@@ -2,12 +2,16 @@
 
 import { authClient } from "@/lib/auth-client";
 
+const OIDC_PROVIDER_ID = process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID || "oidc";
+const OIDC_PROVIDER_NAME =
+  process.env.NEXT_PUBLIC_OIDC_PROVIDER_NAME || "OIDC Provider";
+
 export default function LoginPage() {
   const handleOIDCLogin = async () => {
     try {
       console.log("Initiating OIDC sign-in...");
       const { data, error } = await authClient.signIn.oauth2({
-        providerId: "oidc",
+        providerId: OIDC_PROVIDER_ID,
         callbackURL: "/dashboard",
       });
 
@@ -43,7 +47,7 @@ export default function LoginPage() {
           onClick={handleOIDCLogin}
           className="rounded-full bg-black px-8 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
         >
-          Sign In with OIDC
+          Sign In with {OIDC_PROVIDER_NAME}
         </button>
       </main>
     </div>
