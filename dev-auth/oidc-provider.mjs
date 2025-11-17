@@ -22,7 +22,7 @@ const configuration = {
       redirect_uris: [
         // Better Auth genericOAuth uses /oauth2/callback/:providerId
         "http://localhost:3000/api/auth/oauth2/callback/oidc",
-        "http://localhost:3000/api/auth/oauth2/callback/oidc",
+        "http://localhost:3001/api/auth/oauth2/callback/oidc",
         "http://localhost:3002/api/auth/oauth2/callback/oidc",
         "http://localhost:3003/api/auth/oauth2/callback/oidc",
       ],
