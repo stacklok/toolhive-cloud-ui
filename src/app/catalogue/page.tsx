@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { signOut, useSession } from "@/lib/auth-client";
 
 export default function CataloguePage() {
@@ -20,8 +21,13 @@ export default function CataloguePage() {
     try {
       await signOut();
     } catch (error) {
-      console.error("Sign-out error:", error);
       setIsSigningOut(false);
+      toast.error("Signout failed", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
     }
   };
 

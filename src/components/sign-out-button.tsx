@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
 
@@ -12,7 +13,12 @@ export function SignOut() {
     try {
       await signOut();
     } catch (error) {
-      console.error("Sign-out error:", error);
+      toast.error("Signout failed", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
       setIsSigningOut(false);
     }
   };

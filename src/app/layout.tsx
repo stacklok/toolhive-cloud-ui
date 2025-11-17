@@ -31,7 +31,7 @@ export default function RootLayout({
         {children}
         <Toaster
           richColors
-          duration={2_000}
+          duration={2000}
           position="bottom-right"
           offset={{ top: 50 }}
           closeButton
