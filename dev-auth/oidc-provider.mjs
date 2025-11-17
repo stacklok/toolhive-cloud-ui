@@ -130,6 +130,6 @@ oidc.listen(PORT, () => {
   console.log(`🔑 Client Secret: dev-secret-change-in-production`);
   console.log(`👤 Test user: test@example.com`);
   console.log(
-    `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=better-auth-dev\nOIDC_CLIENT_SECRET=dev-secret-change-in-production\nOIDC_ISSUER_URL=${ISSUER}`,
+    `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=better-auth-dev\nOIDC_CLIENT_SECRET=dev-secret-change-in-production\nOIDC_ISSUER=${ISSUER}`,
   );
 });

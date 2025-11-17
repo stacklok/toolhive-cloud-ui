@@ -5,6 +5,7 @@ This directory contains a simple OIDC provider for local development and testing
 ## What is it?
 
 A minimal OIDC-compliant identity provider built with `oidc-provider` that:
+
 - Automatically logs in a test user (`test@example.com`)
 - Auto-approves all consent requests
 - Supports standard OAuth 2.0 / OIDC flows
@@ -12,11 +13,13 @@ A minimal OIDC-compliant identity provider built with `oidc-provider` that:
 ## How to use
 
 Start the provider:
+
 ```bash
 pnpm oidc
 ```
 
 Or run it alongside the Next.js app:
+
 ```bash
 pnpm dev
 ```
@@ -26,6 +29,7 @@ The provider runs on `http://localhost:4000` and is already configured in `.env.
 ## Configuration
 
 The provider is pre-configured with:
+
 - **Client ID**: `better-auth-dev`
 - **Client Secret**: `dev-secret-change-in-production`
 - **Test User**: `test@example.com` (Test User)
@@ -35,6 +39,7 @@ The provider is pre-configured with:
 ## For Production
 
 Replace this with a real OIDC provider (Okta, Keycloak, Auth0, etc.) by updating the environment variables in `.env.local`:
-- `OIDC_ISSUER_URL`
+
+- `OIDC_ISSUER`
 - `OIDC_CLIENT_ID`
 - `OIDC_CLIENT_SECRET`
