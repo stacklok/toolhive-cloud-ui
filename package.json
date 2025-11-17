@@ -16,7 +16,7 @@
     "oidc": "node dev-auth/oidc-provider.mjs"
   },
   "dependencies": {
-    "better-auth": "1.4.0-beta.20",
+    "better-auth": "1.4.0-beta.21",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "next": "16.0.3",
