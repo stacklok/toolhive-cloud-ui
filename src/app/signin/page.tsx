@@ -12,7 +12,7 @@ export default function SignInPage() {
     try {
       const { error } = await authClient.signIn.oauth2({
         providerId: OIDC_PROVIDER_ID,
-        callbackURL: "/dashboard",
+        callbackURL: "/catalog",
       });
 
       if (error) {
@@ -23,10 +23,6 @@ export default function SignInPage() {
         });
         return;
       }
-
-      toast.success("Signin successful!", {
-        description: "Redirecting to dashboard...",
-      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";

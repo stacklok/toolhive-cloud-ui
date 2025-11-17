@@ -1,32 +1,15 @@
-"use client";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { SignOut } from "@/components/sign-out-button";
+import { auth } from "@/lib/auth";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { signOut, useSession } from "@/lib/auth-client";
+export default async function CatalogPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const { data: session, isPending } = useSession();
-  const [isSigningOut, setIsSigningOut] = useState(false);
-
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/signin");
-    }
-  }, [session, isPending, router]);
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    try {
-      await signOut();
-    } catch (error) {
-      console.error("Sign-out error:", error);
-      setIsSigningOut(false);
-    }
-  };
-
-  if (isPending || !session) {
-    return null;
+  if (!session) {
+    redirect("/signin");
   }
 
   return (
@@ -54,14 +37,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleSignOut}
-          disabled={isSigningOut}
-          className="rounded-full bg-red-600 px-6 py-3 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-        >
-          {isSigningOut ? "Signing Out..." : "Sign Out"}
-        </button>
+        <SignOut />
       </main>
     </div>
   );

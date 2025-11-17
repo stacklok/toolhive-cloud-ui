@@ -25,10 +25,10 @@ export default async function Home() {
             <strong>{session.user.email || session.user.name || "User"}</strong>
           </p>
           <Link
-            href="/dashboard"
+            href="/catalog"
             className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
           >
-            Go to Dashboard
+            Go to Catalog
           </Link>
         </div>
       </main>
