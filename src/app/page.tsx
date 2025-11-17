@@ -36,7 +36,7 @@ export default function Home() {
               Please sign in to access the application
             </p>
             <Link
-              href="/sign-in"
+              href="/signin"
               className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
             >
               Sign In
