@@ -3,40 +3,40 @@ export default {
     {
       _meta: {
         "io.modelcontextprotocol.registry/official": {
-          isLatest: true,
-          publishedAt: "1909-08-03T14:11:31.0Z",
-          status: "esse incididunt aliquip",
+          isLatest: false,
+          publishedAt: "1902-08-01T10:34:40.0Z",
+          status: "enim",
         },
       },
       server: {
         icons: [
           {
-            sizes: ["quis Ut officia dolore in"],
-            mimeType: "aliqua irure",
-            src: "http://ORpOLKKJ.mez6kMWfUnxlJLZ6muv4pO6mm3LkSgqV1xW.8hZFaZP3",
+            sizes: ["amet"],
+            mimeType: "mollit sint non pariatur Lorem",
+            src: "https://gSj.bmeYb+Zq+0VY3zKkSiIWrP.knYWLuBlVD4JW,0",
           },
         ],
         packages: [
           {
             environmentVariables: [
               {
-                choices: ["cillum dolor"],
-                default: "in esse ad nisi",
-                description: "sit aute Lorem",
+                choices: ["Ut irure"],
+                default: "incididunt minim qui deserunt",
+                description: "qui",
               },
             ],
             packageArguments: [
               {
-                choices: ["velit nulla eu qui"],
-                default: "pariatur ullamco nisi",
-                description: "irure pariatur do",
+                choices: ["eu esse"],
+                default: "sunt cupidatat",
+                description: "labore consectetur Lorem qui",
               },
             ],
             runtimeArguments: [
               {
-                choices: ["aute pariatur deserunt"],
-                default: "adipisicing est deserunt ipsum",
-                description: "nostrud",
+                choices: ["amet quis Excepteur"],
+                default: "aute non Duis magna exercitation",
+                description: "officia dolor est",
               },
             ],
           },
@@ -45,20 +45,20 @@ export default {
           {
             headers: [
               {
-                choices: ["nisi"],
-                default: "deserunt in culpa",
-                description: "qui dolore in Duis",
+                choices: ["aute ex occaecat ea"],
+                default: "ea elit nisi in exercitation",
+                description: "incididunt dolor ut dolore Excepteur",
               },
             ],
-            type: "incididunt",
-            url: "consequat",
+            type: "id reprehenderit velit",
+            url: "consequat nulla magna",
           },
         ],
       },
     },
   ],
   metadata: {
-    count: 24350008,
-    nextCursor: "esse sint officia",
+    count: 2971764,
+    nextCursor: "ut incididunt Excepteur in",
   },
 };
