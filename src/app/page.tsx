@@ -14,7 +14,10 @@ export default async function Home() {
 
   // Try to load servers list from the registry API (SSR).
   // In dev, prefer the standalone mock server to validate server-side fetches.
-  let serversSummary: { count: number; titles: string[] } | null = null;
+  let serversSummary: { count: number; titles: string[] } = {
+    count: 0,
+    titles: [],
+  };
   try {
     const base =
       process.env.MOCK_SERVER_ORIGIN ||
@@ -44,7 +47,7 @@ export default async function Home() {
       serversSummary = { count: items.length, titles };
     }
   } catch {
-    // ignore; likely no backend in dev
+    // Leave serversSummary at its default { count: 0, titles: [] }
   }
 
   return (
@@ -67,20 +70,12 @@ export default async function Home() {
           </Link>
 
           <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
-            {serversSummary ? (
-              <>
-                <div>
-                  Registry servers available:{" "}
-                  <strong>{serversSummary.count}</strong>
-                </div>
-                {serversSummary.titles.length > 0 && (
-                  <div>Sample: {serversSummary.titles.join(", ")}</div>
-                )}
-              </>
-            ) : (
-              <div className="italic">
-                Registry unavailable in dev (expected)
-              </div>
+            <div>
+              Registry servers available:{" "}
+              <strong>{serversSummary.count}</strong>
+            </div>
+            {serversSummary.titles.length > 0 && (
+              <div>Sample: {serversSummary.titles.join(", ")}</div>
             )}
           </div>
         </div>

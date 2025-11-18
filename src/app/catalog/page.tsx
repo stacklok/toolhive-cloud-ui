@@ -17,7 +17,7 @@ export default async function CatalogPage() {
     count: number;
     titles: string[];
     sample: Array<{ title: string; name: string; version?: string }>;
-  } | null = null;
+  } = { count: 0, titles: [], sample: [] };
   try {
     const base =
       process.env.MOCK_SERVER_ORIGIN ||
@@ -54,7 +54,7 @@ export default async function CatalogPage() {
       serversSummary = { count: items.length, titles, sample };
     }
   } catch {
-    // ignore in dev if backend is not available
+    // Leave serversSummary at its default empty state
   }
 
   return (
@@ -86,29 +86,21 @@ export default async function CatalogPage() {
           <p className="font-semibold text-zinc-800 dark:text-zinc-200">
             Registry
           </p>
-          {serversSummary ? (
-            <>
-              <div className="text-zinc-700 dark:text-zinc-300">
-                Servers available: <strong>{serversSummary.count}</strong>
-              </div>
-              {serversSummary.sample.length > 0 && (
-                <ul className="mt-2 list-disc pl-5 text-zinc-700 dark:text-zinc-300">
-                  {serversSummary.sample.map((s) => (
-                    <li key={`${s.name}-${s.title}`}>
-                      <strong>{s.title}</strong>
-                      <span className="ml-2 text-zinc-500 dark:text-zinc-400">
-                        ({s.name}
-                        {s.version ? ` @ ${s.version}` : ""})
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          ) : (
-            <div className="italic text-zinc-500 dark:text-zinc-400">
-              Registry unavailable in dev (expected)
-            </div>
+          <div className="text-zinc-700 dark:text-zinc-300">
+            Servers available: <strong>{serversSummary.count}</strong>
+          </div>
+          {serversSummary.sample.length > 0 && (
+            <ul className="mt-2 list-disc pl-5 text-zinc-700 dark:text-zinc-300">
+              {serversSummary.sample.map((s) => (
+                <li key={`${s.name}-${s.title}`}>
+                  <strong>{s.title}</strong>
+                  <span className="ml-2 text-zinc-500 dark:text-zinc-400">
+                    ({s.name}
+                    {s.version ? ` @ ${s.version}` : ""})
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
