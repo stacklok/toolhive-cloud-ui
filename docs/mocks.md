@@ -1,7 +1,7 @@
 MSW Auto-Mocker
 
 - Handlers: `src/mocks/handlers.ts` combines non-schema mocks and auto-generated mocks.
-- Non-schema mocks: add hand-written handlers in `src/mocks/customHandlers/index.ts`. These run before auto-generated handlers so they can replace or extend behavior when needed.
+- Non-schema mocks: add hand-written handlers in `src/mocks/customHandlers/index.ts`. These take precedence over schema-based mocks.
 - Auto-generated: `src/mocks/mocker.ts` reads `swagger.json` and creates fixtures under `src/mocks/fixtures` on first run.
 - Validation: Loaded fixtures are validated with Ajv; errors log to console.
 
