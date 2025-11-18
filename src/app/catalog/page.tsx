@@ -43,8 +43,8 @@ export default async function CatalogPage() {
         console.log(`[catalog] servers=${items.length}`);
       }
       const titles = items
-        .map((it) => it?.server?.title || it?.server?.name)
-        .filter(Boolean)
+        .map((it) => it?.server?.title ?? it?.server?.name)
+        .filter((t): t is string => typeof t === "string")
         .slice(0, 5);
       const sample = items.slice(0, 5).map((it) => ({
         title: it?.server?.title ?? it?.server?.name ?? "Unknown",

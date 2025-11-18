@@ -38,8 +38,8 @@ export default async function Home() {
         console.log(`[home] servers=${items.length}`);
       }
       const titles = items
-        .map((it) => it?.server?.title || it?.server?.name)
-        .filter(Boolean)
+        .map((it) => it?.server?.title ?? it?.server?.name)
+        .filter((t): t is string => typeof t === "string")
         .slice(0, 5);
       serversSummary = { count: items.length, titles };
     }

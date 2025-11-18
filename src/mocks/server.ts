@@ -1,3 +1,4 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { createServer } from "@mswjs/http-middleware";
 import { handlers } from "./handlers";
 
@@ -6,7 +7,7 @@ const port = Number(process.env.MOCK_PORT || DEFAULT_PORT);
 
 const httpServer = createServer(...handlers);
 
-httpServer.on("request", (req) => {
+httpServer.on("request", (req: IncomingMessage, _res: ServerResponse) => {
   // eslint-disable-next-line no-console
   console.log(`[mock] ${req.method} ${req.url}`);
 });
