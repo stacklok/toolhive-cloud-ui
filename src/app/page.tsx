@@ -12,6 +12,24 @@ export default async function Home() {
     redirect("/signin");
   }
 
+  // Try to load servers list from the registry API.
+  // In dev, this may fail if no backend is running; tests use MSW.
+  let serversSummary: { count: number; titles: string[] } | null = null;
+  try {
+    const res = await fetch("http://localhost/registry/v0.1/servers");
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      const items = Array.isArray(data?.servers) ? data.servers : [];
+      const titles = items
+        .map((it: any) => it?.server?.title || it?.server?.name)
+        .filter(Boolean)
+        .slice(0, 5);
+      serversSummary = { count: items.length, titles };
+    }
+  } catch {
+    // ignore; likely no backend in dev
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <main className="flex flex-col items-center gap-8 p-8">
@@ -30,6 +48,24 @@ export default async function Home() {
           >
             Go to Catalog
           </Link>
+
+          <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
+            {serversSummary ? (
+              <>
+                <div>
+                  Registry servers available:{" "}
+                  <strong>{serversSummary.count}</strong>
+                </div>
+                {serversSummary.titles.length > 0 && (
+                  <div>Sample: {serversSummary.titles.join(", ")}</div>
+                )}
+              </>
+            ) : (
+              <div className="italic">
+                Registry unavailable in dev (expected)
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
