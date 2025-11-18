@@ -12,7 +12,8 @@ import { buildMockModule } from "./mockTemplate";
 // ===== Config =====
 // Adjust the path of the OpenAPI JSON here if needed.
 // This repo keeps it at project root as `swagger.json`.
-const USE_TYPES_FOR_FIXTURES = false; // set true if you have @api/types.gen alias
+// Generate typed fixtures that satisfy OpenAPI response types under @api/types.gen
+const USE_TYPES_FOR_FIXTURES = true;
 
 // Strip these noisy prefixes from generated fixture folder names.
 const PREFIXES_TO_STRIP = ["api_v1beta_", "api_v0_"];

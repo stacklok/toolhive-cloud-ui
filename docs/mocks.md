@@ -8,7 +8,7 @@ MSW Auto-Mocker
 Usage
 - Vitest: tests initialize MSW in `src/mocks/test.setup.ts`. Run `pnpm test`.
 - Browser (optional): call `startWorker()` from `src/mocks/browser.ts` in your development entry point to mock requests in the browser.
-- Standalone server (dev): `pnpm mock:server` starts an HTTP mock server at `http://localhost:9090` (configurable with `MOCK_PORT`). Point API requests or Next.js rewrites to this origin to develop without a live backend.
+- Standalone server (dev): `pnpm mock:server` starts an HTTP mock server at `http://localhost:9090`. In dev, Next.js rewrites proxy `/registry/*` to this origin; use relative URLs like `/registry/v0.1/servers` from both client and server code.
 
 Regeneration
 - Delete a fixture file to re-generate it on next request.
@@ -17,5 +17,6 @@ Failure behavior (always strict)
 - If a schema is missing or faker fails, the handler responds 500 and does not write a placeholder.
 - Invalid fixtures (including empty `{}` when the schema defines properties) respond 500.
 
-Types (optional)
-- If you expose OpenAPI response types under `@api/types.gen`, set `USE_TYPES_FOR_FIXTURES = true` in `src/mocks/mocker.ts` to add a `satisfies` clause in generated fixtures.
+Types
+- Fixtures default to strict types. Generated modules import response types from `@api/types.gen` and use a `satisfies` clause to ensure compatibility.
+- Make sure `tsconfig.json` includes: `"paths": { "@api/*": ["./src/generated/*"] }`.

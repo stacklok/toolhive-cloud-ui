@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
-const mockOrigin = process.env.MOCK_SERVER_ORIGIN || "http://localhost:9090";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -13,7 +12,7 @@ const nextConfig: NextConfig = {
       // Proxy registry API to the local MSW mock server in dev
       {
         source: "/registry/:path*",
-        destination: `${mockOrigin}/registry/:path*`,
+        destination: "http://localhost:9090/registry/:path*",
       },
     ];
   },

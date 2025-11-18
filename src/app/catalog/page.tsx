@@ -12,19 +12,15 @@ export default async function CatalogPage() {
     redirect("/signin");
   }
 
-  // Load server registry summary (SSR). In dev, target the mock server.
+  // Load server registry summary (SSR). Use a relative URL so dev rewrites
+  // proxy to the standalone mock server.
   let serversSummary: {
     count: number;
     titles: string[];
     sample: Array<{ title: string; name: string; version?: string }>;
   } = { count: 0, titles: [], sample: [] };
   try {
-    const base =
-      process.env.MOCK_SERVER_ORIGIN ||
-      (process.env.NODE_ENV !== "production" ? "http://localhost:9090" : "");
-    const url = base
-      ? `${base}/registry/v0.1/servers`
-      : "/registry/v0.1/servers";
+    const url = "/registry/v0.1/servers";
     const res = await fetch(url);
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console

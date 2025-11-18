@@ -7,7 +7,6 @@ Fixtures are auto-generated on first run by the MSW Auto-Mocker.
 Notes
 - Non-schema mocks in `src/mocks/customHandlers` take precedence over schema-based mocks.
 - To re-generate a fixture, delete the file; it will be recreated on next request.
-- If your project exposes OpenAPI response types via `@api/types.gen`, you can
-  enable type enforcement by setting `USE_TYPES_FOR_FIXTURES = true` in
-  `src/mocks/mocker.ts`.
+- Fixtures are type-checked against OpenAPI response types via `@api/types.gen` by default.
+- Ensure `tsconfig.json` defines: `"paths": { "@api/*": ["./src/generated/*"] }`.
 - Always strict: missing/failed generation returns 500 (no placeholder), and invalid fixtures return 500.

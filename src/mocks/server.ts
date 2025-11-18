@@ -2,8 +2,8 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createServer } from "@mswjs/http-middleware";
 import { handlers } from "./handlers";
 
-const DEFAULT_PORT = 9090;
-const port = Number(process.env.MOCK_PORT || DEFAULT_PORT);
+// Fixed port for the standalone mock server
+const port = 9090;
 
 const httpServer = createServer(...handlers);
 

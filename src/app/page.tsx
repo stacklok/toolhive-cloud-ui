@@ -12,19 +12,14 @@ export default async function Home() {
     redirect("/signin");
   }
 
-  // Try to load servers list from the registry API (SSR).
-  // In dev, prefer the standalone mock server to validate server-side fetches.
+  // Try to load servers list from the registry API (SSR). Uses a relative URL
+  // so Next.js dev rewrites can proxy to the standalone mock server.
   let serversSummary: { count: number; titles: string[] } = {
     count: 0,
     titles: [],
   };
   try {
-    const base =
-      process.env.MOCK_SERVER_ORIGIN ||
-      (process.env.NODE_ENV !== "production" ? "http://localhost:9090" : "");
-    const url = base
-      ? `${base}/registry/v0.1/servers`
-      : "/registry/v0.1/servers";
+    const url = "/registry/v0.1/servers";
     const res = await fetch(url);
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console
