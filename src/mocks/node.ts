@@ -13,10 +13,19 @@ type Recorded = {
 
 const recorded: Recorded[] = [];
 
-// Attach simple request recorder
-// Requires MSW v2+ events API
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(server as any).events?.on("request:start", async ({ request }: any) => {
+// Attach simple request recorder (MSW v2 events API)
+const events = (
+  server as unknown as {
+    events?: {
+      on: (
+        event: "request:start",
+        cb: (args: { request: Request }) => void,
+      ) => void;
+    };
+  }
+).events;
+
+events?.on("request:start", async ({ request }) => {
   try {
     const url = new URL(request.url);
     let body: unknown;

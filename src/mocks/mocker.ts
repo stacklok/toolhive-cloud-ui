@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+import type { AnySchema } from "ajv";
 import Ajv from "ajv";
 import fs from "fs";
 import { JSONSchemaFaker as jsf } from "json-schema-faker";
+import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -34,7 +34,13 @@ import openapi from "../../swagger.json";
 // Ajv configuration
 const ajv = new Ajv({ strict: true });
 // Ignore vendor extensions like x-enum-varnames
-(ajv as any).addKeyword("x-enum-varnames");
+try {
+  (ajv as unknown as { addKeyword: (key: string) => unknown }).addKeyword(
+    "x-enum-varnames",
+  );
+} catch {
+  // ignore
+}
 
 // json-schema-faker options
 jsf.option({ alwaysFakeOptionals: true });
@@ -59,9 +65,15 @@ function stripPrefixes(s: string): string {
   return out.replace(/__+/g, "_").replace(/^_+|_+$/g, "");
 }
 
-function pickSuccessStatus(responses: Record<string, any>): string | undefined {
-  if (responses?.["200"]) return "200";
-  if (responses?.["201"]) return "201";
+function pickSuccessStatus(
+  responses: Record<string, unknown>,
+): string | undefined {
+  if (Object.hasOwn(responses ?? {}, "200")) {
+    return "200";
+  }
+  if (Object.hasOwn(responses ?? {}, "201")) {
+    return "201";
+  }
   const twoXX = Object.keys(responses || {}).find((k) => /^2\d\d$/.test(k));
   return twoXX;
 }
@@ -93,44 +105,52 @@ function opResponseTypeName(method: string, rawPath: string): string {
 }
 
 // Local $ref resolver for OpenAPI components only.
-function resolvePointer(ref: string): any {
+function resolvePointer(ref: string): unknown {
   if (!ref?.startsWith("#/")) return {};
   const parts = ref
     .slice(2)
     .split("/")
     .map((p) => p.replace(/~1/g, "/").replace(/~0/g, "~"));
-  let cur: any = openapi as any;
+  let cur: unknown = openapi as unknown;
   for (const part of parts) {
-    cur = cur?.[part];
-    if (cur === undefined) return {};
+    if (
+      cur &&
+      typeof cur === "object" &&
+      part in (cur as Record<string, unknown>)
+    ) {
+      cur = (cur as Record<string, unknown>)[part];
+    } else {
+      return {};
+    }
   }
   return cur;
 }
 
-function derefSchema<T = any>(schema: any, seen = new Set()): T {
+function derefSchema(schema: unknown, seen: Set<unknown> = new Set()): unknown {
   if (!schema || typeof schema !== "object") return schema;
-  if ((schema as any).$ref && typeof (schema as any).$ref === "string") {
-    const target = resolvePointer((schema as any).$ref as string);
-    if (seen.has(target)) return target as T;
+  const ref = (schema as { $ref?: unknown }).$ref;
+  if (typeof ref === "string") {
+    const target = resolvePointer(ref);
+    if (seen.has(target)) return target;
     seen.add(target);
     return derefSchema(target, seen);
   }
   if (Array.isArray(schema)) {
-    return schema.map((item) => derefSchema(item, seen)) as any;
+    return schema.map((item) => derefSchema(item, seen));
   }
-  const out: any = {};
-  for (const [k, v] of Object.entries(schema)) {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(schema as Record<string, unknown>)) {
     out[k] = derefSchema(v, seen);
   }
-  return out as T;
+  return out;
 }
 
 function hasRef(schema: unknown, seen = new Set<object>()): boolean {
   if (!schema || typeof schema !== "object") return false;
   if (seen.has(schema as object)) return false;
   seen.add(schema as object);
-  // @ts-expect-error index signature
-  if ((schema as any).$ref && typeof (schema as any).$ref === "string") {
+  const ref = (schema as { $ref?: unknown }).$ref;
+  if (typeof ref === "string") {
     return true;
   }
   if (Array.isArray(schema)) {
@@ -142,16 +162,15 @@ function hasRef(schema: unknown, seen = new Set<object>()): boolean {
   return false;
 }
 
-function shrinkPayload(value: unknown, schema: any, depth = 0): unknown {
+function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
   if (depth > 8) return value; // guard against extreme nesting
   if (value == null) return value;
 
   // Arrays: keep a single representative item
   if (Array.isArray(value)) {
     if (value.length === 0) return value;
-    const itemSchema = Array.isArray(schema?.items)
-      ? schema.items[0]
-      : schema?.items;
+    const items = (schema as { items?: unknown | unknown[] })?.items;
+    const itemSchema = Array.isArray(items) ? items[0] : items;
     const first = shrinkPayload(value[0], itemSchema, depth + 1);
     return [first];
   }
@@ -160,19 +179,32 @@ function shrinkPayload(value: unknown, schema: any, depth = 0): unknown {
   if (typeof value === "object") {
     const obj = value as Record<string, unknown>;
     const out: Record<string, unknown> = {};
-    const props: Record<string, any> = (schema && schema.properties) || {};
-    const required: string[] = (schema && schema.required) || [];
+    const s =
+      (schema as {
+        properties?: Record<string, unknown>;
+        required?: string[];
+      }) || {};
+    const props: Record<string, unknown> = s.properties || {};
+    const required: string[] = s.required || [];
 
     for (const key of required) {
       if (key in obj) {
-        out[key] = shrinkPayload(obj[key], props?.[key], depth + 1);
+        out[key] = shrinkPayload(
+          obj[key],
+          (props as Record<string, unknown>)[key],
+          depth + 1,
+        );
       }
     }
 
     const optionals = Object.keys(obj).filter((k) => !required.includes(k));
     if (optionals.length > 0) {
       const k = optionals[0];
-      out[k] = shrinkPayload(obj[k], props?.[k], depth + 1);
+      out[k] = shrinkPayload(
+        obj[k],
+        (props as Record<string, unknown>)[k],
+        depth + 1,
+      );
     }
     return out;
   }
@@ -189,33 +221,76 @@ function getFixtureRelPath(safePath: string, method: string): string {
   return `./fixtures/${safePath}/${method}.${FIXTURE_EXT}`;
 }
 
+function asJson(
+  value: unknown,
+): string | number | boolean | null | Record<string, unknown> | unknown[] {
+  if (value === null) return null;
+  const t = typeof value;
+  if (t === "string" || t === "number" || t === "boolean") {
+    return value as string | number | boolean;
+  }
+  if (Array.isArray(value)) return value as unknown[];
+  if (t === "object") return value as Record<string, unknown>;
+  return String(value);
+}
+
+function getJsonSchemaFromOperation(
+  operation: unknown,
+  status: string,
+): unknown {
+  const op = operation as { responses?: Record<string, unknown> };
+  const res = (op.responses ?? {})[status] as
+    | { content?: Record<string, unknown> }
+    | undefined;
+  const content = res?.content?.["application/json"] as
+    | { schema?: unknown }
+    | undefined;
+  return content?.schema;
+}
+
 export function autoGenerateHandlers() {
-  const result: any[] = [];
+  const result: RequestHandler[] = [];
 
   // Prefer Vite glob import when available (Vitest/Vite runtime)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error - import.meta.glob is a Vite extension, available in vitest
   const fixtureImporters: Record<string, () => Promise<unknown>> =
-    // @ts-expect-error - vite-specific API available in vite/vitest
-    typeof (import.meta as any).glob === "function"
-      ? // @ts-ignore
-        (import.meta as any).glob("./fixtures/**", { import: "default" })
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error - keep full reference for Vite static replacement
+    typeof import.meta.glob === "function"
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        import.meta.glob("./fixtures/**", { import: "default" })
       : {};
 
   const specPaths = Object.entries(
-    ((openapi as any).paths ?? {}) as Record<string, any>,
+    ((openapi as { paths?: Record<string, unknown> }).paths ?? {}) as Record<
+      string,
+      unknown
+    >,
   );
   const httpMethods = ["get", "post", "put", "patch", "delete"] as const;
+  const handlersByMethod = {
+    get: http.get,
+    post: http.post,
+    put: http.put,
+    patch: http.patch,
+    delete: http.delete,
+  } as const;
 
   for (const [rawPath, pathItem] of specPaths) {
     for (const method of httpMethods) {
-      const operation = pathItem?.[method];
+      const operation = (pathItem as Record<string, unknown>)[method];
       if (!operation) continue;
 
       const mswPath = `*/${rawPath.replace(/^\//, "").replace(/\{([^}]+)\}/g, ":$1")}`;
 
       result.push(
-        // @ts-expect-error index signature for http[method]
-        http[method](mswPath, async () => {
-          const successStatus = pickSuccessStatus(operation.responses || {});
+        handlersByMethod[method](mswPath, async () => {
+          const responsesObj =
+            (operation as { responses?: Record<string, unknown> }).responses ??
+            {};
+          const successStatus = pickSuccessStatus(responsesObj);
 
           const safePath = stripPrefixes(toFileSafe(rawPath));
           const fileBase = `${safePath}/${method}.${FIXTURE_EXT}`;
@@ -231,12 +306,12 @@ export function autoGenerateHandlers() {
 
           const hasFile = fs.existsSync(fixtureFileName);
           if ((FORCE_REGENERATE || !hasFile) && successStatus !== "204") {
-            let payload: any | undefined;
+            let payload: unknown;
             if (successStatus) {
-              const schema =
-                operation.responses?.[successStatus]?.content?.[
-                  "application/json"
-                ]?.schema;
+              const schema = getJsonSchemaFromOperation(
+                operation,
+                successStatus,
+              );
               if (schema) {
                 try {
                   let resolved = derefSchema(schema);
@@ -250,7 +325,9 @@ export function autoGenerateHandlers() {
                       "Unresolved $ref remains after dereferencing passes",
                     );
                   }
-                  const generated = jsf.generate(resolved);
+                  const generated = jsf.generate(
+                    resolved as Parameters<typeof jsf.generate>[0],
+                  );
                   payload = shrinkPayload(generated, resolved);
                 } catch (e) {
                   console.error(
@@ -296,16 +373,16 @@ export function autoGenerateHandlers() {
             return new HttpResponse(null, { status: 204 });
           }
 
-          let data: any;
+          let data: unknown;
           const relPath = getFixtureRelPath(safePath, method);
           try {
             const importer = fixtureImporters?.[relPath];
             if (importer) {
-              const mod: any = await importer();
-              data = mod?.default ?? mod;
+              const mod = (await importer()) as unknown;
+              data = (mod as { default?: unknown })?.default ?? mod;
             } else {
-              const mod: any = await import(relPath);
-              data = mod?.default ?? mod;
+              const mod = (await import(relPath)) as unknown;
+              data = (mod as { default?: unknown })?.default ?? mod;
             }
           } catch (e) {
             return new HttpResponse(
@@ -314,22 +391,26 @@ export function autoGenerateHandlers() {
             );
           }
 
-          const validateSchema =
-            operation.responses?.[successStatus ?? "200"]?.content?.[
-              "application/json"
-            ]?.schema;
+          const validateSchema = getJsonSchemaFromOperation(
+            operation,
+            successStatus ?? "200",
+          );
           if (validateSchema) {
             const resolved = derefSchema(validateSchema);
-            let isValid = ajv.validate(resolved, data);
+            let isValid = ajv.validate(resolved as AnySchema, data as unknown);
             // Treat empty object as invalid when schema exposes properties.
             if (
               isValid &&
               data &&
               typeof data === "object" &&
               !Array.isArray(data) &&
-              Object.keys(data as any).length === 0 &&
-              (resolved as any)?.properties &&
-              Object.keys((resolved as any).properties).length > 0
+              Object.keys(data as Record<string, unknown>).length === 0 &&
+              (resolved as { properties?: Record<string, unknown> })
+                ?.properties &&
+              Object.keys(
+                (resolved as { properties?: Record<string, unknown> })
+                  .properties ?? {},
+              ).length > 0
             ) {
               isValid = false;
             }
@@ -349,7 +430,8 @@ export function autoGenerateHandlers() {
             });
           }
 
-          return HttpResponse.json(data, {
+          const jsonValue = asJson(data);
+          return HttpResponse.json(jsonValue, {
             status: successStatus ? Number(successStatus) : 200,
           });
         }),
