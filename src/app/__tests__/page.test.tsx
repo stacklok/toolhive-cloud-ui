@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../page";
 
 // Mock Next.js modules
 vi.mock("next/headers", () => ({
