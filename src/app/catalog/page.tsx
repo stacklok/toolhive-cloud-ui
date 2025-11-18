@@ -26,14 +26,27 @@ export default async function CatalogPage() {
       ? `${base}/registry/v0.1/servers`
       : "/registry/v0.1/servers";
     const res = await fetch(url);
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.log(`[catalog] SSR fetch ${url} -> ${res.status}`);
+    }
     if (res.ok) {
-      const data = (await res.json()) as any;
+      type ServersPayload = {
+        servers?: Array<{
+          server?: { title?: string; name?: string; version?: string };
+        }>;
+      };
+      const data: ServersPayload = await res.json();
       const items = Array.isArray(data?.servers) ? data.servers : [];
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.log(`[catalog] servers=${items.length}`);
+      }
       const titles = items
-        .map((it: any) => it?.server?.title || it?.server?.name)
+        .map((it) => it?.server?.title || it?.server?.name)
         .filter(Boolean)
         .slice(0, 5);
-      const sample = items.slice(0, 5).map((it: any) => ({
+      const sample = items.slice(0, 5).map((it) => ({
         title: it?.server?.title ?? it?.server?.name ?? "Unknown",
         name: it?.server?.name ?? "unknown",
         version: it?.server?.version ?? undefined,

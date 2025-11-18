@@ -1,12 +1,12 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { AnySchema } from "ajv";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import fs from "fs";
 import { JSONSchemaFaker as jsf } from "json-schema-faker";
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
-import path from "path";
-import { fileURLToPath } from "url";
 import { buildMockModule } from "./mockTemplate";
 
 // ===== Config =====
@@ -44,6 +44,20 @@ jsf.option({ minItems: 1 });
 jsf.option({ maxItems: 3 });
 jsf.option({ failOnInvalidTypes: false });
 jsf.option({ failOnInvalidFormat: false });
+
+// Prefer example/default values when present to get recognizable data
+type JsfOptionCarrier = {
+  option: (opts: {
+    useExamplesValue?: boolean;
+    useDefaultValue?: boolean;
+  }) => unknown;
+};
+try {
+  (jsf as unknown as JsfOptionCarrier).option({ useExamplesValue: true });
+  (jsf as unknown as JsfOptionCarrier).option({ useDefaultValue: true });
+} catch {
+  // ignore if not supported by the installed jsf version
+}
 
 function toFileSafe(s: string): string {
   return s.replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
@@ -157,7 +171,12 @@ function hasRef(schema: unknown, seen = new Set<object>()): boolean {
   return false;
 }
 
-function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
+function shrinkPayload(
+  value: unknown,
+  schema: unknown,
+  depth = 0,
+  path: string[] = [],
+): unknown {
   if (depth > 8) return value; // guard against extreme nesting
   if (value == null) return value;
 
@@ -166,8 +185,16 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
     if (value.length === 0) return value;
     const items = (schema as { items?: unknown | unknown[] })?.items;
     const itemSchema = Array.isArray(items) ? items[0] : items;
-    const first = shrinkPayload(value[0], itemSchema, depth + 1);
-    return [first];
+    // For top-level `servers` array, keep 2–3 items; otherwise keep 1
+    const isTopLevelServers = path.length === 1 && path[0] === "servers";
+    const keep = isTopLevelServers
+      ? Math.min(value.length, 2 + Math.floor(Math.random() * 2))
+      : 1;
+    const out: unknown[] = [];
+    for (let i = 0; i < keep; i++) {
+      out.push(shrinkPayload(value[i], itemSchema, depth + 1, path));
+    }
+    return out;
   }
 
   // Objects: keep required keys and a small, meaningful subset of optionals
@@ -188,25 +215,49 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
           obj[key],
           (props as Record<string, unknown>)[key],
           depth + 1,
+          [...path, key],
         );
       }
     }
 
     const optionals = Object.keys(obj).filter((k) => !required.includes(k));
+
+    // Prefer semantically meaningful fields when present
+    const meaningfulOrder = [
+      "title",
+      "name",
+      "version",
+      "description",
+      "server",
+      "_meta",
+    ];
+    for (const k of meaningfulOrder) {
+      if (k in obj && !(k in out)) {
+        out[k] = shrinkPayload(
+          obj[k],
+          (props as Record<string, unknown>)[k],
+          depth + 1,
+          [...path, k],
+        );
+      }
+    }
+
     if (optionals.length > 0) {
       // Prefer array-typed properties or names that look like lists
       const schemaKeys = Object.keys(props);
-      const weighted = optionals.map((k) => {
-        const ps = (props as Record<string, unknown>)[k] as
-          | { type?: string; items?: unknown }
-          | undefined;
-        const isArray =
-          ps?.type === "array" || typeof ps?.items !== "undefined";
-        const nameBias = /servers|items|list|data|results/i.test(k);
-        const schemaOrder = Math.max(0, schemaKeys.indexOf(k));
-        const weight = (isArray ? 2 : 0) + (nameBias ? 1 : 0);
-        return { k, weight, schemaOrder };
-      });
+      const weighted = optionals
+        .filter((k) => !(k in out))
+        .map((k) => {
+          const ps = (props as Record<string, unknown>)[k] as
+            | { type?: string; items?: unknown }
+            | undefined;
+          const isArray =
+            ps?.type === "array" || typeof ps?.items !== "undefined";
+          const nameBias = /servers|items|list|data|results/i.test(k);
+          const schemaOrder = Math.max(0, schemaKeys.indexOf(k));
+          const weight = (isArray ? 2 : 0) + (nameBias ? 1 : 0);
+          return { k, weight, schemaOrder };
+        });
       weighted.sort(
         (a, b) => b.weight - a.weight || a.schemaOrder - b.schemaOrder,
       );
@@ -217,6 +268,7 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
             obj[k],
             (props as Record<string, unknown>)[k],
             depth + 1,
+            [...path, k],
           );
         }
       }
@@ -234,6 +286,60 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
 
 function getFixtureRelPath(safePath: string, method: string): string {
   return `./fixtures/${safePath}/${method}.${FIXTURE_EXT}`;
+}
+
+function enrichServersFixture(payload: unknown): unknown {
+  if (!payload || typeof payload !== "object") return payload;
+  const obj = payload as Record<string, unknown>;
+  const servers = Array.isArray(obj.servers)
+    ? (obj.servers as unknown[])
+    : null;
+  if (!servers) return payload;
+  const updated = servers.map((item, idx) => {
+    if (!item || typeof item !== "object") return item;
+    const it = item as Record<string, unknown>;
+    let server: Record<string, unknown>;
+    if (it.server && typeof it.server === "object") {
+      server = it.server as Record<string, unknown>;
+    } else {
+      server = {} as Record<string, unknown>;
+      it.server = server;
+    }
+    if (
+      !server.title ||
+      typeof server.title !== "string" ||
+      server.title.length === 0
+    ) {
+      server.title = `Sample Server ${idx + 1}`;
+    }
+    if (
+      !server.name ||
+      typeof server.name !== "string" ||
+      server.name.length === 0
+    ) {
+      const slug = String(server.title)
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+      server.name = `io.example/${slug || `server-${idx + 1}`}`;
+    }
+    if (
+      !server.version ||
+      typeof server.version !== "string" ||
+      server.version.length === 0
+    ) {
+      server.version = "1.0.0";
+    }
+    return it;
+  });
+  (obj as Record<string, unknown>).servers = updated;
+  if (!obj.metadata || typeof obj.metadata !== "object") {
+    obj.metadata = { count: updated.length };
+  } else {
+    const m = obj.metadata as Record<string, unknown>;
+    if (typeof m.count !== "number") m.count = updated.length;
+  }
+  return obj;
 }
 
 function asJson(
@@ -254,12 +360,12 @@ function getJsonSchemaFromOperation(
   status: string,
 ): unknown {
   const op = operation as { responses?: Record<string, unknown> };
-  const res = (op.responses ?? {})[status] as
+  const res = op.responses?.[status] as
     | { content?: Record<string, unknown> }
     | undefined;
-  const content = res?.content?.["application/json"] as
-    | { schema?: unknown }
-    | undefined;
+  const content = (res?.content as Record<string, unknown> | undefined)?.[
+    "application/json"
+  ] as { schema?: unknown } | undefined;
   return content?.schema;
 }
 
@@ -337,7 +443,14 @@ export function autoGenerateHandlers() {
                   const generated = jsf.generate(
                     resolved as Parameters<typeof jsf.generate>[0],
                   );
-                  payload = shrinkPayload(generated, resolved);
+                  payload = shrinkPayload(generated, resolved, 0, []);
+                  // Improve developer experience: ensure minimal fields for servers list
+                  if (
+                    rawPath === "/registry/v0.1/servers" &&
+                    method === "get"
+                  ) {
+                    payload = enrichServersFixture(payload);
+                  }
                 } catch (e) {
                   console.error(
                     "[auto-mocker] jsf.generate failed for",
@@ -445,6 +558,23 @@ export function autoGenerateHandlers() {
           }
 
           const jsonValue = asJson(data);
+          try {
+            let serversLen: number | undefined;
+            if (
+              jsonValue &&
+              typeof jsonValue === "object" &&
+              Object.hasOwn(jsonValue, "servers")
+            ) {
+              const s = (jsonValue as Record<string, unknown>).servers;
+              if (Array.isArray(s)) serversLen = s.length;
+            }
+            // eslint-disable-next-line no-console
+            console.log(
+              `[auto-mocker] respond ${method.toUpperCase()} ${rawPath} -> ${
+                successStatus ? Number(successStatus) : 200
+              } ${serversLen !== undefined ? `servers=${serversLen}` : ""} (${fixtureFileName})`,
+            );
+          } catch {}
           return HttpResponse.json(jsonValue, {
             status: successStatus ? Number(successStatus) : 200,
           });

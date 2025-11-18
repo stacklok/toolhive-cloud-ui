@@ -23,11 +23,22 @@ export default async function Home() {
       ? `${base}/registry/v0.1/servers`
       : "/registry/v0.1/servers";
     const res = await fetch(url);
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.log(`[home] SSR fetch ${url} -> ${res.status}`);
+    }
     if (res.ok) {
-      const data = (await res.json()) as any;
+      type ServersPayload = {
+        servers?: Array<{ server?: { title?: string; name?: string } }>;
+      };
+      const data: ServersPayload = await res.json();
       const items = Array.isArray(data?.servers) ? data.servers : [];
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.log(`[home] servers=${items.length}`);
+      }
       const titles = items
-        .map((it: any) => it?.server?.title || it?.server?.name)
+        .map((it) => it?.server?.title || it?.server?.name)
         .filter(Boolean)
         .slice(0, 5);
       serversSummary = { count: items.length, titles };
