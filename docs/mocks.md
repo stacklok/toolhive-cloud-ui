@@ -1,8 +1,8 @@
-MSW Auto‑Mocker
+MSW Auto-Mocker
 
-- Handlers: `src/mocks/handlers.ts` combines custom and auto‑generated.
+- Handlers: `src/mocks/handlers.ts` combines custom and auto-generated.
 - Custom: add overrides in `src/mocks/customHandlers/index.ts`.
-- Auto‑gen: `src/mocks/mocker.ts` reads `swagger.json` and creates fixtures in `src/mocks/fixtures` on first run.
+- Auto-gen: `src/mocks/mocker.ts` reads `swagger.json` and creates fixtures in `src/mocks/fixtures` on first run.
 - Validation: Loaded fixtures are validated with Ajv; errors log to console.
 
 Usage

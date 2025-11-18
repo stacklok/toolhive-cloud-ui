@@ -313,7 +313,6 @@ export function autoGenerateHandlers() {
           const successStatus = pickSuccessStatus(responsesObj);
 
           const safePath = stripPrefixes(toFileSafe(rawPath));
-          const fileBase = `${safePath}/${method}.${FIXTURE_EXT}`;
           const fixtureFileName = path.join(
             FIXTURES_PATH,
             `${safePath}`,

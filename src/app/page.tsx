@@ -16,7 +16,7 @@ export default async function Home() {
   // In dev, this may fail if no backend is running; tests use MSW.
   let serversSummary: { count: number; titles: string[] } | null = null;
   try {
-    const res = await fetch("http://localhost/registry/v0.1/servers");
+    const res = await fetch("/registry/v0.1/servers");
     if (res.ok) {
       const data = (await res.json()) as any;
       const items = Array.isArray(data?.servers) ? data.servers : [];

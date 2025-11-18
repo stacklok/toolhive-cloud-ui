@@ -1,4 +1,4 @@
-Fixtures are auto-generated on first run by the MSW Auto‑Mocker.
+Fixtures are auto-generated on first run by the MSW Auto-Mocker.
 
 - Files are TypeScript modules under this directory mirroring API routes.
 - Each module default-exports the mock payload returned by the handler.
