@@ -125,6 +125,23 @@ function derefSchema<T = any>(schema: any, seen = new Set()): T {
   return out as T;
 }
 
+function hasRef(schema: unknown, seen = new Set<object>()): boolean {
+  if (!schema || typeof schema !== "object") return false;
+  if (seen.has(schema as object)) return false;
+  seen.add(schema as object);
+  // @ts-expect-error index signature
+  if ((schema as any).$ref && typeof (schema as any).$ref === "string") {
+    return true;
+  }
+  if (Array.isArray(schema)) {
+    return schema.some((it) => hasRef(it, seen));
+  }
+  for (const v of Object.values(schema as Record<string, unknown>)) {
+    if (hasRef(v, seen)) return true;
+  }
+  return false;
+}
+
 function getFixtureRelPath(safePath: string, method: string): string {
   return `./fixtures/${safePath}/${method}.${FIXTURE_EXT}`;
 }
@@ -179,7 +196,17 @@ export function autoGenerateHandlers() {
                 ]?.schema;
               if (schema) {
                 try {
-                  const resolved = derefSchema(schema);
+                  let resolved = derefSchema(schema);
+                  // Attempt to fully resolve nested refs if any remain
+                  let guard = 0;
+                  while (hasRef(resolved) && guard++ < 5) {
+                    resolved = derefSchema(resolved);
+                  }
+                  if (hasRef(resolved)) {
+                    throw new Error(
+                      "Unresolved $ref remains after dereferencing passes",
+                    );
+                  }
                   payload = jsf.generate(resolved);
                 } catch (e) {
                   console.error(
