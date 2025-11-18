@@ -12,11 +12,17 @@ export default async function Home() {
     redirect("/signin");
   }
 
-  // Try to load servers list from the registry API.
-  // In dev, this may fail if no backend is running; tests use MSW.
+  // Try to load servers list from the registry API (SSR).
+  // In dev, prefer the standalone mock server to validate server-side fetches.
   let serversSummary: { count: number; titles: string[] } | null = null;
   try {
-    const res = await fetch("/registry/v0.1/servers");
+    const base =
+      process.env.MOCK_SERVER_ORIGIN ||
+      (process.env.NODE_ENV !== "production" ? "http://localhost:9090" : "");
+    const url = base
+      ? `${base}/registry/v0.1/servers`
+      : "/registry/v0.1/servers";
+    const res = await fetch(url);
     if (res.ok) {
       const data = (await res.json()) as any;
       const items = Array.isArray(data?.servers) ? data.servers : [];

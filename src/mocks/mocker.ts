@@ -1,5 +1,6 @@
 import type { AnySchema } from "ajv";
 import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import fs from "fs";
 import { JSONSchemaFaker as jsf } from "json-schema-faker";
 import type { RequestHandler } from "msw";
@@ -31,8 +32,10 @@ import openapi from "../../swagger.json";
 
 // Ajv configuration
 const ajv = new Ajv({ strict: true });
-// Allow vendor extensions like x-enum-varnames
+addFormats(ajv);
+// Allow vendor/annotation keywords present in OpenAPI-derived schemas
 ajv.addKeyword("x-enum-varnames");
+ajv.addKeyword("example");
 
 // json-schema-faker options
 jsf.option({ alwaysFakeOptionals: true });
@@ -402,7 +405,12 @@ export function autoGenerateHandlers() {
             successStatus ?? "200",
           );
           if (validateSchema) {
-            const resolved = derefSchema(validateSchema);
+            // Fully dereference before validation to avoid local $ref to components
+            let resolved = derefSchema(validateSchema);
+            let guard = 0;
+            while (hasRef(resolved) && guard++ < 5) {
+              resolved = derefSchema(resolved);
+            }
             let isValid = ajv.validate(resolved as AnySchema, data as unknown);
             // Treat empty object as invalid when schema exposes properties.
             if (

@@ -12,6 +12,38 @@ export default async function CatalogPage() {
     redirect("/signin");
   }
 
+  // Load server registry summary (SSR). In dev, target the mock server.
+  let serversSummary: {
+    count: number;
+    titles: string[];
+    sample: Array<{ title: string; name: string; version?: string }>;
+  } | null = null;
+  try {
+    const base =
+      process.env.MOCK_SERVER_ORIGIN ||
+      (process.env.NODE_ENV !== "production" ? "http://localhost:9090" : "");
+    const url = base
+      ? `${base}/registry/v0.1/servers`
+      : "/registry/v0.1/servers";
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      const items = Array.isArray(data?.servers) ? data.servers : [];
+      const titles = items
+        .map((it: any) => it?.server?.title || it?.server?.name)
+        .filter(Boolean)
+        .slice(0, 5);
+      const sample = items.slice(0, 5).map((it: any) => ({
+        title: it?.server?.title ?? it?.server?.name ?? "Unknown",
+        name: it?.server?.name ?? "unknown",
+        version: it?.server?.version ?? undefined,
+      }));
+      serversSummary = { count: items.length, titles, sample };
+    }
+  } catch {
+    // ignore in dev if backend is not available
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <main className="flex flex-col items-center gap-8 rounded-lg bg-white p-12 shadow-lg dark:bg-zinc-900">
@@ -35,6 +67,36 @@ export default async function CatalogPage() {
               User ID: <strong>{session.user.id}</strong>
             </p>
           </div>
+        </div>
+
+        <div className="w-full max-w-xl rounded-lg bg-zinc-100 p-4 text-sm dark:bg-zinc-800">
+          <p className="font-semibold text-zinc-800 dark:text-zinc-200">
+            Registry
+          </p>
+          {serversSummary ? (
+            <>
+              <div className="text-zinc-700 dark:text-zinc-300">
+                Servers available: <strong>{serversSummary.count}</strong>
+              </div>
+              {serversSummary.sample.length > 0 && (
+                <ul className="mt-2 list-disc pl-5 text-zinc-700 dark:text-zinc-300">
+                  {serversSummary.sample.map((s) => (
+                    <li key={`${s.name}-${s.title}`}>
+                      <strong>{s.title}</strong>
+                      <span className="ml-2 text-zinc-500 dark:text-zinc-400">
+                        ({s.name}
+                        {s.version ? ` @ ${s.version}` : ""})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <div className="italic text-zinc-500 dark:text-zinc-400">
+              Registry unavailable in dev (expected)
+            </div>
+          )}
         </div>
 
         <SignOut />
