@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OidcTokenData } from "../auth";
+import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
 
 // Mock next/headers
 const mockCookies = vi.hoisted(() => ({
@@ -100,7 +101,6 @@ describe("auth.ts", () => {
     it("should return null when cookie is not present", async () => {
       mockCookies.get.mockReturnValue(undefined);
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -110,7 +110,6 @@ describe("auth.ts", () => {
     it("should return null when cookie value is empty", async () => {
       mockCookies.get.mockReturnValue({ value: "" });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -128,7 +127,6 @@ describe("auth.ts", () => {
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -145,7 +143,6 @@ describe("auth.ts", () => {
       const encryptedPayload = encryptTestData(JSON.stringify(tokenData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -161,7 +158,6 @@ describe("auth.ts", () => {
       const encryptedPayload = encryptTestData(JSON.stringify(tokenData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBe("valid-access-token-123");
@@ -177,7 +173,6 @@ describe("auth.ts", () => {
       const encryptedPayload = encryptTestData(JSON.stringify(invalidData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -190,7 +185,6 @@ describe("auth.ts", () => {
     it("should handle decryption errors gracefully", async () => {
       mockCookies.get.mockReturnValue({ value: "invalid-encrypted-data" });
 
-      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
@@ -203,7 +197,6 @@ describe("auth.ts", () => {
 
   describe("clearOidcProviderToken", () => {
     it("should delete the oidc_token cookie", async () => {
-      const { clearOidcProviderToken } = await import("../auth");
       await clearOidcProviderToken();
 
       expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
