@@ -1,10 +1,16 @@
-"use client";
-
+import { headers } from "next/headers";
 import Link from "next/link";
-import { useSession } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 
-export default function Home() {
-  const { data: session, isPending } = useSession();
+export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/signin");
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
@@ -13,36 +19,18 @@ export default function Home() {
           Welcome to ToolHive Cloud UI
         </h1>
 
-        {isPending ? (
-          <p className="text-zinc-600 dark:text-zinc-400">Loading...</p>
-        ) : session?.user ? (
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              You are logged in as{" "}
-              <strong>
-                {session.user.email || session.user.name || "User"}
-              </strong>
-            </p>
-            <Link
-              href="/dashboard"
-              className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-            >
-              Go to Dashboard
-            </Link>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Please sign in to access the application
-            </p>
-            <Link
-              href="/sign-in"
-              className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-            >
-              Sign In
-            </Link>
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-zinc-600 dark:text-zinc-400">
+            You are logged in as{" "}
+            <strong>{session.user.email || session.user.name || "User"}</strong>
+          </p>
+          <Link
+            href="/catalog"
+            className="rounded-full bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          >
+            Go to Catalog
+          </Link>
+        </div>
       </main>
     </div>
   );

@@ -10,10 +10,10 @@ export const authClient = createAuthClient({
 export const { signIn, useSession } = authClient;
 
 export const signOut = async (options?: { redirectTo?: string }) => {
-  const redirectUri = options?.redirectTo || "/sign-in";
+  const redirectUri = options?.redirectTo || "/signin";
 
   // Note: This does NOT logout from Okta SSO session
-  // User will be automatically re-authenticated on next sign-in (SSO behavior)
+  // User will be automatically re-authenticated on next signin (SSO behavior)
   await authClient.signOut({
     fetchOptions: {
       onSuccess: () => {
