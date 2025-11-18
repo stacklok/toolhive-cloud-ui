@@ -175,7 +175,7 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
     return [first];
   }
 
-  // Objects: keep required keys and at most one optional key
+  // Objects: keep required keys and a small, meaningful subset of optionals
   if (typeof value === "object") {
     const obj = value as Record<string, unknown>;
     const out: Record<string, unknown> = {};
@@ -199,12 +199,32 @@ function shrinkPayload(value: unknown, schema: unknown, depth = 0): unknown {
 
     const optionals = Object.keys(obj).filter((k) => !required.includes(k));
     if (optionals.length > 0) {
-      const k = optionals[0];
-      out[k] = shrinkPayload(
-        obj[k],
-        (props as Record<string, unknown>)[k],
-        depth + 1,
+      // Prefer array-typed properties or names that look like lists
+      const schemaKeys = Object.keys(props);
+      const weighted = optionals.map((k) => {
+        const ps = (props as Record<string, unknown>)[k] as
+          | { type?: string; items?: unknown }
+          | undefined;
+        const isArray =
+          ps?.type === "array" || typeof ps?.items !== "undefined";
+        const nameBias = /servers|items|list|data|results/i.test(k);
+        const schemaOrder = Math.max(0, schemaKeys.indexOf(k));
+        const weight = (isArray ? 2 : 0) + (nameBias ? 1 : 0);
+        return { k, weight, schemaOrder };
+      });
+      weighted.sort(
+        (a, b) => b.weight - a.weight || a.schemaOrder - b.schemaOrder,
       );
+      const MAX_OPTIONALS = 3;
+      for (const { k } of weighted.slice(0, MAX_OPTIONALS)) {
+        if (k in obj) {
+          out[k] = shrinkPayload(
+            obj[k],
+            (props as Record<string, unknown>)[k],
+            depth + 1,
+          );
+        }
+      }
     }
     return out;
   }
