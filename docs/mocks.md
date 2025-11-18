@@ -8,6 +8,7 @@ MSW Auto-Mocker
 Usage
 - Vitest: already wired via `src/mocks/test.setup.ts`. Run `pnpm test`.
 - Browser dev (optional): import and call `startWorker()` from `src/mocks/browser.ts` in your app's dev entry.
+- Standalone server (dev): run `pnpm mock:server` to start an HTTP mock server on `http://localhost:9090` (configurable via `MOCK_PORT`). Point your app's API base URL or a Next.js rewrite to this server to consume mock data without a real backend.
 
 Regeneration
 - Delete a fixture file or run with `AUTO_MOCKER_FORCE=1` to re-generate.

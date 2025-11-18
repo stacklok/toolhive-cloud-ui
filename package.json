@@ -16,7 +16,8 @@
     "oidc": "node dev-auth/oidc-provider.mjs",
     "generate-swagger": "tsx scripts/generate-swagger.ts",
     "generate-client": "pnpm run generate-swagger && openapi-ts",
-    "generate-client:nofetch": "openapi-ts"
+    "generate-client:nofetch": "openapi-ts",
+    "mock:server": "tsx src/mocks/server.ts"
   },
   "dependencies": {
     "better-auth": "1.4.0-beta.21",
@@ -43,6 +44,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
+    "@mswjs/http-middleware": "^0.10.2",
     "babel-plugin-react-compiler": "1.0.0",
     "concurrently": "^9.2.1",
     "husky": "^9.1.7",
