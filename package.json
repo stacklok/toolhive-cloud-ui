@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.22.0",
   "scripts": {
-    "dev": "concurrently -n \"OIDC,Next\" -c \"blue,green\" \"pnpm oidc\" \"pnpm dev:next\"",
+    "dev": "concurrently -n \"OIDC,Mock,Next\" -c \"blue,magenta,green\" \"pnpm oidc\" \"pnpm mock:server\" \"pnpm dev:next\"",
     "dev:next": "next dev",
     "build": "next build",
     "start": "next start",

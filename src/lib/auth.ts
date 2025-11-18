@@ -3,7 +3,9 @@ import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 
 const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
-const OIDC_ISSUER = process.env.OIDC_ISSUER || "";
+// Support both OIDC_ISSUER and OIDC_ISSUER_URL env var names
+const OIDC_ISSUER =
+  process.env.OIDC_ISSUER || process.env.OIDC_ISSUER_URL || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 
 const trustedOrigins = process.env.TRUSTED_ORIGINS
