@@ -142,6 +142,49 @@ function hasRef(schema: unknown, seen = new Set<object>()): boolean {
   return false;
 }
 
+function shrinkPayload(value: unknown, schema: any, depth = 0): unknown {
+  if (depth > 8) return value; // guard against extreme nesting
+  if (value == null) return value;
+
+  // Arrays: keep a single representative item
+  if (Array.isArray(value)) {
+    if (value.length === 0) return value;
+    const itemSchema = Array.isArray(schema?.items)
+      ? schema.items[0]
+      : schema?.items;
+    const first = shrinkPayload(value[0], itemSchema, depth + 1);
+    return [first];
+  }
+
+  // Objects: keep required keys and at most one optional key
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    const props: Record<string, any> = (schema && schema.properties) || {};
+    const required: string[] = (schema && schema.required) || [];
+
+    for (const key of required) {
+      if (key in obj) {
+        out[key] = shrinkPayload(obj[key], props?.[key], depth + 1);
+      }
+    }
+
+    const optionals = Object.keys(obj).filter((k) => !required.includes(k));
+    if (optionals.length > 0) {
+      const k = optionals[0];
+      out[k] = shrinkPayload(obj[k], props?.[k], depth + 1);
+    }
+    return out;
+  }
+
+  // Strings: clamp length
+  if (typeof value === "string") {
+    return value.length > 60 ? value.slice(0, 60) : value;
+  }
+
+  return value;
+}
+
 function getFixtureRelPath(safePath: string, method: string): string {
   return `./fixtures/${safePath}/${method}.${FIXTURE_EXT}`;
 }
@@ -207,7 +250,8 @@ export function autoGenerateHandlers() {
                       "Unresolved $ref remains after dereferencing passes",
                     );
                   }
-                  payload = jsf.generate(resolved);
+                  const generated = jsf.generate(resolved);
+                  payload = shrinkPayload(generated, resolved);
                 } catch (e) {
                   console.error(
                     "[auto-mocker] jsf.generate failed for",
