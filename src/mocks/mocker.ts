@@ -17,9 +17,6 @@ const USE_TYPES_FOR_FIXTURES = false; // set true if you have @api/types.gen ali
 // Strip these noisy prefixes from generated fixture folder names.
 const PREFIXES_TO_STRIP = ["api_v1beta_", "api_v0_"];
 
-// Allow forcing regeneration of fixtures via env flag.
-const FORCE_REGENERATE = process.env.AUTO_MOCKER_FORCE === "1";
-
 // ===== Runtime setup =====
 // Resolve module directory
 const __filename = fileURLToPath(import.meta.url);
@@ -420,7 +417,7 @@ export function autoGenerateHandlers() {
           }
 
           const hasFile = fs.existsSync(fixtureFileName);
-          if ((FORCE_REGENERATE || !hasFile) && successStatus !== "204") {
+          if (!hasFile && successStatus !== "204") {
             let payload: unknown;
             if (successStatus) {
               const schema = getJsonSchemaFromOperation(

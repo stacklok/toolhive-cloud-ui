@@ -1,7 +1,8 @@
 import type { RequestHandler } from "msw";
 
-// Add hand-written handlers here. These take precedence over
-// auto-generated ones because they are spread first in handlers.ts.
+// Add non-schema, hand-written mocks here.
+// These are composed before the auto-generated handlers (handlers.ts),
+// so they can replace or extend behavior where needed.
 export const customHandlers: RequestHandler[] = [
   // Example override: customize one endpoint's payload
   // http.get("*/registry/v0.1/servers", () =>
