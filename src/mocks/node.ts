@@ -1,8 +1,8 @@
-import type { RestHandler } from "msw";
+import type { RequestHandler } from "msw";
 import { setupServer } from "msw/node";
 import { handlers } from "./handlers";
 
-export const server = setupServer(...(handlers as RestHandler[]));
+export const server = setupServer(...(handlers as RequestHandler[]));
 
 type Recorded = {
   method: string;
