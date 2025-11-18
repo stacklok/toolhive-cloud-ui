@@ -10,4 +10,4 @@ Notes
 - If your project exposes OpenAPI response types via `@api/types.gen`, you can
   enable type enforcement by setting `USE_TYPES_FOR_FIXTURES = true` in
   `src/mocks/mocker.ts`.
-
+- Always strict: missing/failed generation returns 500 (no placeholder), and invalid fixtures return 500.

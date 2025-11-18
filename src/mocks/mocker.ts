@@ -171,7 +171,7 @@ export function autoGenerateHandlers() {
 
           const hasFile = fs.existsSync(fixtureFileName);
           if ((FORCE_REGENERATE || !hasFile) && successStatus !== "204") {
-            let payload: any = {};
+            let payload: any | undefined;
             if (successStatus) {
               const schema =
                 operation.responses?.[successStatus]?.content?.[
@@ -182,7 +182,7 @@ export function autoGenerateHandlers() {
                   const resolved = derefSchema(schema);
                   payload = jsf.generate(resolved);
                 } catch (e) {
-                  console.warn(
+                  console.error(
                     "[auto-mocker] jsf.generate failed for",
                     method.toUpperCase(),
                     rawPath,
@@ -190,33 +190,34 @@ export function autoGenerateHandlers() {
                   );
                 }
               } else {
-                console.warn(
+                console.error(
                   "[auto-mocker] no JSON schema for",
                   method.toUpperCase(),
                   rawPath,
                   "status",
                   successStatus,
                 );
-                payload = {};
               }
             }
 
-            const opType = successStatus
-              ? opResponseTypeName(method, rawPath)
-              : undefined;
-            const tsModule = buildMockModule(payload, {
-              opType,
-              useTypes: USE_TYPES_FOR_FIXTURES,
-            });
-            try {
-              fs.writeFileSync(fixtureFileName, tsModule);
-              console.log("[auto-mocker] wrote", fixtureFileName);
-            } catch (e) {
-              console.error(
-                "[auto-mocker] failed to write fixture",
-                fixtureFileName,
-                e,
-              );
+            if (payload !== undefined) {
+              const opType = successStatus
+                ? opResponseTypeName(method, rawPath)
+                : undefined;
+              const tsModule = buildMockModule(payload, {
+                opType,
+                useTypes: USE_TYPES_FOR_FIXTURES,
+              });
+              try {
+                fs.writeFileSync(fixtureFileName, tsModule);
+                console.log("[auto-mocker] wrote", fixtureFileName);
+              } catch (e) {
+                console.error(
+                  "[auto-mocker] failed to write fixture",
+                  fixtureFileName,
+                  e,
+                );
+              }
             }
           }
 
@@ -237,7 +238,7 @@ export function autoGenerateHandlers() {
             }
           } catch (e) {
             return new HttpResponse(
-              `Missing mock fixture: ${relPath}. ${e instanceof Error ? e.message : ""}`,
+              `[auto-mocker] Missing mock fixture: ${relPath}. ${e instanceof Error ? e.message : ""}`,
               { status: 500 },
             );
           }
@@ -248,13 +249,33 @@ export function autoGenerateHandlers() {
             ]?.schema;
           if (validateSchema) {
             const resolved = derefSchema(validateSchema);
-            const isValid = ajv.validate(resolved, data);
+            let isValid = ajv.validate(resolved, data);
+            // Treat empty object as invalid when schema exposes properties.
+            if (
+              isValid &&
+              data &&
+              typeof data === "object" &&
+              !Array.isArray(data) &&
+              Object.keys(data as any).length === 0 &&
+              (resolved as any)?.properties &&
+              Object.keys((resolved as any).properties).length > 0
+            ) {
+              isValid = false;
+            }
             if (!isValid) {
-              console.error("[auto-mocker] invalid mock response", {
-                fixtureFileName,
-                errors: ajv.errors,
+              const message = `fixture validation failed for ${method.toUpperCase()} ${rawPath} -> ${fixtureFileName}`;
+              console.error("[auto-mocker]", message, ajv.errors || []);
+              return new HttpResponse(`[auto-mocker] ${message}`, {
+                status: 500,
               });
             }
+          } else {
+            // No JSON schema to validate against: explicit failure
+            const message = `no JSON schema for ${method.toUpperCase()} ${rawPath} status ${successStatus ?? "200"}`;
+            console.error("[auto-mocker]", message);
+            return new HttpResponse(`[auto-mocker] ${message}`, {
+              status: 500,
+            });
           }
 
           return HttpResponse.json(data, {
