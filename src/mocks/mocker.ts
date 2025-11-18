@@ -26,21 +26,13 @@ const __dirname = path.dirname(__filename);
 const FIXTURES_PATH = path.join(__dirname, "fixtures");
 const FIXTURE_EXT = "ts";
 
-// Load OpenAPI JSON (supports resolveJsonModule in TS config)
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error - JSON import relies on TS config (resolveJsonModule)
+// Load OpenAPI JSON (resolveJsonModule is enabled in tsconfig)
 import openapi from "../../swagger.json";
 
 // Ajv configuration
 const ajv = new Ajv({ strict: true });
-// Ignore vendor extensions like x-enum-varnames
-try {
-  (ajv as unknown as { addKeyword: (key: string) => unknown }).addKeyword(
-    "x-enum-varnames",
-  );
-} catch {
-  // ignore
-}
+// Allow vendor extensions like x-enum-varnames
+ajv.addKeyword("x-enum-varnames");
 
 // json-schema-faker options
 jsf.option({ alwaysFakeOptionals: true });
@@ -273,14 +265,9 @@ export function autoGenerateHandlers() {
 
   // Prefer Vite glob import when available (Vitest/Vite runtime)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error - import.meta.glob is a Vite extension, available in vitest
   const fixtureImporters: Record<string, () => Promise<unknown>> =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error - keep full reference for Vite static replacement
     typeof import.meta.glob === "function"
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        import.meta.glob("./fixtures/**", { import: "default" })
+      ? import.meta.glob("./fixtures/**", { import: "default" })
       : {};
 
   const specPaths = Object.entries(

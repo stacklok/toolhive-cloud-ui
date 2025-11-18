@@ -14,18 +14,16 @@ type Recorded = {
 const recorded: Recorded[] = [];
 
 // Attach simple request recorder (MSW v2 events API)
-const events = (
-  server as unknown as {
-    events?: {
-      on: (
-        event: "request:start",
-        cb: (args: { request: Request }) => void,
-      ) => void;
-    };
-  }
-).events;
-
-events?.on("request:start", async ({ request }) => {
+type ServerWithEvents = ReturnType<typeof setupServer> & {
+  events?: {
+    on: (
+      event: "request:start",
+      cb: (args: { request: Request }) => void,
+    ) => void;
+  };
+};
+const serverWithEvents: ServerWithEvents = server as ServerWithEvents;
+serverWithEvents.events?.on("request:start", async ({ request }) => {
   try {
     const url = new URL(request.url);
     let body: unknown;
