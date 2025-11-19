@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getRegistryV01Servers } from "@/generated/sdk.gen";
 import { auth } from "@/lib/auth/auth";
 
 export default async function Home() {
@@ -11,27 +10,6 @@ export default async function Home() {
 
   if (!session) {
     redirect("/signin");
-  }
-
-  // Try to load servers list from the registry API (SSR). Uses a relative URL
-  // so Next.js dev rewrites can proxy to the standalone mock server.
-  let serversSummary: { count: number; titles: string[] } = {
-    count: 0,
-    titles: [],
-  };
-  try {
-    const resp = await getRegistryV01Servers();
-    const data = resp.data as {
-      servers?: Array<{ server?: { title?: string; name?: string } }>;
-    };
-    const items = Array.isArray(data?.servers) ? data.servers : [];
-    const titles = items
-      .map((it) => it?.server?.title ?? it?.server?.name)
-      .filter((t): t is string => typeof t === "string")
-      .slice(0, 5);
-    serversSummary = { count: items.length, titles };
-  } catch {
-    // Leave serversSummary at its default { count: 0, titles: [] }
   }
 
   return (
@@ -52,16 +30,6 @@ export default async function Home() {
           >
             Go to Catalog
           </Link>
-
-          <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
-            <div>
-              Registry servers available:{" "}
-              <strong>{serversSummary.count}</strong>
-            </div>
-            {serversSummary.titles.length > 0 && (
-              <div>Sample: {serversSummary.titles.join(", ")}</div>
-            )}
-          </div>
         </div>
       </main>
     </div>
