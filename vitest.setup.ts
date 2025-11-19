@@ -47,6 +47,6 @@ vi.mock("@/lib/auth/auth-client", () => ({
 import { afterEach } from "vitest";
 
 afterEach(() => {
+  // Clear calls/instances, but keep hoisted module mock implementations intact
   vi.clearAllMocks();
-  vi.resetAllMocks();
 });
