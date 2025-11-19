@@ -12,7 +12,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock auth module
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn(() =>

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OidcTokenData } from "../auth";
 import {
   clearOidcProviderToken,
+  decrypt,
   encrypt,
   getOidcProviderAccessToken,
 } from "../auth";

@@ -1,6 +1,6 @@
 "use server";
 
-import { clearOidcProviderToken } from "@/lib/auth";
+import { clearOidcProviderToken } from "@/lib/auth/auth";
 
 /**
  * Server action to clear OIDC token cookie on sign out.
