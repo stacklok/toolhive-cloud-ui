@@ -119,12 +119,11 @@ pnpm generate-client        # Fetch swagger.json and regenerate
 pnpm generate-client:nofetch # Regenerate without fetching
 ```
 
-
 ## Critical Rules
 
 ### DO ✅
 
-1. **Read workspace rules first** - `.cursor/rules/*.mdc` contains all guidelines
+1. **Read project documentation first** - Check AGENTS.md and CLAUDE.md for all guidelines
 2. **Use Server Components by default** - Mark Client Components explicitly
 3. **Use hey-api hooks exclusively** - No manual fetch in components
 4. **Use async/await** - Never `.then()` chains
@@ -283,7 +282,7 @@ git push origin v0.x.x
 
 1. **Ask questions** - If requirements are unclear, ask before implementing
 2. **Check existing code** - Look for similar patterns in the codebase
-3. **Read the rules** - All guidelines are in `.cursor/rules/*.mdc`
+3. **Read the documentation** - All guidelines are in AGENTS.md, CLAUDE.md, and copilot-instructions.md
 4. **Incremental changes** - Small, focused changes are better than large refactors
 5. **Test your changes** - Run linter, type-check, and tests
 6. **Explain reasoning** - Use JSDoc to explain why, not what
@@ -309,7 +308,7 @@ git push origin v0.x.x
 
 ## References
 
-- **Workspace Rules**: `.cursor/rules/*.mdc` (READ FIRST)
+- **Project Documentation**: AGENTS.md, CLAUDE.md, copilot-instructions.md (READ FIRST)
 - **Next.js Docs**: https://nextjs.org/docs
 - **React Docs**: https://react.dev
 - **Better Auth**: https://www.better-auth.com
@@ -329,78 +328,3 @@ For questions or issues:
 ---
 
 **Remember**: This is an open-source project. Write clean, maintainable code that others can understand and contribute to. When in doubt, favor simplicity over cleverness.
-## Next.js App Router Essentials
-
-**CRITICAL**: This is Next.js 16 with App Router (not Pages Router). Consult [Next.js Documentation](https://nextjs.org/docs) before suggesting code.
-
-### Core Concepts
-
-**File-System Routing** - Routes are defined by folder structure, not code:
-```
-app/
-├── page.tsx              # Route
-├── layout.tsx            # Shared UI (persists across navigation)
-├── loading.tsx           # Loading UI (auto-Suspense)
-├── error.tsx             # Error boundary
-└── [param]/              # Dynamic segment
-    └── page.tsx
-```
-
-**Server Components (default)** - Run only on server:
-- ✅ **CAN**: async/await, fetch data, access backend resources, environment variables
-- ❌ **CANNOT**: hooks (useState, useEffect), event handlers, browser APIs, React Query hooks
-
-```typescript
-// ✅ Server Component - async data fetching
-async function ServerPage() {
-  const response = await fetch('https://api.example.com/data', {
-    next: { revalidate: 3600 } // Cache 1 hour
-  });
-  const data = await response.json();
-  return <div>{data.title}</div>;
-}
-```
-
-**Client Components** (`'use client'`) - Run in browser:
-- ✅ **CAN**: hooks, event handlers, browser APIs, hey-api React Query hooks
-- ❌ **CANNOT**: direct backend access
-
-```typescript
-"use client";
-
-import { useState } from "react";
-import { useGetApiV0Servers } from "@/generated/client/@tanstack/react-query.gen";
-
-function ClientComponent() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { data, isLoading } = useGetApiV0Servers(); // hey-api hook
-  
-  return <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>;
-}
-```
-
-**Server Actions** (`'use server'`) - For mutations:
-```typescript
-"use server";
-
-import { revalidatePath } from "next/cache";
-
-export async function createServer(formData: FormData) {
-  await db.server.create({ data: formData });
-  revalidatePath("/servers"); // Revalidate cache
-  return { success: true };
-}
-```
-
-**Caching & Revalidation**:
-- Time-based: `next: { revalidate: 3600 }`
-- Tag-based: `next: { tags: ['servers'] }`
-- On-demand: `revalidatePath('/servers')`, `revalidateTag('servers')`
-- Opt-out: `cache: 'no-store'`
-
-**For detailed patterns, examples, and advanced features**:
-- [Next.js Official Docs](https://nextjs.org/docs/app) - Comprehensive guide
-- `AGENTS.md` in this repo - Quick reference with code examples
-- `.cursor/rules/nextjs.mdc` - Best practices and common patterns
-
-

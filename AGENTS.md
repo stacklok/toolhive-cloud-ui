@@ -6,8 +6,8 @@ This document provides essential context for AI coding assistants (Claude, GitHu
 
 **IMPORTANT**: Before making any code changes, read:
 
-1. `.cursor/rules/*.mdc` - Comprehensive coding guidelines
-2. This file - Project overview and key patterns
+1. This file (AGENTS.md) - Project overview and key patterns
+2. `CLAUDE.md` - Detailed guidelines for AI assistants
 3. `README.md` - Setup and deployment instructions
 
 ## Project Summary
@@ -68,7 +68,6 @@ src/
 ├── generated/        # hey-api output (DO NOT EDIT)
 └── hooks/            # Custom React hooks
 
-.cursor/rules/        # Coding guidelines (READ FIRST)
 dev-auth/             # Development OIDC mock
 helm/                 # Kubernetes deployment
 scripts/              # Build scripts
@@ -429,7 +428,7 @@ function isData(value: unknown): value is Data {
 
 ### Documentation
 
-- **Workspace Rules**: `.cursor/rules/*.mdc` (MUST READ)
+- **Project Guides**: AGENTS.md, CLAUDE.md, copilot-instructions.md (MUST READ)
 - **Next.js**: https://nextjs.org/docs
 - **Better Auth**: https://www.better-auth.com
 - **hey-api**: https://heyapi.vercel.app
@@ -478,4 +477,4 @@ This is an **open-source** project. Write code that:
 
 ---
 
-**Remember**: Simple, readable code is better than clever code. When in doubt, check the workspace rules (`.cursor/rules/*.mdc`) and existing codebase patterns.
+**Remember**: Simple, readable code is better than clever code. When in doubt, check the project documentation (AGENTS.md, CLAUDE.md) and existing codebase patterns.
