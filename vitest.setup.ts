@@ -16,20 +16,27 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-vi.mock("@/lib/auth/auth", () => ({
-  auth: {
-    api: {
-      getSession: vi.fn(() =>
-        Promise.resolve({
-          user: {
-            email: "test@example.com",
-            name: "Test User",
-          },
-        }),
-      ),
+// Partially mock auth only for getSession; keep other exports (encrypt, decrypt, etc.) intact
+vi.mock("@/lib/auth/auth", async (importOriginal) => {
+  const actual = (await importOriginal()) as unknown as {
+    auth: { api: { getSession: (...args: unknown[]) => unknown } };
+    [k: string]: unknown;
+  };
+  return {
+    ...actual,
+    auth: {
+      ...actual.auth,
+      api: {
+        ...actual.auth.api,
+        getSession: vi.fn(() =>
+          Promise.resolve({
+            user: { email: "test@example.com", name: "Test User" },
+          }),
+        ),
+      },
     },
-  },
-}));
+  };
+});
 
 // Common UI/runtime mocks
 vi.mock("next/image", () => ({
