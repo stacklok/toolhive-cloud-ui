@@ -28,7 +28,7 @@ jobs:
           prompt: "/review"
           claude_args: |
             --system-prompt "Follow the guidelines in CLAUDE.md. Focus on code quality, security, TypeScript strict mode (NO any types), Next.js App Router best practices, and hey-api integration patterns."
-            --max-turns 30
+            --max-turns 15
 
   # Respond to @claude mentions
   interactive:
@@ -51,4 +51,4 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
             --system-prompt "Follow the guidelines in CLAUDE.md. Focus on code quality, security, TypeScript strict mode (NO any types), Next.js App Router best practices, and hey-api integration patterns."
-            --max-turns 30
+            --max-turns 15
