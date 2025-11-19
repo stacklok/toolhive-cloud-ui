@@ -198,11 +198,18 @@ pnpm generate-client:nofetch # Regenerate without fetching
 - Loading states and skeleton screens
 - Accessibility (keyboard navigation, screen readers)
 
-### Testing Tools
+### Mocking & Testing
+
+- **MSW Auto-Mocker**
+  - Auto-generates handlers from `swagger.json` and creates fixtures under `src/mocks/fixtures` on first run.
+  - Strict validation with Ajv + ajv-formats; fixtures are type-checked against `@api/types.gen` by default.
+  - Hand-written, non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks.
+  - Dev: `pnpm mock:server` starts a standalone HTTP mock on `http://localhost:9090`. In dev, Next rewrites proxy `/registry/*` there; always use relative URLs like `/registry/v0.1/servers`.
+  - Regenerate by deleting specific fixture files.
+  - Create new fixtures by calling the desired endpoint in a Vitest test (or via the app in dev). The first call generates a TypeScript fixture file; customize the payload by editing that file instead of writing a new custom handler when you only need different sample data.
 
 - **Vitest** - Test runner (faster than Jest)
 - **Testing Library** - Component testing
-- **MSW** - API mocking
 - **jsdom** - DOM simulation
 
 ### Example Test

@@ -9,6 +9,7 @@ This document provides essential context for AI coding assistants (Claude, GitHu
 1. This file (AGENTS.md) - Project overview and key patterns
 2. `CLAUDE.md` - Detailed guidelines for AI assistants
 3. `README.md` - Setup and deployment instructions
+4. `docs/mocks.md` - MSW auto-mocker, fixtures, and dev server
 
 ## Project Summary
 
@@ -68,6 +69,8 @@ src/
 ├── generated/        # hey-api output (DO NOT EDIT)
 └── hooks/            # Custom React hooks
 
+src/mocks/            # MSW auto-mocker, handlers, fixtures, and dev server
+
 dev-auth/             # Development OIDC mock
 helm/                 # Kubernetes deployment
 scripts/              # Build scripts
@@ -78,6 +81,7 @@ scripts/              # Build scripts
 ```bash
 # Development
 pnpm dev              # Start dev server + OIDC mock
+pnpm mock:server      # Start standalone MSW mock server (http://localhost:9090)
 pnpm dev:next        # Start only Next.js
 pnpm oidc            # Start only OIDC mock
 
@@ -90,6 +94,12 @@ pnpm test            # Run tests
 # API Client
 pnpm generate-client # Regenerate from backend API
 ```
+
+## Mocking & Fixtures
+
+- Schema-based mocks are generated automatically. To create a new mock for an endpoint, run a Vitest test (or the app in dev) that calls that endpoint. The first call writes a fixture under `src/mocks/fixtures/<sanitized-path>/<method>.ts`.
+- To adjust the payload, edit the generated fixture file. Prefer this over adding a non-schema mock when you only need more realistic sample data.
+- Non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks. Use these for behavior overrides or endpoints without schema.
 
 ## Next.js App Router Key Concepts
 
@@ -134,8 +144,8 @@ app/
 
 ```typescript
 async function ServerList() {
-  const response = await fetch("http://api/servers", {
-    next: { revalidate: 3600 }, // Cache for 1 hour
+  const response = await fetch("/registry/v0.1/servers", {
+    next: { revalidate: 3600 }, // In dev, Next rewrites proxy to mock server
   });
   const data = await response.json();
   return <ServerList servers={data} />;
