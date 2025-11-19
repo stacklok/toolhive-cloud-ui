@@ -1,9 +1,16 @@
+import "dotenv/config";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createServer } from "@mswjs/http-middleware";
+import { getApiBaseUrl } from "@/lib/env";
 import { handlers } from "./handlers";
 
-// Fixed port for the standalone mock server
-const port = 9090;
+// Mock server runs on the port configured in API_BASE_URL
+// This ensures the app can reach the mock server at the expected URL
+const port = new URL(getApiBaseUrl()).port;
+
+if (!port) {
+  throw new Error("API_BASE_URL must include a port number");
+}
 
 const httpServer = createServer(...handlers);
 

@@ -67,12 +67,13 @@ This document provides context and guidelines for Claude (and other AI assistant
 
 ### 3. Generated API Client
 
-- **Never write manual fetch logic** - Always use hey-api generated hooks
+- **Never write manual fetch logic** - Always use hey-api generated functions
 - **Never edit generated files** - They are regenerated from OpenAPI spec and changes will be lost
+- **Use server actions for all API calls** - Client components should not call the API directly
 - API client regenerated from OpenAPI spec via custom script
-- Type-safe API calls with automatic loading/error states
+- Type-safe API calls with proper error handling
 
-**Why**: Generated client ensures type safety, eliminates manual state management, and stays in sync with backend API.
+**Why**: Generated client ensures type safety and stays in sync with backend API. Server-only API access keeps the backend URL secure and reduces client bundle size.
 
 ### 4. Async/Await Over Promises
 
@@ -207,7 +208,7 @@ pnpm generate-client:nofetch # Regenerate without fetching
   - Auto-generates handlers from `swagger.json` and creates fixtures under `src/mocks/fixtures` on first run.
   - Strict validation with Ajv + ajv-formats; fixtures are type-checked against `@api/types.gen` by default.
   - Hand-written, non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks.
-  - Dev: `pnpm mock:server` starts a standalone HTTP mock on `http://localhost:9090`. In dev, Next rewrites proxy `/registry/*` there; always use relative URLs like `/registry/v0.1/servers`.
+  - Dev: `pnpm mock:server` starts a standalone HTTP mock on `http://localhost:9090` (configurable via `API_BASE_URL`). In dev, Next rewrites proxy `/registry/*` there; always use relative URLs like `/registry/v0.1/servers`.
   - Regenerate by deleting specific fixture files.
   - Create new fixtures by calling the desired endpoint in a Vitest test (or via the app in dev). The first call generates a TypeScript fixture file; customize the payload by editing that file instead of writing a new custom handler when you only need different sample data.
   - Prefer global test setup for common mocks: add shared mocks to `vitest.setup.ts` (e.g., `next/headers`, `next/navigation`, `next/image`, `sonner`, auth client). Before adding a mock in a specific test file, check if it belongs in the global setup.

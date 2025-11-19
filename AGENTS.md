@@ -37,10 +37,11 @@ This document provides essential context for AI coding assistants (Claude, GitHu
 ## Core Principles
 
 1. **Server Components First** - Use `'use client'` only when necessary
-2. **Generated API Client** - Never write manual fetch logic, use hey-api hooks
-3. **Async/Await Only** - No `.then()` promise chains
-4. **🚫 NEVER USE `any`** - STRICTLY FORBIDDEN. Use `unknown` with type guards or proper types
-5. **Stateless Auth** - JWT tokens, no server-side sessions
+2. **Generated API Client** - Never write manual fetch logic, use hey-api functions in server actions
+3. **Server Actions for API Calls** - Client components fetch data via server actions, not direct API calls
+4. **Async/Await Only** - No `.then()` promise chains
+5. **🚫 NEVER USE `any`** - STRICTLY FORBIDDEN. Use `unknown` with type guards or proper types
+6. **Stateless Auth** - JWT tokens, no server-side sessions
 
 ## ⚠️ Before Suggesting Code
 
@@ -81,7 +82,7 @@ scripts/              # Build scripts
 ```bash
 # Development
 pnpm dev              # Start dev server + OIDC mock
-pnpm mock:server      # Start standalone MSW mock server (http://localhost:9090)
+pnpm mock:server      # Start standalone MSW mock server (default: http://localhost:9090)
 pnpm dev:next        # Start only Next.js
 pnpm oidc            # Start only OIDC mock
 
@@ -274,23 +275,42 @@ export async function createServer(formData: FormData) {
 
 ### Using Generated API Client
 
-**⚠️ IMPORTANT: Never edit files in `src/generated/*`** - they are auto-generated and will be overwritten.
+**⚠️ IMPORTANT:**
+- Never edit files in `src/generated/*`** - they are auto-generated and will be overwritten
+- **Always use server actions** - Client components should not call the API directly
+- The API client is server-side only (no `NEXT_PUBLIC_` env vars needed)
 
-**Queries (GET)**:
+**Example: Server Action**:
 
 ```typescript
-import { useGetApiV0Servers } from "@/generated/client/@tanstack/react-query.gen";
+// src/app/catalog/actions.ts
+"use server";
 
-const { data, isLoading, error } = useGetApiV0Servers();
+import { getRegistryV01Servers } from "@/generated/sdk.gen";
+
+export async function getServersSummary() {
+  try {
+    const resp = await getRegistryV01Servers();
+    const data = resp.data;
+    // Process data...
+    return { count: data?.servers?.length ?? 0, ... };
+  } catch (error) {
+    console.error("Failed to fetch servers:", error);
+    return { count: 0, ... };
+  }
+}
 ```
 
-**Mutations (POST/PUT/DELETE)**:
+**Example: Server Component**:
 
 ```typescript
-import { usePostApiV0Servers } from "@/generated/client/@tanstack/react-query.gen";
+// src/app/catalog/page.tsx
+import { getServersSummary } from "./actions";
 
-const mutation = usePostApiV0Servers();
-await mutation.mutateAsync({ body: data });
+export default async function CatalogPage() {
+  const summary = await getServersSummary();
+  return <div>{summary.count} servers</div>;
+}
 ```
 
 **When Backend Changes**:

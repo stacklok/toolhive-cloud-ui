@@ -8,7 +8,7 @@ MSW Auto-Mocker
 Usage
 - Vitest: tests initialize MSW in `src/mocks/test.setup.ts`. Run `pnpm test`.
 - Browser (optional): call `startWorker()` from `src/mocks/browser.ts` in your development entry point to mock requests in the browser.
-- Standalone server (dev): `pnpm mock:server` starts an HTTP mock server at `http://localhost:9090`. In dev, Next.js rewrites proxy `/registry/*` to this origin; use relative URLs like `/registry/v0.1/servers` from both client and server code.
+- Standalone server (dev): `pnpm mock:server` starts an HTTP mock server at `http://localhost:9090` (configurable via `API_BASE_URL`). In dev, Next.js rewrites proxy `/registry/*` to this origin; use relative URLs like `/registry/v0.1/servers` from both client and server code.
 
 Generating fixtures
 - To create a new fixture for an endpoint, simply run a Vitest test (or the app in dev) that calls that endpoint. The auto‑mocker will generate `src/mocks/fixtures/<sanitized-path>/<method>.ts` on first use using schema‑based fake data.

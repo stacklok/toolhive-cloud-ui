@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { getApiBaseUrl } from "./src/lib/env";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -8,11 +9,14 @@ const nextConfig: NextConfig = {
   output: "standalone",
   async rewrites() {
     if (!isDev) return [];
+
+    const apiBaseUrl = getApiBaseUrl();
+
     return [
-      // Proxy registry API to the local MSW mock server in dev
+      // Proxy registry API in development (to mock server or real backend)
       {
         source: "/registry/:path*",
-        destination: "http://localhost:9090/registry/:path*",
+        destination: `${apiBaseUrl}/registry/:path*`,
       },
     ];
   },
