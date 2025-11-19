@@ -15,7 +15,6 @@ test("Home page renders welcome heading and link to catalog when user is logged 
   expect(screen.getByText(/You are logged in as/i)).toBeDefined();
   expect(screen.getByText(/test@example.com/i)).toBeDefined();
 
-  // Verify the link to catalog is present
   const catalogLink = screen.getByRole("link", { name: /Go to Catalog/i });
   expect(catalogLink).toBeDefined();
   expect(catalogLink.getAttribute("href")).toBe("/catalog");

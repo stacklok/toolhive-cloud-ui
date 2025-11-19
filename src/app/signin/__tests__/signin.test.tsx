@@ -15,7 +15,6 @@ describe("SignInPage", () => {
   test("renders signin page with all elements", () => {
     render(<SignInPage />);
 
-    // Check main heading
     expect(
       screen.getByRole("heading", {
         level: 2,
@@ -23,12 +22,10 @@ describe("SignInPage", () => {
       }),
     ).toBeDefined();
 
-    // Check description text
     expect(
       screen.getByText(/Sign in using your company credentials/i),
     ).toBeDefined();
 
-    // Check Toolhive branding
     expect(
       screen.getByRole("heading", {
         level: 1,
@@ -36,7 +33,6 @@ describe("SignInPage", () => {
       }),
     ).toBeDefined();
 
-    // Check Okta button
     expect(screen.getByRole("button", { name: /Okta/i })).toBeDefined();
   });
 

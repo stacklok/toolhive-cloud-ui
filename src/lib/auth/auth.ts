@@ -202,13 +202,11 @@ export async function getOidcProviderAccessToken(
       return null;
     }
 
-    // Verify the token belongs to the current user
     if (tokenData.userId !== userId) {
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
-    // Check if token is expired
     const now = Date.now();
     if (tokenData.expiresAt <= now) {
       cookieStore.delete(COOKIE_NAME);
