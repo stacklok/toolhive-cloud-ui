@@ -1,52 +1,31 @@
+import { createHash } from "node:crypto";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
-import crypto from "crypto";
+import * as jose from "jose";
 import { cookies } from "next/headers";
 
 // Environment configuration
 const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
 const OIDC_ISSUER = process.env.OIDC_ISSUER || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-const ENCRYPTION_KEY = process.env.BETTER_AUTH_SECRET;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
-// Encryption constants
-const KEY_LENGTH = 32;
-const IV_LENGTH = 12;
-
 /**
- * Static salt for key derivation.
- *
- * NOTE: Using a constant salt is intentional and secure in this context.
- * We're deriving an encryption key from a secret (BETTER_AUTH_SECRET), not hashing passwords.
- * The salt ensures consistent key derivation from the same secret across restarts.
- * Security comes from the secret itself, not from the salt.
- * Each encryption operation uses a unique random IV for semantic security.
- */
-const ENCRYPTION_SALT = "oidc_token_salt";
-
-// Cache for derived key (lazy initialization)
-let DERIVED_KEY: Buffer | null = null;
-
-/**
- * Gets or derives the encryption key on first use.
+ * Gets the encryption secret for JWE.
+ * Uses SHA-256 to derive exactly 32 bytes (256 bits) from BETTER_AUTH_SECRET,
+ * ensuring compatibility with AES-256-GCM regardless of secret length.
  * Lazy initialization avoids build-time errors when env vars are not set.
  */
-function getDerivedKey(): Buffer {
-  if (!DERIVED_KEY) {
-    if (!ENCRYPTION_KEY) {
-      throw new Error(
-        "BETTER_AUTH_SECRET environment variable is required for encryption",
-      );
-    }
-    DERIVED_KEY = crypto.scryptSync(
-      ENCRYPTION_KEY,
-      ENCRYPTION_SALT,
-      KEY_LENGTH,
+function getSecret(): Uint8Array {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (!secret) {
+    throw new Error(
+      "BETTER_AUTH_SECRET environment variable is required for encryption",
     );
   }
-  return DERIVED_KEY;
+  // Hash the secret to get exactly 32 bytes for AES-256-GCM
+  return new Uint8Array(createHash("sha256").update(secret).digest());
 }
 
 // Token expiration constants
@@ -93,59 +72,45 @@ function isOidcTokenData(data: unknown): data is OidcTokenData {
 }
 
 /**
- * Encrypts data using AES-256-GCM (AEAD).
- * Provides both confidentiality and integrity/authentication.
- * Returns encrypted data in format: iv:authTag:encrypted (all hex-encoded).
+ * Encrypts token data using JWE (JSON Web Encryption).
+ * Uses AES-256-GCM with direct key agreement (alg: 'dir').
  * Exported for testing purposes.
  */
-export function encrypt(text: string): string {
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv("aes-256-gcm", getDerivedKey(), iv);
-
-  const encrypted = Buffer.concat([
-    cipher.update(text, "utf8"),
-    cipher.final(),
-  ]);
-
-  const authTag = cipher.getAuthTag();
-
-  return [
-    iv.toString("hex"),
-    authTag.toString("hex"),
-    encrypted.toString("hex"),
-  ].join(":");
+export async function encrypt(data: OidcTokenData): Promise<string> {
+  const plaintext = new TextEncoder().encode(JSON.stringify(data));
+  return await new jose.CompactEncrypt(plaintext)
+    .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+    .encrypt(getSecret());
 }
 
 /**
- * Decrypts data encrypted with AES-256-GCM.
- * Verifies authenticity before decryption.
- * Expects data in format: iv:authTag:encrypted (all hex-encoded).
+ * Decrypts JWE token and returns parsed token data.
+ * Validates data structure after decryption.
  * Exported for testing purposes.
  */
-export function decrypt(payload: string): string {
-  const [ivHex, tagHex, encryptedHex] = payload.split(":");
+export async function decrypt(jwe: string): Promise<OidcTokenData> {
+  try {
+    const { plaintext } = await jose.compactDecrypt(jwe, getSecret());
+    const data = JSON.parse(new TextDecoder().decode(plaintext));
 
-  if (!ivHex || !tagHex || !encryptedHex) {
-    throw new Error("Invalid encrypted data format");
+    if (!isOidcTokenData(data)) {
+      throw new Error("Invalid token data structure");
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof jose.errors.JWEDecryptionFailed) {
+      throw new Error("Token decryption failed - possible tampering");
+    }
+    if (error instanceof jose.errors.JWEInvalid) {
+      throw new Error("Invalid JWE format");
+    }
+    throw error;
   }
-
-  const iv = Buffer.from(ivHex, "hex");
-  const authTag = Buffer.from(tagHex, "hex");
-  const encrypted = Buffer.from(encryptedHex, "hex");
-
-  const decipher = crypto.createDecipheriv("aes-256-gcm", getDerivedKey(), iv);
-  decipher.setAuthTag(authTag);
-
-  const decrypted = Buffer.concat([
-    decipher.update(encrypted),
-    decipher.final(),
-  ]);
-
-  return decrypted.toString("utf8");
 }
 
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET || "build-time-placeholder",
+  secret: process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret",
   baseURL: BASE_URL,
   trustedOrigins,
   session: {
@@ -172,7 +137,12 @@ export const auth = betterAuth({
   databaseHooks: {
     account: {
       create: {
-        after: async (account) => {
+        after: async (account: {
+          accessToken?: string;
+          refreshToken?: string;
+          accessTokenExpiresAt?: Date | string;
+          userId: string;
+        }) => {
           if (account.accessToken && account.userId) {
             const expiresAt = account.accessTokenExpiresAt
               ? new Date(account.accessTokenExpiresAt).getTime()
@@ -185,7 +155,7 @@ export const auth = betterAuth({
               userId: account.userId,
             };
 
-            const encrypted = encrypt(JSON.stringify(tokenData));
+            const encrypted = await encrypt(tokenData);
             const cookieStore = await cookies();
 
             cookieStore.set(COOKIE_NAME, encrypted, {
@@ -217,53 +187,33 @@ export async function getOidcProviderAccessToken(
       return null;
     }
 
-    let decrypted: string;
+    let tokenData: OidcTokenData;
     try {
-      decrypted = decrypt(encryptedCookie.value);
+      tokenData = await decrypt(encryptedCookie.value);
     } catch (error) {
       // Decryption failure indicates tampering, corruption, or wrong secret
       console.error(
-        "[Auth] Token decryption failed - possible tampering or key mismatch:",
+        "[Auth] Token decryption failed - possible tampering or invalid format:",
         error,
       );
-      cookieStore.delete(COOKIE_NAME);
-      return null;
-    }
-
-    let parsedData: unknown;
-    try {
-      parsedData = JSON.parse(decrypted);
-    } catch (error) {
-      // JSON parsing failure indicates malformed data
-      console.error(
-        "[Auth] Token JSON parsing failed - malformed data:",
-        error,
-      );
-      cookieStore.delete(COOKIE_NAME);
-      return null;
-    }
-
-    // Runtime validation using type guard
-    if (!isOidcTokenData(parsedData)) {
-      console.error("[Auth] Invalid token data structure");
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
     // Verify the token belongs to the current user
-    if (parsedData.userId !== userId) {
+    if (tokenData.userId !== userId) {
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
     // Check if token is expired
     const now = Date.now();
-    if (parsedData.expiresAt <= now) {
+    if (tokenData.expiresAt <= now) {
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
-    return parsedData.accessToken;
+    return tokenData.accessToken;
   } catch (error) {
     // Unexpected error (e.g., cookie operations failure)
     console.error("[Auth] Unexpected error reading OIDC token:", error);
