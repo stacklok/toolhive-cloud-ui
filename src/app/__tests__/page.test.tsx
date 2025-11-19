@@ -17,7 +17,7 @@ vi.mock("@/lib/auth/auth", () => ({
 
 beforeEach(() => vi.clearAllMocks());
 
-test("Home page renders welcome heading when user is logged in", async () => {
+test("Home page renders welcome heading and link to catalog when user is logged in", async () => {
   render(await Home());
 
   expect(
@@ -29,4 +29,9 @@ test("Home page renders welcome heading when user is logged in", async () => {
 
   expect(screen.getByText(/You are logged in as/i)).toBeDefined();
   expect(screen.getByText(/test@example.com/i)).toBeDefined();
+
+  // Verify the link to catalog is present
+  const catalogLink = screen.getByRole("link", { name: /Go to Catalog/i });
+  expect(catalogLink).toBeDefined();
+  expect(catalogLink.getAttribute("href")).toBe("/catalog");
 });
