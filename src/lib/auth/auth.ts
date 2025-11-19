@@ -7,9 +7,7 @@ import { cookies } from "next/headers";
 
 // Environment configuration
 const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
-// Support both OIDC_ISSUER and OIDC_ISSUER_URL for local/dev compatibility
-const OIDC_ISSUER =
-  process.env.OIDC_ISSUER || process.env.OIDC_ISSUER_URL || "";
+const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
@@ -127,7 +125,7 @@ export const auth = betterAuth({
       config: [
         {
           providerId: OIDC_PROVIDER_ID,
-          discoveryUrl: `${OIDC_ISSUER}/.well-known/openid-configuration`,
+          discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
           redirectURI: `${BASE_URL}/api/auth/oauth2/callback/${OIDC_PROVIDER_ID}`,
           clientId: process.env.OIDC_CLIENT_ID || "",
           clientSecret: process.env.OIDC_CLIENT_SECRET || "",
