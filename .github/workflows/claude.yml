@@ -36,7 +36,7 @@ jobs:
             - Server vs Client Component usage
             - hey-api integration patterns
             Be concise and actionable - highlight critical issues first.
-          claude_args: "--max-turns 5"
+          claude_args: "--max-turns 15"
 
   # Respond to @claude mentions
   interactive:
@@ -57,4 +57,4 @@ jobs:
         uses: anthropics/claude-code-action@ac1a3207f3f00b4a37e2f3a6f0935733c7c64651 # v1.0
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--max-turns 5"
+          claude_args: "--max-turns 15"
