@@ -197,6 +197,7 @@ export async function getOidcProviderAccessToken(
 
     // Verify the token belongs to the current user
     if (parsedData.userId !== userId) {
+      cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
