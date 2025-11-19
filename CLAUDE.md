@@ -207,6 +207,7 @@ pnpm generate-client:nofetch # Regenerate without fetching
   - Dev: `pnpm mock:server` starts a standalone HTTP mock on `http://localhost:9090`. In dev, Next rewrites proxy `/registry/*` there; always use relative URLs like `/registry/v0.1/servers`.
   - Regenerate by deleting specific fixture files.
   - Create new fixtures by calling the desired endpoint in a Vitest test (or via the app in dev). The first call generates a TypeScript fixture file; customize the payload by editing that file instead of writing a new custom handler when you only need different sample data.
+  - Prefer global test setup for common mocks: add shared mocks to `vitest.setup.ts` (e.g., `next/headers`, `next/navigation`, `next/image`, `sonner`, auth client). Before adding a mock in a specific test file, check if it belongs in the global setup.
 
 - **Vitest** - Test runner (faster than Jest)
 - **Testing Library** - Component testing

@@ -101,6 +101,8 @@ pnpm generate-client # Regenerate from backend API
 - To adjust the payload, edit the generated fixture file. Prefer this over adding a non-schema mock when you only need more realistic sample data.
 - Non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks. Use these for behavior overrides or endpoints without schema.
 
+- Global test setup: Add common mocks to `vitest.setup.ts` (e.g., `next/headers`, `next/navigation`, `next/image`, `sonner`, auth client). Before copying a mock into a test file, check if it can be centralized globally. Reset all mocks globally between tests.
+
 ## Next.js App Router Key Concepts
 
 ### File-System Routing

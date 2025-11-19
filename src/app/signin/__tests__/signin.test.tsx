@@ -3,28 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import SignInPage from "@/app/signin/page";
 
-// Mock Next.js Image component
-vi.mock("next/image", () => ({
-  default: () => null,
-}));
-
-// Mock sonner toast
-vi.mock("sonner", () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-  },
-}));
-
-// Mock auth client
-vi.mock("@/lib/auth/auth-client", () => ({
-  authClient: {
-    signIn: {
-      oauth2: vi.fn(),
-    },
-  },
-}));
-
 describe("SignInPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
