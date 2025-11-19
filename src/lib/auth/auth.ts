@@ -1,32 +1,19 @@
-import { createHash } from "node:crypto";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
-import * as jose from "jose";
 import { cookies } from "next/headers";
-import { OIDC_PROVIDER_ID } from "./constants";
+import type { OIDCDiscovery, OidcTokenData, TokenResponse } from "./types";
+import { decrypt, encrypt } from "./utils";
 
 // Environment configuration
+const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
 const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
+const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
+const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
-
-/**
- * Gets the encryption secret for JWE.
- * Uses SHA-256 to derive exactly 32 bytes (256 bits) from BETTER_AUTH_SECRET,
- * ensuring compatibility with AES-256-GCM regardless of secret length.
- * Lazy initialization avoids build-time errors when env vars are not set.
- */
-function getSecret(): Uint8Array {
-  const secret = process.env.BETTER_AUTH_SECRET;
-  if (!secret) {
-    throw new Error(
-      "BETTER_AUTH_SECRET environment variable is required for encryption",
-    );
-  }
-  // Hash the secret to get exactly 32 bytes for AES-256-GCM
-  return new Uint8Array(createHash("sha256").update(secret).digest());
-}
+const BETTER_AUTH_SECRET =
+  process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret";
 
 // Token expiration constants
 const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; //  1 hour in ms
@@ -44,75 +31,123 @@ if (!trustedOrigins.includes(BASE_URL)) {
 }
 
 /**
- * Represents the data stored in the encrypted OIDC token cookie.
+ * Cached token endpoint to avoid repeated discovery calls.
  */
-export interface OidcTokenData {
-  accessToken: string;
-  refreshToken?: string;
-  expiresAt: number;
-  userId: string;
+let cachedTokenEndpoint: string | null = null;
+
+/**
+ * Saves encrypted token data in HTTP-only cookie.
+ */
+async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
+  const encrypted = await encrypt(tokenData, BETTER_AUTH_SECRET);
+  const cookieStore = await cookies();
+
+  cookieStore.set(COOKIE_NAME, encrypted, {
+    httpOnly: true,
+    secure: IS_PRODUCTION,
+    sameSite: "lax",
+    maxAge: TOKEN_SEVEN_DAYS_SECONDS,
+    path: "/",
+  });
 }
 
 /**
- * Type guard to validate OidcTokenData structure at runtime.
+ * Discovers and caches the token endpoint from OIDC provider.
  */
-function isOidcTokenData(data: unknown): data is OidcTokenData {
-  if (typeof data !== "object" || data === null) {
-    return false;
+async function getTokenEndpoint(): Promise<string | null> {
+  if (cachedTokenEndpoint) {
+    return cachedTokenEndpoint;
   }
 
-  const obj = data as Record<string, unknown>;
-
-  return (
-    typeof obj.accessToken === "string" &&
-    typeof obj.expiresAt === "number" &&
-    typeof obj.userId === "string" &&
-    (obj.refreshToken === undefined || typeof obj.refreshToken === "string")
-  );
-}
-
-/**
- * Encrypts token data using JWE (JSON Web Encryption).
- * Uses AES-256-GCM with direct key agreement (alg: 'dir').
- * Exported for testing purposes.
- */
-export async function encrypt(data: OidcTokenData): Promise<string> {
-  const plaintext = new TextEncoder().encode(JSON.stringify(data));
-  return await new jose.CompactEncrypt(plaintext)
-    .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
-    .encrypt(getSecret());
-}
-
-/**
- * Decrypts JWE token and returns parsed token data.
- * Validates data structure after decryption.
- * Exported for testing purposes.
- */
-export async function decrypt(jwe: string): Promise<OidcTokenData> {
   try {
-    const { plaintext } = await jose.compactDecrypt(jwe, getSecret());
-    const data = JSON.parse(new TextDecoder().decode(plaintext));
+    const discoveryUrl = `${OIDC_ISSUER}/.well-known/openid-configuration`;
+    const response = await fetch(discoveryUrl);
 
-    if (!isOidcTokenData(data)) {
-      throw new Error("Invalid token data structure");
+    if (!response.ok) {
+      console.error(
+        "[Auth] Failed to fetch OIDC discovery document:",
+        response.status,
+      );
+      return null;
     }
 
-    return data;
+    const discovery = (await response.json()) as OIDCDiscovery;
+    cachedTokenEndpoint = discovery.token_endpoint;
+
+    return cachedTokenEndpoint;
   } catch (error) {
-    if (error instanceof jose.errors.JWEDecryptionFailed) {
-      throw new Error("Token decryption failed - possible tampering");
+    console.error("[Auth] Error fetching OIDC discovery document:", error);
+    return null;
+  }
+}
+
+/**
+ * Attempts to refresh the access token using the refresh token.
+ * Returns new token data if successful, null otherwise.
+ */
+async function refreshAccessToken(
+  refreshToken: string,
+  userId: string,
+): Promise<OidcTokenData | null> {
+  try {
+    const tokenEndpoint = await getTokenEndpoint();
+
+    if (!tokenEndpoint) {
+      console.error("[Auth] Token endpoint not available");
+      return null;
     }
-    if (error instanceof jose.errors.JWEInvalid) {
-      throw new Error("Invalid JWE format");
+
+    const params = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: OIDC_CLIENT_ID,
+      client_secret: OIDC_CLIENT_SECRET,
+    });
+
+    const response = await fetch(tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString(),
+    });
+
+    if (!response.ok) {
+      console.error(
+        "[Auth] Token refresh failed:",
+        response.status,
+        response.statusText,
+      );
+      return null;
     }
-    // Wrap unexpected errors to avoid exposing internal details
-    const message = error instanceof Error ? error.message : "Unknown error";
-    throw new Error(`Token decryption error: ${message}`);
+
+    const tokenResponse = (await response.json()) as TokenResponse;
+
+    const expiresAt = Date.now() + tokenResponse.expires_in * 1000;
+    const refreshTokenExpiresAt = tokenResponse.refresh_expires_in
+      ? Date.now() + tokenResponse.refresh_expires_in * 1000
+      : undefined;
+
+    const newTokenData: OidcTokenData = {
+      accessToken: tokenResponse.access_token,
+      refreshToken: tokenResponse.refresh_token || refreshToken,
+      expiresAt,
+      refreshTokenExpiresAt,
+      userId,
+    };
+
+    // Save the new token data in the cookie
+    await saveTokenCookie(newTokenData);
+
+    return newTokenData;
+  } catch (error) {
+    console.error("[Auth] Token refresh error:", error);
+    return null;
   }
 }
 
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret",
+  secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
   trustedOrigins,
   session: {
@@ -143,6 +178,7 @@ export const auth = betterAuth({
           accessToken?: string;
           refreshToken?: string;
           accessTokenExpiresAt?: Date | string;
+          refreshTokenExpiresAt?: Date | string;
           userId: string;
         }) => {
           if (account.accessToken && account.userId) {
@@ -150,23 +186,19 @@ export const auth = betterAuth({
               ? new Date(account.accessTokenExpiresAt).getTime()
               : Date.now() + TOKEN_ONE_HOUR_MS;
 
+            const refreshTokenExpiresAt = account.refreshTokenExpiresAt
+              ? new Date(account.refreshTokenExpiresAt).getTime()
+              : undefined;
+
             const tokenData: OidcTokenData = {
               accessToken: account.accessToken,
               refreshToken: account.refreshToken || undefined,
               expiresAt,
+              refreshTokenExpiresAt,
               userId: account.userId,
             };
 
-            const encrypted = await encrypt(tokenData);
-            const cookieStore = await cookies();
-
-            cookieStore.set(COOKIE_NAME, encrypted, {
-              httpOnly: true,
-              secure: IS_PRODUCTION,
-              sameSite: "lax",
-              maxAge: TOKEN_SEVEN_DAYS_SECONDS,
-              path: "/",
-            });
+            await saveTokenCookie(tokenData);
           }
         },
       },
@@ -191,7 +223,7 @@ export async function getOidcProviderAccessToken(
 
     let tokenData: OidcTokenData;
     try {
-      tokenData = await decrypt(encryptedCookie.value);
+      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
     } catch (error) {
       // Decryption failure indicates tampering, corruption, or wrong secret
       console.error(
@@ -209,6 +241,32 @@ export async function getOidcProviderAccessToken(
 
     const now = Date.now();
     if (tokenData.expiresAt <= now) {
+      // Check if refresh token is also expired
+      if (
+        tokenData.refreshTokenExpiresAt &&
+        tokenData.refreshTokenExpiresAt <= now
+      ) {
+        console.log("[Auth] Both access and refresh tokens expired");
+        cookieStore.delete(COOKIE_NAME);
+        return null;
+      }
+
+      // Attempt to refresh the token if refresh token is available
+      if (tokenData.refreshToken) {
+        console.log("[Auth] Access token expired, attempting refresh...");
+        const refreshedData = await refreshAccessToken(
+          tokenData.refreshToken,
+          userId,
+        );
+
+        if (refreshedData) {
+          console.log("[Auth] Token refresh successful");
+          return refreshedData.accessToken;
+        }
+
+        console.log("[Auth] Token refresh failed, clearing cookie");
+      }
+
       cookieStore.delete(COOKIE_NAME);
       return null;
     }

@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OidcTokenData } from "../auth";
-import {
-  clearOidcProviderToken,
-  encrypt,
-  getOidcProviderAccessToken,
-} from "../auth";
+import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
+import type { OidcTokenData } from "../types";
+import { encrypt } from "../utils";
 
 // Mock jose library to avoid Uint8Array issues in jsdom
 vi.mock("jose", () => ({
@@ -90,7 +87,10 @@ describe("auth.ts", () => {
         expiresAt: Date.now() - 1000, // Expired 1 second ago
       };
 
-      const encryptedPayload = await encrypt(expiredTokenData);
+      const encryptedPayload = await encrypt(
+        expiredTokenData,
+        process.env.BETTER_AUTH_SECRET,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -106,7 +106,10 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000,
       };
 
-      const encryptedPayload = await encrypt(tokenData);
+      const encryptedPayload = await encrypt(
+        tokenData,
+        process.env.BETTER_AUTH_SECRET,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -121,7 +124,10 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000, // Valid for 1 hour
       };
 
-      const encryptedPayload = await encrypt(tokenData);
+      const encryptedPayload = await encrypt(
+        tokenData,
+        process.env.BETTER_AUTH_SECRET,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -132,7 +138,10 @@ describe("auth.ts", () => {
     it("should return null and delete cookie when token data is invalid", async () => {
       // Create invalid token data (missing required fields)
       const invalidData = { accessToken: "token" }; // Missing userId and expiresAt
-      const invalidPayload = await encrypt(invalidData as OidcTokenData);
+      const invalidPayload = await encrypt(
+        invalidData as OidcTokenData,
+        process.env.BETTER_AUTH_SECRET,
+      );
 
       mockCookies.get.mockReturnValue({ value: invalidPayload });
 
