@@ -32,14 +32,16 @@ const ENCRYPTION_SALT = "oidc_token_salt";
 const KEY_LENGTH = 32;
 const IV_LENGTH = 12;
 
+// Cache derived key to match auth.ts behavior
+const TEST_DERIVED_KEY = crypto.scryptSync(
+  process.env.BETTER_AUTH_SECRET as string,
+  ENCRYPTION_SALT,
+  KEY_LENGTH,
+);
+
 function encryptTestData(text: string): string {
-  const key = crypto.scryptSync(
-    process.env.BETTER_AUTH_SECRET as string,
-    ENCRYPTION_SALT,
-    KEY_LENGTH,
-  );
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", TEST_DERIVED_KEY, iv);
 
   const encrypted = Buffer.concat([
     cipher.update(text, "utf8"),

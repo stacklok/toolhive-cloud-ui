@@ -17,6 +17,13 @@ const ENCRYPTION_SALT = "oidc_token_salt";
 const KEY_LENGTH = 32;
 const IV_LENGTH = 12;
 
+// Derive encryption key once at module initialization to avoid blocking event loop
+const DERIVED_KEY = crypto.scryptSync(
+  ENCRYPTION_KEY,
+  ENCRYPTION_SALT,
+  KEY_LENGTH,
+);
+
 // Token expiration constants
 const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // milliseconds
 const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // seconds
@@ -66,9 +73,8 @@ function isOidcTokenData(data: unknown): data is OidcTokenData {
  * Returns encrypted data in format: iv:authTag:encrypted (all hex-encoded).
  */
 function encrypt(text: string): string {
-  const key = crypto.scryptSync(ENCRYPTION_KEY, ENCRYPTION_SALT, KEY_LENGTH);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", DERIVED_KEY, iv);
 
   const encrypted = Buffer.concat([
     cipher.update(text, "utf8"),
@@ -90,7 +96,6 @@ function encrypt(text: string): string {
  * Expects data in format: iv:authTag:encrypted (all hex-encoded).
  */
 function decrypt(payload: string): string {
-  const key = crypto.scryptSync(ENCRYPTION_KEY, ENCRYPTION_SALT, KEY_LENGTH);
   const [ivHex, tagHex, encryptedHex] = payload.split(":");
 
   if (!ivHex || !tagHex || !encryptedHex) {
@@ -101,7 +106,7 @@ function decrypt(payload: string): string {
   const authTag = Buffer.from(tagHex, "hex");
   const encrypted = Buffer.from(encryptedHex, "hex");
 
-  const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", DERIVED_KEY, iv);
   decipher.setAuthTag(authTag);
 
   const decrypted = Buffer.concat([
