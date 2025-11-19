@@ -371,7 +371,6 @@ export function autoGenerateHandlers() {
   const result: RequestHandler[] = [];
 
   // Prefer Vite glob import when available (Vitest/Vite runtime)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   const fixtureImporters: Record<string, () => Promise<unknown>> =
     typeof import.meta.glob === "function"
       ? import.meta.glob("./fixtures/**", { import: "default" })
@@ -566,7 +565,7 @@ export function autoGenerateHandlers() {
               const s = (jsonValue as Record<string, unknown>).servers;
               if (Array.isArray(s)) serversLen = s.length;
             }
-            // eslint-disable-next-line no-console
+            // biome-ignore lint: dev fixture response summary
             console.log(
               `[auto-mocker] respond ${method.toUpperCase()} ${rawPath} -> ${
                 successStatus ? Number(successStatus) : 200

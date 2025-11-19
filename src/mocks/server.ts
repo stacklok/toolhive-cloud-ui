@@ -8,11 +8,11 @@ const port = 9090;
 const httpServer = createServer(...handlers);
 
 httpServer.on("request", (req: IncomingMessage, _res: ServerResponse) => {
-  // eslint-disable-next-line no-console
+  // biome-ignore lint: dev mock server request log
   console.log(`[mock] ${req.method} ${req.url}`);
 });
 
 httpServer.listen(port, () => {
-  // eslint-disable-next-line no-console
+  // biome-ignore lint: dev mock server startup log
   console.log(`MSW mock server running on http://localhost:${port}`);
 });

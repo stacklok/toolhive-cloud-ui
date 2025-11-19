@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOut } from "@/components/sign-out-button";
+import { getRegistryV01Servers } from "@/generated/sdk.gen";
 import { auth } from "@/lib/auth/auth";
 
 export default async function CatalogPage() {
@@ -20,30 +21,23 @@ export default async function CatalogPage() {
     sample: Array<{ title: string; name: string; version?: string }>;
   } = { count: 0, titles: [], sample: [] };
   try {
-    const isDev = process.env.NODE_ENV !== "production";
-    const url = isDev
-      ? "http://localhost:9090/registry/v0.1/servers"
-      : "/registry/v0.1/servers";
-    const res = await fetch(url);
-    if (res.ok) {
-      type ServersPayload = {
-        servers?: Array<{
-          server?: { title?: string; name?: string; version?: string };
-        }>;
-      };
-      const data: ServersPayload = await res.json();
-      const items = Array.isArray(data?.servers) ? data.servers : [];
-      const titles = items
-        .map((it) => it?.server?.title ?? it?.server?.name)
-        .filter((t): t is string => typeof t === "string")
-        .slice(0, 5);
-      const sample = items.slice(0, 5).map((it) => ({
-        title: it?.server?.title ?? it?.server?.name ?? "Unknown",
-        name: it?.server?.name ?? "unknown",
-        version: it?.server?.version ?? undefined,
-      }));
-      serversSummary = { count: items.length, titles, sample };
-    }
+    const resp = await getRegistryV01Servers();
+    const data = resp.data as {
+      servers?: Array<{
+        server?: { title?: string; name?: string; version?: string };
+      }>;
+    };
+    const items = Array.isArray(data?.servers) ? data.servers : [];
+    const titles = items
+      .map((it) => it?.server?.title ?? it?.server?.name)
+      .filter((t): t is string => typeof t === "string")
+      .slice(0, 5);
+    const sample = items.slice(0, 5).map((it) => ({
+      title: it?.server?.title ?? it?.server?.name ?? "Unknown",
+      name: it?.server?.name ?? "unknown",
+      version: it?.server?.version ?? undefined,
+    }));
+    serversSummary = { count: items.length, titles, sample };
   } catch {
     // Leave serversSummary at its default empty state
   }
