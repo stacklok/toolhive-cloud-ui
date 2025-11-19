@@ -16,8 +16,26 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-// Note: Do not globally mock the entire auth module; unit tests under src/lib/auth
-// validate real exports like encrypt/decrypt. Mock getSession per test instead.
+// Global auth server mock with default authenticated session
+// Uses importActual to preserve real exports (encrypt, decrypt, etc.) for unit tests
+// Individual tests can override getSession return value if needed
+vi.mock("@/lib/auth/auth", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/auth/auth")>();
+  return {
+    ...actual,
+    auth: {
+      ...actual.auth,
+      api: {
+        ...actual.auth.api,
+        getSession: vi.fn(() =>
+          Promise.resolve({
+            user: { email: "test@example.com", name: "Test User" },
+          }),
+        ),
+      },
+    },
+  };
+});
 
 // Common UI/runtime mocks
 vi.mock("next/image", () => ({
