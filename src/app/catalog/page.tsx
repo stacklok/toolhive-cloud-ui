@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOut } from "@/components/sign-out-button";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 
 export default async function CatalogPage() {
   const session = await auth.api.getSession({

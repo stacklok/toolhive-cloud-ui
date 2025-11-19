@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { signOut, useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth/auth-client";
 
 export default function CataloguePage() {
   const router = useRouter();

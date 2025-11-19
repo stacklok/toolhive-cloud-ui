@@ -17,7 +17,7 @@ vi.mock("sonner", () => ({
 }));
 
 // Mock auth client
-vi.mock("@/lib/auth-client", () => ({
+vi.mock("@/lib/auth/auth-client", () => ({
   authClient: {
     signIn: {
       oauth2: vi.fn(),
@@ -64,7 +64,7 @@ describe("SignInPage", () => {
 
   test("calls authClient.signIn.oauth2 when button is clicked", async () => {
     const user = userEvent.setup();
-    const { authClient } = await import("@/lib/auth-client");
+    const { authClient } = await import("@/lib/auth/auth-client");
     vi.mocked(authClient.signIn.oauth2).mockResolvedValue({ error: null });
 
     render(<SignInPage />);
@@ -83,7 +83,7 @@ describe("SignInPage", () => {
   test("shows error toast when signin fails with error", async () => {
     const user = userEvent.setup();
     const { toast } = await import("sonner");
-    const { authClient } = await import("@/lib/auth-client");
+    const { authClient } = await import("@/lib/auth/auth-client");
 
     vi.mocked(authClient.signIn.oauth2).mockResolvedValue({
       error: {
@@ -106,7 +106,7 @@ describe("SignInPage", () => {
   test("shows error toast when signin throws exception", async () => {
     const user = userEvent.setup();
     const { toast } = await import("sonner");
-    const { authClient } = await import("@/lib/auth-client");
+    const { authClient } = await import("@/lib/auth/auth-client");
 
     vi.mocked(authClient.signIn.oauth2).mockRejectedValue(
       new Error("Network error"),
@@ -127,7 +127,7 @@ describe("SignInPage", () => {
   test("shows generic error message for unknown errors", async () => {
     const user = userEvent.setup();
     const { toast } = await import("sonner");
-    const { authClient } = await import("@/lib/auth-client");
+    const { authClient } = await import("@/lib/auth/auth-client");
 
     vi.mocked(authClient.signIn.oauth2).mockRejectedValue(
       "Something went wrong",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/lib/auth-client";
+import { signOut } from "@/lib/auth/auth-client";
 
 export function SignOut() {
   const [isSigningOut, setIsSigningOut] = useState(false);
