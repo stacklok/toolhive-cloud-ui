@@ -40,6 +40,6 @@ The provider is pre-configured with:
 
 Replace this with a real OIDC provider (Okta, Keycloak, Auth0, etc.) by updating the environment variables in `.env.local`:
 
-- `OIDC_ISSUER`
+- `OIDC_ISSUER_URL`
 - `OIDC_CLIENT_ID`
 - `OIDC_CLIENT_SECRET`

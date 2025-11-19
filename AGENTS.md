@@ -325,7 +325,7 @@ pnpm generate-client  # Fetch swagger.json and regenerate
 
 - OIDC provider agnostic
 - Stateless JWT authentication
-- Environment variables: `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`
+- Environment variables: `OIDC_ISSUER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`
 
 ### Development
 

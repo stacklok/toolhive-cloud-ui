@@ -274,7 +274,7 @@ git push origin v0.x.x
 ### Authentication Not Working
 
 - **Development**: Ensure OIDC mock is running (`pnpm oidc`)
-- **Production**: Check environment variables (OIDC_ISSUER, CLIENT_ID, etc.)
+- **Production**: Check environment variables (OIDC_ISSUER_URL, CLIENT_ID, etc.)
 
 ### API Calls Failing
 
