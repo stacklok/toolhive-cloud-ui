@@ -22,10 +22,6 @@ export default async function CatalogPage() {
   try {
     const url = "/registry/v0.1/servers";
     const res = await fetch(url);
-    if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
-      console.log(`[catalog] SSR fetch ${url} -> ${res.status}`);
-    }
     if (res.ok) {
       type ServersPayload = {
         servers?: Array<{
@@ -34,10 +30,6 @@ export default async function CatalogPage() {
       };
       const data: ServersPayload = await res.json();
       const items = Array.isArray(data?.servers) ? data.servers : [];
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.log(`[catalog] servers=${items.length}`);
-      }
       const titles = items
         .map((it) => it?.server?.title ?? it?.server?.name)
         .filter((t): t is string => typeof t === "string")
