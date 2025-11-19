@@ -20,4 +20,13 @@ export type CreateClientConfig<T extends ClientOptions = ClientOptions2> = (
   override?: Config<ClientOptions & T>,
 ) => Config<Required<ClientOptions> & T>;
 
-export const client = createClient(createConfig<ClientOptions2>());
+// Configure client with baseUrl for both SSR and client-side
+// In development: points to standalone MSW mock server (http://localhost:9090)
+// In production: points to real backend API
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:9090";
+
+export const client = createClient(
+  createConfig<ClientOptions2>({
+    baseUrl,
+  }),
+);

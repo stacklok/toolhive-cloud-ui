@@ -38,8 +38,9 @@ export default async function CatalogPage() {
       version: it?.server?.version ?? undefined,
     }));
     serversSummary = { count: items.length, titles, sample };
-  } catch {
-    // Leave serversSummary at its default empty state
+  } catch (error) {
+    // Log the error for debugging
+    console.error("[catalog] Failed to fetch servers:", error);
   }
 
   return (
