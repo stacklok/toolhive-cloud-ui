@@ -1,51 +1,42 @@
-name: Claude Code
+name: Claude Code Review
 
 on:
   issue_comment:
     types: [created]
   pull_request_review_comment:
     types: [created]
-  issues:
-    types: [opened, assigned]
-  pull_request_review:
-    types: [submitted]
   pull_request:
     types: [opened, synchronize]
 
 jobs:
   claude:
+    # Auto-review on PR open/sync, or respond to @claude mentions
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
       (github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       issues: write
       id-token: write
-      actions: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
-        with:
-          fetch-depth: 1
+        uses: actions/checkout@v4
 
-      - name: Run Claude Code
-        id: claude
-        uses: anthropics/claude-code-action@ac1a3207f3f00b4a37e2f3a6f0935733c7c64651 # v1.0
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           prompt: |
             Review this PR following the guidelines in CLAUDE.md.
-            Focus on code quality, security, and adherence to project standards.
-            Be concise and actionable in your feedback - highlight critical issues first.
-
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr:*)'
+            Focus on:
+            - Code quality and maintainability
+            - Security issues
+            - TypeScript strict mode compliance (NO `any` types)
+            - Next.js App Router best practices
+            - Server vs Client Component usage
+            - hey-api integration patterns
+            Be concise and actionable - highlight critical issues first.
+          claude_args: "--max-turns 5"
