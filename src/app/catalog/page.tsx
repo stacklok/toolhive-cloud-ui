@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOut } from "@/components/sign-out-button";
-import { getRegistryV01Servers } from "@/generated/sdk.gen";
 import { auth } from "@/lib/auth/auth";
+import { getServersSummary } from "./actions";
 
 export default async function CatalogPage() {
   const session = await auth.api.getSession({
@@ -13,35 +13,7 @@ export default async function CatalogPage() {
     redirect("/signin");
   }
 
-  // Load server registry summary (SSR). Use a relative URL so dev rewrites
-  // proxy to the standalone mock server.
-  let serversSummary: {
-    count: number;
-    titles: string[];
-    sample: Array<{ title: string; name: string; version?: string }>;
-  } = { count: 0, titles: [], sample: [] };
-  try {
-    const resp = await getRegistryV01Servers();
-    const data = resp.data as {
-      servers?: Array<{
-        server?: { title?: string; name?: string; version?: string };
-      }>;
-    };
-    const items = Array.isArray(data?.servers) ? data.servers : [];
-    const titles = items
-      .map((it) => it?.server?.title ?? it?.server?.name)
-      .filter((t): t is string => typeof t === "string")
-      .slice(0, 5);
-    const sample = items.slice(0, 5).map((it) => ({
-      title: it?.server?.title ?? it?.server?.name ?? "Unknown",
-      name: it?.server?.name ?? "unknown",
-      version: it?.server?.version ?? undefined,
-    }));
-    serversSummary = { count: items.length, titles, sample };
-  } catch (error) {
-    // Log the error for debugging
-    console.error("[catalog] Failed to fetch servers:", error);
-  }
+  const serversSummary = await getServersSummary();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
