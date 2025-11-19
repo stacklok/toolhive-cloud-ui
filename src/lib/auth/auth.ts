@@ -29,8 +29,8 @@ function getSecret(): Uint8Array {
 }
 
 // Token expiration constants
-const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // milliseconds
-const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // seconds
+const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; //  1 hour in ms
+const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // 7 days in seconds
 
 // Cookie configuration
 const COOKIE_NAME = "oidc_token" as const;
@@ -105,7 +105,9 @@ export async function decrypt(jwe: string): Promise<OidcTokenData> {
     if (error instanceof jose.errors.JWEInvalid) {
       throw new Error("Invalid JWE format");
     }
-    throw error;
+    // Wrap unexpected errors to avoid exposing internal details
+    const message = error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`Token decryption error: ${message}`);
   }
 }
 
