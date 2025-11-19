@@ -68,6 +68,7 @@ This document provides context and guidelines for Claude (and other AI assistant
 ### 3. Generated API Client
 
 - **Never write manual fetch logic** - Always use hey-api generated hooks
+- **Never edit generated files** - They are regenerated from OpenAPI spec and changes will be lost
 - API client regenerated from OpenAPI spec via custom script
 - Type-safe API calls with automatic loading/error states
 
@@ -137,7 +138,9 @@ pnpm generate-client:nofetch # Regenerate without fetching
 ### DON'T ❌
 
 1. **🚫 Don't EVER use `any` type** - STRICTLY FORBIDDEN. Use `unknown` + type guards or proper types
-2. **Don't edit generated files** - `src/generated/*` is auto-generated
+2. **🚫 Don't EVER edit generated files** - `src/generated/*` is auto-generated and will be overwritten
+   - Generated files are overwritten on every `pnpm generate-client` run
+   - If you need to configure or extend the client, do it in your own files
 3. **Don't use `'use client'` everywhere** - Only when necessary
 4. **Don't create custom fetch logic** - Use hey-api hooks
 5. **Don't use `.then()`** - Use async/await

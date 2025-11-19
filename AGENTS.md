@@ -254,7 +254,7 @@ export async function createServer(formData: FormData) {
 ### ❌ NEVER DO
 
 - **Use `any` type** - STRICTLY FORBIDDEN. Use `unknown` + type guards or proper types
-- Edit files in `src/generated/*` (auto-generated)
+- **Edit files in `src/generated/*`** - Auto-generated, will be overwritten on regeneration
 - Use `'use client'` on every component
 - Create manual fetch logic in components
 - Use `.then()` promise chains
@@ -273,6 +273,8 @@ export async function createServer(formData: FormData) {
 - `GET /api/v0/deployed/{name}` - Instance details
 
 ### Using Generated API Client
+
+**⚠️ IMPORTANT: Never edit files in `src/generated/*`** - they are auto-generated and will be overwritten.
 
 **Queries (GET)**:
 
