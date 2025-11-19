@@ -19,7 +19,10 @@ export default async function Home() {
     titles: [],
   };
   try {
-    const url = "/registry/v0.1/servers";
+    const isDev = process.env.NODE_ENV !== "production";
+    const url = isDev
+      ? "http://localhost:9090/registry/v0.1/servers"
+      : "/registry/v0.1/servers";
     const res = await fetch(url);
     if (res.ok) {
       type ServersPayload = {

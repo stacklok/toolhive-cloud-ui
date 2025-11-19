@@ -16,27 +16,8 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-// Partially mock auth only for getSession; keep other exports (encrypt, decrypt, etc.) intact
-vi.mock("@/lib/auth/auth", async (importOriginal) => {
-  const actual = (await importOriginal()) as unknown as {
-    auth: { api: { getSession: (...args: unknown[]) => unknown } };
-    [k: string]: unknown;
-  };
-  return {
-    ...actual,
-    auth: {
-      ...actual.auth,
-      api: {
-        ...actual.auth.api,
-        getSession: vi.fn(() =>
-          Promise.resolve({
-            user: { email: "test@example.com", name: "Test User" },
-          }),
-        ),
-      },
-    },
-  };
-});
+// Note: Do not globally mock the entire auth module; unit tests under src/lib/auth
+// validate real exports like encrypt/decrypt. Mock getSession per test instead.
 
 // Common UI/runtime mocks
 vi.mock("next/image", () => ({

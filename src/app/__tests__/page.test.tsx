@@ -2,6 +2,19 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import Home from "../page";
 
+// Mock auth session retrieval for this test
+vi.mock("@/lib/auth/auth", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn(() =>
+        Promise.resolve({
+          user: { email: "test@example.com", name: "Test User" },
+        }),
+      ),
+    },
+  },
+}));
+
 beforeEach(() => vi.clearAllMocks());
 
 test("Home page renders welcome heading when user is logged in", async () => {
