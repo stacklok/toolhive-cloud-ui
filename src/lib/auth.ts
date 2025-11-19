@@ -26,12 +26,28 @@ const IV_LENGTH = 12;
  */
 const ENCRYPTION_SALT = "oidc_token_salt";
 
-// Derive encryption key once at module initialization to avoid blocking event loop
-const DERIVED_KEY = crypto.scryptSync(
-  ENCRYPTION_KEY as string,
-  ENCRYPTION_SALT,
-  KEY_LENGTH,
-);
+// Cache for derived key (lazy initialization)
+let DERIVED_KEY: Buffer | null = null;
+
+/**
+ * Gets or derives the encryption key on first use.
+ * Lazy initialization avoids build-time errors when env vars are not set.
+ */
+function getDerivedKey(): Buffer {
+  if (!DERIVED_KEY) {
+    if (!ENCRYPTION_KEY) {
+      throw new Error(
+        "BETTER_AUTH_SECRET environment variable is required for encryption",
+      );
+    }
+    DERIVED_KEY = crypto.scryptSync(
+      ENCRYPTION_KEY,
+      ENCRYPTION_SALT,
+      KEY_LENGTH,
+    );
+  }
+  return DERIVED_KEY;
+}
 
 // Token expiration constants
 const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // milliseconds
@@ -84,7 +100,7 @@ function isOidcTokenData(data: unknown): data is OidcTokenData {
  */
 export function encrypt(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv("aes-256-gcm", DERIVED_KEY, iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", getDerivedKey(), iv);
 
   const encrypted = Buffer.concat([
     cipher.update(text, "utf8"),
@@ -117,7 +133,7 @@ export function decrypt(payload: string): string {
   const authTag = Buffer.from(tagHex, "hex");
   const encrypted = Buffer.from(encryptedHex, "hex");
 
-  const decipher = crypto.createDecipheriv("aes-256-gcm", DERIVED_KEY, iv);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", getDerivedKey(), iv);
   decipher.setAuthTag(authTag);
 
   const decrypted = Buffer.concat([
