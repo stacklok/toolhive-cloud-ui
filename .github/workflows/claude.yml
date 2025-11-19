@@ -9,8 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  # Auto-review on PR open/sync
-  auto-review:
+  review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -26,17 +25,10 @@ jobs:
         uses: anthropics/claude-code-action@ac1a3207f3f00b4a37e2f3a6f0935733c7c64651 # v1.0
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          prompt: |
-            Review this PR following the guidelines in CLAUDE.md.
-            Focus on:
-            - Code quality and maintainability
-            - Security issues
-            - TypeScript strict mode compliance (NO `any` types)
-            - Next.js App Router best practices
-            - Server vs Client Component usage
-            - hey-api integration patterns
-            Be concise and actionable - highlight critical issues first.
-          claude_args: "--max-turns 15"
+          prompt: "/review"
+          claude_args: |
+            --system-prompt "Follow the guidelines in CLAUDE.md. Focus on code quality, security, TypeScript strict mode (NO any types), Next.js App Router best practices, and hey-api integration patterns."
+            --max-turns 15
 
   # Respond to @claude mentions
   interactive:
@@ -57,4 +49,6 @@ jobs:
         uses: anthropics/claude-code-action@ac1a3207f3f00b4a37e2f3a6f0935733c7c64651 # v1.0
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--max-turns 15"
+          claude_args: |
+            --system-prompt "Follow the guidelines in CLAUDE.md. Focus on code quality, security, TypeScript strict mode (NO any types), Next.js App Router best practices, and hey-api integration patterns."
+            --max-turns 15
