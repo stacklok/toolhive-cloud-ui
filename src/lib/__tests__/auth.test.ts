@@ -1,7 +1,10 @@
-import crypto from "crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OidcTokenData } from "../auth";
-import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
+import {
+  clearOidcProviderToken,
+  encrypt,
+  getOidcProviderAccessToken,
+} from "../auth";
 
 // Mock next/headers
 const mockCookies = vi.hoisted(() => ({
@@ -27,36 +30,6 @@ vi.mock("better-auth/plugins", () => ({
   genericOAuth: vi.fn(() => ({})),
 }));
 
-// Encryption helper using same logic as auth.ts
-const ENCRYPTION_SALT = "oidc_token_salt";
-const KEY_LENGTH = 32;
-const IV_LENGTH = 12;
-
-// Cache derived key to match auth.ts behavior
-const TEST_DERIVED_KEY = crypto.scryptSync(
-  process.env.BETTER_AUTH_SECRET as string,
-  ENCRYPTION_SALT,
-  KEY_LENGTH,
-);
-
-function encryptTestData(text: string): string {
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv("aes-256-gcm", TEST_DERIVED_KEY, iv);
-
-  const encrypted = Buffer.concat([
-    cipher.update(text, "utf8"),
-    cipher.final(),
-  ]);
-
-  const authTag = cipher.getAuthTag();
-
-  return [
-    iv.toString("hex"),
-    authTag.toString("hex"),
-    encrypted.toString("hex"),
-  ].join(":");
-}
-
 describe("auth.ts", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
@@ -78,8 +51,8 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000,
       });
 
-      // Encrypt using helper
-      const encryptedPayload = encryptTestData(originalData);
+      // Encrypt using exported function
+      const encryptedPayload = encrypt(originalData);
 
       // Verify format (iv:authTag:encrypted)
       const parts = encryptedPayload.split(":");
@@ -91,8 +64,8 @@ describe("auth.ts", () => {
     it("should create different ciphertext for same plaintext", () => {
       const data = "same plaintext";
 
-      const encrypted1 = encryptTestData(data);
-      const encrypted2 = encryptTestData(data);
+      const encrypted1 = encrypt(data);
+      const encrypted2 = encrypt(data);
 
       // Different IV should produce different ciphertext
       expect(encrypted1).not.toBe(encrypted2);
@@ -124,9 +97,7 @@ describe("auth.ts", () => {
         expiresAt: Date.now() - 1000, // Expired 1 second ago
       };
 
-      const encryptedPayload = encryptTestData(
-        JSON.stringify(expiredTokenData),
-      );
+      const encryptedPayload = encrypt(JSON.stringify(expiredTokenData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -142,7 +113,7 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000,
       };
 
-      const encryptedPayload = encryptTestData(JSON.stringify(tokenData));
+      const encryptedPayload = encrypt(JSON.stringify(tokenData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -157,7 +128,7 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000, // Valid for 1 hour
       };
 
-      const encryptedPayload = encryptTestData(JSON.stringify(tokenData));
+      const encryptedPayload = encrypt(JSON.stringify(tokenData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -172,7 +143,7 @@ describe("auth.ts", () => {
         // No userId, no expiresAt
       };
 
-      const encryptedPayload = encryptTestData(JSON.stringify(invalidData));
+      const encryptedPayload = encrypt(JSON.stringify(invalidData));
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -190,8 +161,9 @@ describe("auth.ts", () => {
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
+      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Error reading OIDC token from cookie:",
+        "[Auth] Token decryption failed - possible tampering or key mismatch:",
         expect.any(Error),
       );
     });

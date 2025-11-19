@@ -8,18 +8,27 @@ import { cookies } from "next/headers";
 const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
 const OIDC_ISSUER = process.env.OIDC_ISSUER || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-const ENCRYPTION_KEY =
-  process.env.BETTER_AUTH_SECRET || "build-time-placeholder";
+const ENCRYPTION_KEY = process.env.BETTER_AUTH_SECRET;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 // Encryption constants
-const ENCRYPTION_SALT = "oidc_token_salt";
 const KEY_LENGTH = 32;
 const IV_LENGTH = 12;
 
+/**
+ * Static salt for key derivation.
+ *
+ * NOTE: Using a constant salt is intentional and secure in this context.
+ * We're deriving an encryption key from a secret (BETTER_AUTH_SECRET), not hashing passwords.
+ * The salt ensures consistent key derivation from the same secret across restarts.
+ * Security comes from the secret itself, not from the salt.
+ * Each encryption operation uses a unique random IV for semantic security.
+ */
+const ENCRYPTION_SALT = "oidc_token_salt";
+
 // Derive encryption key once at module initialization to avoid blocking event loop
 const DERIVED_KEY = crypto.scryptSync(
-  ENCRYPTION_KEY,
+  ENCRYPTION_KEY as string,
   ENCRYPTION_SALT,
   KEY_LENGTH,
 );
@@ -71,8 +80,9 @@ function isOidcTokenData(data: unknown): data is OidcTokenData {
  * Encrypts data using AES-256-GCM (AEAD).
  * Provides both confidentiality and integrity/authentication.
  * Returns encrypted data in format: iv:authTag:encrypted (all hex-encoded).
+ * Exported for testing purposes.
  */
-function encrypt(text: string): string {
+export function encrypt(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv("aes-256-gcm", DERIVED_KEY, iv);
 
@@ -94,8 +104,9 @@ function encrypt(text: string): string {
  * Decrypts data encrypted with AES-256-GCM.
  * Verifies authenticity before decryption.
  * Expects data in format: iv:authTag:encrypted (all hex-encoded).
+ * Exported for testing purposes.
  */
-function decrypt(payload: string): string {
+export function decrypt(payload: string): string {
   const [ivHex, tagHex, encryptedHex] = payload.split(":");
 
   if (!ivHex || !tagHex || !encryptedHex) {
@@ -190,8 +201,31 @@ export async function getOidcProviderAccessToken(
       return null;
     }
 
-    const decrypted = decrypt(encryptedCookie.value);
-    const parsedData: unknown = JSON.parse(decrypted);
+    let decrypted: string;
+    try {
+      decrypted = decrypt(encryptedCookie.value);
+    } catch (error) {
+      // Decryption failure indicates tampering, corruption, or wrong secret
+      console.error(
+        "[Auth] Token decryption failed - possible tampering or key mismatch:",
+        error,
+      );
+      cookieStore.delete(COOKIE_NAME);
+      return null;
+    }
+
+    let parsedData: unknown;
+    try {
+      parsedData = JSON.parse(decrypted);
+    } catch (error) {
+      // JSON parsing failure indicates malformed data
+      console.error(
+        "[Auth] Token JSON parsing failed - malformed data:",
+        error,
+      );
+      cookieStore.delete(COOKIE_NAME);
+      return null;
+    }
 
     // Runtime validation using type guard
     if (!isOidcTokenData(parsedData)) {
@@ -208,14 +242,15 @@ export async function getOidcProviderAccessToken(
 
     // Check if token is expired
     const now = Date.now();
-    if (parsedData.expiresAt < now) {
+    if (parsedData.expiresAt <= now) {
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
     return parsedData.accessToken;
   } catch (error) {
-    console.error("[Auth] Error reading OIDC token from cookie:", error);
+    // Unexpected error (e.g., cookie operations failure)
+    console.error("[Auth] Unexpected error reading OIDC token:", error);
     return null;
   }
 }
