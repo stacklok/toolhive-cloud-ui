@@ -24,11 +24,9 @@ if (!port) {
 const httpServer = createServer(...handlers);
 
 httpServer.on("request", (req: IncomingMessage, _res: ServerResponse) => {
-  // biome-ignore lint: dev mock server request log
   console.log(`[mock] ${req.method} ${req.url}`);
 });
 
 httpServer.listen(port, () => {
-  // biome-ignore lint: dev mock server startup log
   console.log(`MSW mock server running on http://localhost:${port}`);
 });

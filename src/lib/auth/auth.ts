@@ -54,7 +54,7 @@ async function getTokenEndpoint(): Promise<string | null> {
     if (!response.ok) {
       console.error(
         "[Auth] Failed to fetch OIDC discovery document:",
-        response.status
+        response.status,
       );
       return null;
     }
@@ -75,7 +75,7 @@ async function getTokenEndpoint(): Promise<string | null> {
  */
 async function refreshAccessToken(
   refreshToken: string,
-  userId: string
+  userId: string,
 ): Promise<OidcTokenData | null> {
   try {
     const tokenEndpoint = await getTokenEndpoint();
@@ -104,7 +104,7 @@ async function refreshAccessToken(
       console.error(
         "[Auth] Token refresh failed:",
         response.status,
-        response.statusText
+        response.statusText,
       );
       return null;
     }
@@ -199,7 +199,7 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
  * Returns null if token not found, expired, or belongs to different user.
  */
 export async function getOidcProviderAccessToken(
-  userId: string
+  userId: string,
 ): Promise<string | null> {
   try {
     const cookieStore = await cookies();
@@ -216,7 +216,7 @@ export async function getOidcProviderAccessToken(
       // Decryption failure indicates tampering, corruption, or wrong secret
       console.error(
         "[Auth] Token decryption failed - possible tampering or invalid format:",
-        error
+        error,
       );
       cookieStore.delete(COOKIE_NAME);
       return null;
@@ -244,7 +244,7 @@ export async function getOidcProviderAccessToken(
         console.log("[Auth] Access token expired, attempting refresh...");
         const refreshedData = await refreshAccessToken(
           tokenData.refreshToken,
-          userId
+          userId,
         );
 
         if (refreshedData) {
