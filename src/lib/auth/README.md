@@ -45,12 +45,14 @@ flowchart TD
     B -->|No| C[Redirect to /signin]
     B -->|Yes| D{Token expired?}
     D -->|No| E[Use existing token]
-    D -->|Yes| F[Call /api/auth/refresh-token]
-    F --> G{Refresh successful?}
-    G -->|Yes| H[Save new token in cookie]
-    G -->|No| C
-    H --> E
-    E --> I[Make API call with token]
+    D -->|Yes| F[POST /api/auth/refresh-token]
+    F --> G[Endpoint reads refresh token from cookie]
+    G --> H[Call Okta token endpoint with refresh token]
+    H --> I{Okta response OK?}
+    I -->|Yes| J[Save new access token in cookie]
+    I -->|No| C
+    J --> E
+    E --> K[Make API call with valid token]
 ```
 
 ## Key Files
