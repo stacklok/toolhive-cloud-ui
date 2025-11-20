@@ -26,7 +26,6 @@ describe("UserMenu", () => {
     render(<UserMenu userName="Jane Smith" />);
     const user = userEvent.setup();
 
-    // Open dropdown - use getAllByRole and find the one in this render
     const buttons = screen.getAllByRole("button");
     const trigger = buttons.find((btn) =>
       btn.textContent?.includes("Jane Smith"),
@@ -35,11 +34,9 @@ describe("UserMenu", () => {
     if (!trigger) return;
     await user.click(trigger);
 
-    // Find and click the sign out menu item (it's a div with role="menuitem")
     const signOutItem = screen.getByRole("menuitem", { name: /sign out/i });
     await user.click(signOutItem);
 
-    // Verify signOut was called
     expect(signOut).toHaveBeenCalledOnce();
   });
 });
