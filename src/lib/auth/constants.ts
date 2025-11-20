@@ -3,7 +3,8 @@
  */
 
 // Environment configuration
-export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
+export const OIDC_PROVIDER_ID =
+  process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID || "oidc";
 export const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
