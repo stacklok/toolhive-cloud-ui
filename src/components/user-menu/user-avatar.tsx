@@ -16,7 +16,7 @@ export function UserAvatar({ userName }: UserAvatarProps) {
   const initials = getInitials(userName);
 
   return (
-    <Avatar>
+    <Avatar className="size-9">
       <AvatarFallback className="rounded-full bg-zinc-600/90 text-primary-foreground">
         {initials}
       </AvatarFallback>

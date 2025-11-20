@@ -23,7 +23,9 @@ export function UserMenu({ userName }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
           <UserAvatar userName={userName} />
-          <span>{userName}</span>
+          <span className="text-sm font-medium leading-5 text-secondary-foreground">
+            {userName}
+          </span>
           <ChevronIndicator isOpen={isOpen} />
         </Button>
       </DropdownMenuTrigger>
