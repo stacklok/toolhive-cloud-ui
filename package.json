@@ -19,7 +19,7 @@
     "generate-client:nofetch": "openapi-ts"
   },
   "dependencies": {
-    "better-auth": "1.4.0-beta.21",
+    "better-auth": "1.4.0-beta.25",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "jose": "^6.1.2",
