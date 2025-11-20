@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,12 +16,15 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ userName }: UserMenuProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
           <UserAvatar userName={userName} />
           <span>{userName}</span>
+          {isOpen ? <ChevronUp /> : <ChevronDown />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
