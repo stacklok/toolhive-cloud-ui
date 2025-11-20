@@ -20,6 +20,8 @@
     "mock:server": "tsx src/mocks/server.ts"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.11",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "better-auth": "1.4.0-beta.25",
@@ -27,6 +29,7 @@
     "clsx": "2.1.1",
     "jose": "^6.1.2",
     "json-schema-faker": "^0.5.6",
+    "lucide-react": "^0.554.0",
     "msw": "^2.12.2",
     "next": "16.0.3",
     "react": "19.2.0",

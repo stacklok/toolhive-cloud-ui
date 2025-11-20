@@ -43,6 +43,7 @@ vi.mock("next/image", () => ({
 }));
 
 vi.mock("sonner", () => ({
+  Toaster: () => null,
   toast: {
     error: vi.fn(),
     success: vi.fn(),
@@ -59,12 +60,20 @@ vi.mock("@/lib/auth/auth-client", () => ({
     },
     signOut: vi.fn(),
   },
+  signIn: {
+    oauth2: vi.fn(),
+  },
+  signOut: vi.fn(),
+  useSession: vi.fn(),
 }));
 
+import { cleanup } from "@testing-library/react";
 // Reset mocks between test cases globally
 import { afterEach } from "vitest";
 
 afterEach(() => {
   // Clear calls/instances, but keep hoisted module mock implementations intact
   vi.clearAllMocks();
+  // Clean up DOM after each test
+  cleanup();
 });
