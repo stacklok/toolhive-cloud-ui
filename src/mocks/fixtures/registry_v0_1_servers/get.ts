@@ -54,21 +54,7 @@ export default {
             ],
           },
         ],
-        remotes: [
-          {
-            headers: [
-              {
-                name: "aute qui exercitation",
-                description: "sed cupidatat est",
-                choices: ["consequat nostrud"],
-                default: "aliqua ad anim consequat",
-                format: "tempor sint Duis",
-              },
-            ],
-            type: "id ullamco",
-            url: "velit nulla",
-          },
-        ],
+        remotes: [],
       },
       _meta: {
         "io.modelcontextprotocol.registry/official": {
@@ -131,21 +117,7 @@ export default {
             ],
           },
         ],
-        remotes: [
-          {
-            headers: [
-              {
-                name: "eu sed est",
-                description: "ut in ex est nulla",
-                choices: ["aute in ex aliquip nisi"],
-                default: "fugiat eiusmod Duis aliqua et",
-                format: "ullamco veniam dolore",
-              },
-            ],
-            type: "tempor id ad qui",
-            url: "sint quis",
-          },
-        ],
+        remotes: [],
       },
       _meta: {
         dolor_3e9: 35203589,
@@ -211,21 +183,7 @@ export default {
             ],
           },
         ],
-        remotes: [
-          {
-            headers: [
-              {
-                name: "id quis enim Ut",
-                description: "quis mollit",
-                choices: ["ut labore"],
-                default: "adipisicing esse velit nisi sed",
-                format: "minim et consectetur",
-              },
-            ],
-            type: "consectetur sed ad esse Ut",
-            url: "in sint Excepteur",
-          },
-        ],
+        remotes: [],
       },
       _meta: {
         "io.modelcontextprotocol.registry/official": {
