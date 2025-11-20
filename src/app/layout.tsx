@@ -29,6 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="border-b">
+          <div className="container mx-auto px-4 py-4">
+            <h1>Hello World</h1>
+          </div>
+        </header>
         {children}
         <Toaster
           richColors
