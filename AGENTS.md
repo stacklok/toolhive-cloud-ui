@@ -276,7 +276,8 @@ export async function createServer(formData: FormData) {
 ### Using Generated API Client
 
 **⚠️ IMPORTANT:**
-- Never edit files in `src/generated/*`** - they are auto-generated and will be overwritten
+
+- Never edit files in `src/generated/*`\*\* - they are auto-generated and will be overwritten
 - **Always use server actions** - Client components should not call the API directly
 - The API client is server-side only (no `NEXT_PUBLIC_` env vars needed)
 
@@ -325,7 +326,13 @@ pnpm generate-client  # Fetch swagger.json and regenerate
 
 - OIDC provider agnostic
 - Stateless JWT authentication
-- Environment variables: `OIDC_ISSUER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`
+- Environment variables:
+  - `OIDC_ISSUER_URL` - OIDC provider URL
+  - `OIDC_CLIENT_ID` - OAuth2 client ID
+  - `OIDC_CLIENT_SECRET` - OAuth2 client secret
+  - `NEXT_PUBLIC_OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - **Required**, must use `NEXT_PUBLIC_` prefix. Not sensitive data - it's just an identifier.
+  - `BETTER_AUTH_URL` - Application base URL
+  - `BETTER_AUTH_SECRET` - Secret for token encryption
 
 ### Development
 
