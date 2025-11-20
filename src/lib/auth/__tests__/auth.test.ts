@@ -89,7 +89,7 @@ describe("auth.ts", () => {
 
       const encryptedPayload = await encrypt(
         expiredTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -109,7 +109,7 @@ describe("auth.ts", () => {
 
       const encryptedPayload = await encrypt(
         tokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -127,7 +127,7 @@ describe("auth.ts", () => {
 
       const encryptedPayload = await encrypt(
         tokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -141,7 +141,7 @@ describe("auth.ts", () => {
       const invalidData = { accessToken: "token" }; // Missing userId and expiresAt
       const invalidPayload = await encrypt(
         invalidData as OidcTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
 
       mockCookies.get.mockReturnValue({ value: invalidPayload });

@@ -84,7 +84,7 @@ describe("token", () => {
 
       const encryptedPayload = await encrypt(
         tokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -105,7 +105,7 @@ describe("token", () => {
 
       const encryptedPayload = await encrypt(
         expiredTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -154,7 +154,7 @@ describe("token", () => {
 
       const encryptedPayload = await encrypt(
         expiredTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -182,7 +182,7 @@ describe("token", () => {
 
       const encryptedPayload = await encrypt(
         expiredTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
@@ -295,7 +295,7 @@ describe("token", () => {
 
       const encryptedPayload = await encrypt(
         expiredTokenData,
-        process.env.BETTER_AUTH_SECRET,
+        process.env.BETTER_AUTH_SECRET as string,
       );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
