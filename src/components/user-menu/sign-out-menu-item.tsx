@@ -1,3 +1,4 @@
+import { LogOut } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth/auth-client";
 
@@ -6,5 +7,10 @@ export function SignOutMenuItem() {
     await signOut();
   };
 
-  return <DropdownMenuItem onSelect={handleSignOut}>Sign out</DropdownMenuItem>;
+  return (
+    <DropdownMenuItem onSelect={handleSignOut}>
+      <LogOut />
+      Sign out
+    </DropdownMenuItem>
+  );
 }
