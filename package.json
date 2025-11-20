@@ -20,6 +20,7 @@
     "mock:server": "tsx src/mocks/server.ts"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.11",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "better-auth": "1.4.0-beta.25",
