@@ -10,13 +10,12 @@
  */
 
 import { client } from "@/generated/client.gen";
-import { getApiBaseUrl } from "./env";
 
 // Configure client with baseUrl for server-side operations
 // In development: points to standalone MSW mock server
 // In production: points to real backend API
 client.setConfig({
-  baseUrl: getApiBaseUrl(),
+  baseUrl: process.env.API_BASE_URL || "",
 });
 
 export { client };
