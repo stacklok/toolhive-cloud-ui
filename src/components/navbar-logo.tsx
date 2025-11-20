@@ -10,9 +10,7 @@ export function NavbarLogo() {
         height={19}
         className="shrink-0"
       />
-      <span className="text-[28px] font-bold leading-[37px] tracking-[-0.025em] text-foreground">
-        Toolhive
-      </span>
+      <span className="text-2xl font-bold tracking-tight">Toolhive</span>
     </div>
   );
 }
