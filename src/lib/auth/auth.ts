@@ -128,9 +128,16 @@ export async function refreshAccessToken(
       ? Date.now() + tokenResponse.refresh_expires_in * 1000
       : undefined;
 
+    const newRefreshToken = tokenResponse.refresh_token || refreshToken;
+    if (!tokenResponse.refresh_token) {
+      console.warn(
+        "[Auth] Provider did not return new refresh token, reusing existing",
+      );
+    }
+
     const newTokenData: OidcTokenData = {
       accessToken: tokenResponse.access_token,
-      refreshToken: tokenResponse.refresh_token || refreshToken,
+      refreshToken: newRefreshToken,
       expiresAt,
       refreshTokenExpiresAt,
       userId,
