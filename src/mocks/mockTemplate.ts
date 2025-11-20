@@ -1,19 +1,13 @@
 /**
  * Renders a TypeScript module for a generated mock fixture.
- * If a response type name is provided and your project exposes
- * OpenAPI types under the "@api/types.gen" alias, you can set
- * `USE_TYPES_FOR_FIXTURES = true` in mocker.ts to include a
- * type-only import and a `satisfies` clause to enforce types.
+ * When a response type name is provided, includes a type import
+ * from '@api/types.gen' and a `satisfies` clause for type safety.
  */
-export function buildMockModule(
-  payload: unknown,
-  options?: { opType?: string; useTypes?: boolean },
-): string {
-  const opType = options?.opType?.trim();
-  const useTypes = Boolean(options?.useTypes && opType);
-  const typeImport = useTypes
-    ? `import type { ${opType} } from '@api/types.gen'\n\n`
+export function buildMockModule(payload: unknown, opType?: string): string {
+  const typeName = opType?.trim();
+  const typeImport = typeName
+    ? `import type { ${typeName} } from '@api/types.gen'\n\n`
     : "";
-  const typeSatisfies = useTypes ? ` satisfies ${opType}` : "";
+  const typeSatisfies = typeName ? ` satisfies ${typeName}` : "";
   return `${typeImport}export default ${JSON.stringify(payload, null, 2)}${typeSatisfies}\n`;
 }

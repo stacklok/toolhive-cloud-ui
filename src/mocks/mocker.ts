@@ -12,8 +12,6 @@ import { buildMockModule } from "./mockTemplate";
 // ===== Config =====
 // Adjust the path of the OpenAPI JSON here if needed.
 // This repo keeps it at project root as `swagger.json`.
-// Generate typed fixtures that satisfy OpenAPI response types under @api/types.gen
-const USE_TYPES_FOR_FIXTURES = true;
 
 // Strip these noisy prefixes from generated fixture folder names.
 const PREFIXES_TO_STRIP = ["api_v1beta_", "api_v0_"];
@@ -471,10 +469,7 @@ export function autoGenerateHandlers() {
               const opType = successStatus
                 ? opResponseTypeName(method, rawPath)
                 : undefined;
-              const tsModule = buildMockModule(payload, {
-                opType,
-                useTypes: USE_TYPES_FOR_FIXTURES,
-              });
+              const tsModule = buildMockModule(payload, opType);
               try {
                 fs.writeFileSync(fixtureFileName, tsModule);
                 console.log("[auto-mocker] wrote", fixtureFileName);

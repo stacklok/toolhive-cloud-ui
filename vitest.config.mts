@@ -8,7 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["src/mocks/test.setup.ts", "./vitest.setup.ts"],
     env: {
-      // Exactly 32 bytes for AES-256; keep length if you change it
+      // Exactly 32 bytes for AES-256
       BETTER_AUTH_SECRET: "12345678901234567890123456789012",
       OIDC_PROVIDER_ID: "oidc",
       OIDC_ISSUER: "https://test-issuer.com",
