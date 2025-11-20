@@ -4,6 +4,7 @@
 
 import { createHash } from "node:crypto";
 import * as jose from "jose";
+import { TOKEN_ONE_HOUR_MS } from "./constants";
 import type { OidcTokenData } from "./types";
 
 /**
@@ -86,4 +87,40 @@ export function isOidcTokenData(data: unknown): data is OidcTokenData {
     (obj.refreshTokenExpiresAt === undefined ||
       typeof obj.refreshTokenExpiresAt === "number")
   );
+}
+
+/**
+ * Saves OIDC tokens from account creation or update into HTTP-only cookie.
+ * Used by Better Auth database hooks for both initial login and re-login.
+ *
+ * @param account - Account data from Better Auth containing OIDC tokens
+ */
+export async function saveAccountToken(account: {
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  accessTokenExpiresAt?: Date | string | null;
+  refreshTokenExpiresAt?: Date | string | null;
+  userId: string;
+}) {
+  if (account.accessToken && account.userId) {
+    const expiresAt = account.accessTokenExpiresAt
+      ? new Date(account.accessTokenExpiresAt).getTime()
+      : Date.now() + TOKEN_ONE_HOUR_MS;
+
+    const refreshTokenExpiresAt = account.refreshTokenExpiresAt
+      ? new Date(account.refreshTokenExpiresAt).getTime()
+      : undefined;
+
+    const tokenData: OidcTokenData = {
+      accessToken: account.accessToken,
+      refreshToken: account.refreshToken || undefined,
+      expiresAt,
+      refreshTokenExpiresAt,
+      userId: account.userId,
+    };
+
+    // Dynamic import to avoid circular dependency
+    const { saveTokenCookie } = await import("./auth");
+    await saveTokenCookie(tokenData);
+  }
 }

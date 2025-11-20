@@ -11,12 +11,11 @@ import {
   OIDC_CLIENT_SECRET,
   OIDC_ISSUER_URL,
   OIDC_PROVIDER_ID,
-  TOKEN_ONE_HOUR_MS,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
 import type { OIDCDiscovery, OidcTokenData, TokenResponse } from "./types";
-import { decrypt, encrypt } from "./utils";
+import { decrypt, encrypt, saveAccountToken } from "./utils";
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
@@ -25,8 +24,9 @@ let cachedTokenEndpoint: string | null = null;
 
 /**
  * Saves encrypted token data in HTTP-only cookie.
+ * Exported for use by saveAccountToken in utils.
  */
-async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
+export async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
   const encrypted = await encrypt(tokenData, BETTER_AUTH_SECRET);
   const cookieStore = await cookies();
 
@@ -187,63 +187,10 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   databaseHooks: {
     account: {
       create: {
-        after: async (account: {
-          accessToken?: string | null;
-          refreshToken?: string | null;
-          accessTokenExpiresAt?: Date | string | null;
-          refreshTokenExpiresAt?: Date | string | null;
-          userId: string;
-        }) => {
-          if (account.accessToken && account.userId) {
-            const expiresAt = account.accessTokenExpiresAt
-              ? new Date(account.accessTokenExpiresAt).getTime()
-              : Date.now() + TOKEN_ONE_HOUR_MS;
-
-            const refreshTokenExpiresAt = account.refreshTokenExpiresAt
-              ? new Date(account.refreshTokenExpiresAt).getTime()
-              : undefined;
-
-            const tokenData: OidcTokenData = {
-              accessToken: account.accessToken,
-              refreshToken: account.refreshToken || undefined,
-              expiresAt,
-              refreshTokenExpiresAt,
-              userId: account.userId,
-            };
-
-            await saveTokenCookie(tokenData);
-          }
-        },
+        after: saveAccountToken,
       },
       update: {
-        after: async (account: {
-          accessToken?: string | null;
-          refreshToken?: string | null;
-          accessTokenExpiresAt?: Date | string | null;
-          refreshTokenExpiresAt?: Date | string | null;
-          userId: string;
-        }) => {
-          // Same logic as create - save tokens on re-login
-          if (account.accessToken && account.userId) {
-            const expiresAt = account.accessTokenExpiresAt
-              ? new Date(account.accessTokenExpiresAt).getTime()
-              : Date.now() + TOKEN_ONE_HOUR_MS;
-
-            const refreshTokenExpiresAt = account.refreshTokenExpiresAt
-              ? new Date(account.refreshTokenExpiresAt).getTime()
-              : undefined;
-
-            const tokenData: OidcTokenData = {
-              accessToken: account.accessToken,
-              refreshToken: account.refreshToken || undefined,
-              expiresAt,
-              refreshTokenExpiresAt,
-              userId: account.userId,
-            };
-
-            await saveTokenCookie(tokenData);
-          }
-        },
+        after: saveAccountToken,
       },
     },
   },
