@@ -76,9 +76,16 @@ async function getTokenEndpoint(): Promise<string | null> {
 export async function refreshAccessToken(
   refreshToken: string,
   userId: string,
+  refreshTokenExpiresAt?: number,
 ): Promise<OidcTokenData | null> {
   if (!refreshToken || !userId) {
     console.error("[Auth] Missing refresh token or userId");
+    return null;
+  }
+
+  // Check if refresh token is expired before attempting to refresh
+  if (refreshTokenExpiresAt && refreshTokenExpiresAt <= Date.now()) {
+    console.error("[Auth] Refresh token expired");
     return null;
   }
 

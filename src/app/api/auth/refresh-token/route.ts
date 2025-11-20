@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
     const refreshedData = await refreshAccessToken(
       tokenData.refreshToken,
       userId,
+      tokenData.refreshTokenExpiresAt,
     );
 
     if (!refreshedData) {
