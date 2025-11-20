@@ -4,10 +4,10 @@ import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import * as jose from "jose";
 import { cookies } from "next/headers";
+import { OIDC_PROVIDER_ID } from "./constants";
 
 // Environment configuration
-const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
-const OIDC_ISSUER = process.env.OIDC_ISSUER || "";
+const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
@@ -125,7 +125,7 @@ export const auth = betterAuth({
       config: [
         {
           providerId: OIDC_PROVIDER_ID,
-          discoveryUrl: `${OIDC_ISSUER}/.well-known/openid-configuration`,
+          discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
           redirectURI: `${BASE_URL}/api/auth/oauth2/callback/${OIDC_PROVIDER_ID}`,
           clientId: process.env.OIDC_CLIENT_ID || "",
           clientSecret: process.env.OIDC_CLIENT_SECRET || "",
@@ -202,13 +202,11 @@ export async function getOidcProviderAccessToken(
       return null;
     }
 
-    // Verify the token belongs to the current user
     if (tokenData.userId !== userId) {
       cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
-    // Check if token is expired
     const now = Date.now();
     if (tokenData.expiresAt <= now) {
       cookieStore.delete(COOKIE_NAME);

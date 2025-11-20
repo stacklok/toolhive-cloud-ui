@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
+    setupFiles: ["src/mocks/test.setup.ts", "./vitest.setup.ts"],
     env: {
-      BETTER_AUTH_SECRET: "12345678901234567890123456789012", // Exactly 32 bytes for AES-256
-      OIDC_PROVIDER_ID: "oidc",
-      OIDC_ISSUER: "https://test-issuer.com",
+      // Exactly 32 bytes for AES-256
+      BETTER_AUTH_SECRET: "12345678901234567890123456789012",
+      OIDC_ISSUER_URL: "https://test-issuer.com",
       OIDC_CLIENT_ID: "test-client-id",
       OIDC_CLIENT_SECRET: "test-client-secret",
       BETTER_AUTH_URL: "http://localhost:3000",

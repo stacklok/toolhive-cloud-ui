@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOut } from "@/components/sign-out-button";
 import { auth } from "@/lib/auth/auth";
+import { getServersSummary } from "./actions";
 
 export default async function CatalogPage() {
   const session = await auth.api.getSession({
@@ -11,6 +12,8 @@ export default async function CatalogPage() {
   if (!session) {
     redirect("/signin");
   }
+
+  const serversSummary = await getServersSummary();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
@@ -35,6 +38,28 @@ export default async function CatalogPage() {
               User ID: <strong>{session.user.id}</strong>
             </p>
           </div>
+        </div>
+
+        <div className="w-full max-w-xl rounded-lg bg-zinc-100 p-4 text-sm dark:bg-zinc-800">
+          <p className="font-semibold text-zinc-800 dark:text-zinc-200">
+            Registry
+          </p>
+          <div className="text-zinc-700 dark:text-zinc-300">
+            Servers available: <strong>{serversSummary.count}</strong>
+          </div>
+          {serversSummary.sample.length > 0 && (
+            <ul className="mt-2 list-disc pl-5 text-zinc-700 dark:text-zinc-300">
+              {serversSummary.sample.map((s) => (
+                <li key={`${s.name}-${s.title}`}>
+                  <strong>{s.title}</strong>
+                  <span className="ml-2 text-zinc-500 dark:text-zinc-400">
+                    ({s.name}
+                    {s.version ? ` @ ${s.version}` : ""})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <SignOut />

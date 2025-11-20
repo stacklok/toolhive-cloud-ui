@@ -1,7 +1,14 @@
+import { config } from "dotenv";
 import Provider from "oidc-provider";
 
-const ISSUER = "http://localhost:4000";
-const PORT = 4000;
+config();
+config({ path: ".env.local" });
+
+const ISSUER = process.env.OIDC_ISSUER_URL || "http://localhost:4000";
+const PORT = new URL(ISSUER).port || 4000;
+const CLIENT_ID = process.env.OIDC_CLIENT_ID || "better-auth-dev";
+const CLIENT_SECRET =
+  process.env.OIDC_CLIENT_SECRET || "dev-secret-change-in-production";
 
 // Simple in-memory account storage
 const accounts = {
@@ -17,8 +24,8 @@ const accounts = {
 const configuration = {
   clients: [
     {
-      client_id: "better-auth-dev",
-      client_secret: "dev-secret-change-in-production",
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
       redirect_uris: [
         // Better Auth genericOAuth uses /oauth2/callback/:providerId
         "http://localhost:3000/api/auth/oauth2/callback/oidc",
@@ -126,10 +133,10 @@ oidc.use(async (ctx, next) => {
 
 oidc.listen(PORT, () => {
   console.log(`🔐 OIDC Provider running at ${ISSUER}`);
-  console.log(`📝 Client ID: better-auth-dev`);
-  console.log(`🔑 Client Secret: dev-secret-change-in-production`);
+  console.log(`📝 Client ID: ${CLIENT_ID}`);
+  console.log(`🔑 Client Secret: ${CLIENT_SECRET}`);
   console.log(`👤 Test user: test@example.com`);
   console.log(
-    `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=better-auth-dev\nOIDC_CLIENT_SECRET=dev-secret-change-in-production\nOIDC_ISSUER=${ISSUER}`,
+    `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=${CLIENT_ID}\nOIDC_CLIENT_SECRET=${CLIENT_SECRET}\nOIDC_ISSUER_URL=${ISSUER}`,
   );
 });

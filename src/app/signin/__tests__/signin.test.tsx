@@ -3,28 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import SignInPage from "@/app/signin/page";
 
-// Mock Next.js Image component
-vi.mock("next/image", () => ({
-  default: () => null,
-}));
-
-// Mock sonner toast
-vi.mock("sonner", () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-  },
-}));
-
-// Mock auth client
-vi.mock("@/lib/auth/auth-client", () => ({
-  authClient: {
-    signIn: {
-      oauth2: vi.fn(),
-    },
-  },
-}));
-
 describe("SignInPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -37,7 +15,6 @@ describe("SignInPage", () => {
   test("renders signin page with all elements", () => {
     render(<SignInPage />);
 
-    // Check main heading
     expect(
       screen.getByRole("heading", {
         level: 2,
@@ -45,12 +22,10 @@ describe("SignInPage", () => {
       }),
     ).toBeDefined();
 
-    // Check description text
     expect(
       screen.getByText(/Sign in using your company credentials/i),
     ).toBeDefined();
 
-    // Check Toolhive branding
     expect(
       screen.getByRole("heading", {
         level: 1,
@@ -58,7 +33,6 @@ describe("SignInPage", () => {
       }),
     ).toBeDefined();
 
-    // Check Okta button
     expect(screen.getByRole("button", { name: /Okta/i })).toBeDefined();
   });
 

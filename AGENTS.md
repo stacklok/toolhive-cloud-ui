@@ -9,6 +9,7 @@ This document provides essential context for AI coding assistants (Claude, GitHu
 1. This file (AGENTS.md) - Project overview and key patterns
 2. `CLAUDE.md` - Detailed guidelines for AI assistants
 3. `README.md` - Setup and deployment instructions
+4. `docs/mocks.md` - MSW auto-mocker, fixtures, and dev server
 
 ## Project Summary
 
@@ -36,10 +37,11 @@ This document provides essential context for AI coding assistants (Claude, GitHu
 ## Core Principles
 
 1. **Server Components First** - Use `'use client'` only when necessary
-2. **Generated API Client** - Never write manual fetch logic, use hey-api hooks
-3. **Async/Await Only** - No `.then()` promise chains
-4. **🚫 NEVER USE `any`** - STRICTLY FORBIDDEN. Use `unknown` with type guards or proper types
-5. **Stateless Auth** - JWT tokens, no server-side sessions
+2. **Generated API Client** - Never write manual fetch logic, use hey-api functions in server actions
+3. **Server Actions for API Calls** - Client components fetch data via server actions, not direct API calls
+4. **Async/Await Only** - No `.then()` promise chains
+5. **🚫 NEVER USE `any`** - STRICTLY FORBIDDEN. Use `unknown` with type guards or proper types
+6. **Stateless Auth** - JWT tokens, no server-side sessions
 
 ## ⚠️ Before Suggesting Code
 
@@ -68,6 +70,8 @@ src/
 ├── generated/        # hey-api output (DO NOT EDIT)
 └── hooks/            # Custom React hooks
 
+src/mocks/            # MSW auto-mocker, handlers, fixtures, and dev server
+
 dev-auth/             # Development OIDC mock
 helm/                 # Kubernetes deployment
 scripts/              # Build scripts
@@ -78,6 +82,7 @@ scripts/              # Build scripts
 ```bash
 # Development
 pnpm dev              # Start dev server + OIDC mock
+pnpm mock:server      # Start standalone MSW mock server (default: http://localhost:9090)
 pnpm dev:next        # Start only Next.js
 pnpm oidc            # Start only OIDC mock
 
@@ -90,6 +95,14 @@ pnpm test            # Run tests
 # API Client
 pnpm generate-client # Regenerate from backend API
 ```
+
+## Mocking & Fixtures
+
+- Schema-based mocks are generated automatically. To create a new mock for an endpoint, run a Vitest test (or the app in dev) that calls that endpoint. The first call writes a fixture under `src/mocks/fixtures/<sanitized-path>/<method>.ts`.
+- To adjust the payload, edit the generated fixture file. Prefer this over adding a non-schema mock when you only need more realistic sample data.
+- Non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks. Use these for behavior overrides or endpoints without schema.
+
+- Global test setup: Add common mocks to `vitest.setup.ts` (e.g., `next/headers`, `next/navigation`, `next/image`, `sonner`, auth client). Before copying a mock into a test file, check if it can be centralized globally. Reset all mocks globally between tests.
 
 ## Next.js App Router Key Concepts
 
@@ -134,8 +147,8 @@ app/
 
 ```typescript
 async function ServerList() {
-  const response = await fetch("http://api/servers", {
-    next: { revalidate: 3600 }, // Cache for 1 hour
+  const response = await fetch("/registry/v0.1/servers", {
+    next: { revalidate: 3600 }, // In dev, Next rewrites proxy to mock server
   });
   const data = await response.json();
   return <ServerList servers={data} />;
@@ -242,7 +255,7 @@ export async function createServer(formData: FormData) {
 ### ❌ NEVER DO
 
 - **Use `any` type** - STRICTLY FORBIDDEN. Use `unknown` + type guards or proper types
-- Edit files in `src/generated/*` (auto-generated)
+- **Edit files in `src/generated/*`** - Auto-generated, will be overwritten on regeneration
 - Use `'use client'` on every component
 - Create manual fetch logic in components
 - Use `.then()` promise chains
@@ -262,21 +275,42 @@ export async function createServer(formData: FormData) {
 
 ### Using Generated API Client
 
-**Queries (GET)**:
+**⚠️ IMPORTANT:**
+- Never edit files in `src/generated/*`** - they are auto-generated and will be overwritten
+- **Always use server actions** - Client components should not call the API directly
+- The API client is server-side only (no `NEXT_PUBLIC_` env vars needed)
+
+**Example: Server Action**:
 
 ```typescript
-import { useGetApiV0Servers } from "@/generated/client/@tanstack/react-query.gen";
+// src/app/catalog/actions.ts
+"use server";
 
-const { data, isLoading, error } = useGetApiV0Servers();
+import { getRegistryV01Servers } from "@/generated/sdk.gen";
+
+export async function getServersSummary() {
+  try {
+    const resp = await getRegistryV01Servers();
+    const data = resp.data;
+    // Process data...
+    return { count: data?.servers?.length ?? 0, ... };
+  } catch (error) {
+    console.error("Failed to fetch servers:", error);
+    return { count: 0, ... };
+  }
+}
 ```
 
-**Mutations (POST/PUT/DELETE)**:
+**Example: Server Component**:
 
 ```typescript
-import { usePostApiV0Servers } from "@/generated/client/@tanstack/react-query.gen";
+// src/app/catalog/page.tsx
+import { getServersSummary } from "./actions";
 
-const mutation = usePostApiV0Servers();
-await mutation.mutateAsync({ body: data });
+export default async function CatalogPage() {
+  const summary = await getServersSummary();
+  return <div>{summary.count} servers</div>;
+}
 ```
 
 **When Backend Changes**:
