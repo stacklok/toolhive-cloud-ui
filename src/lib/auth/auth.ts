@@ -4,9 +4,9 @@ import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import * as jose from "jose";
 import { cookies } from "next/headers";
+import { OIDC_PROVIDER_ID } from "./constants";
 
 // Environment configuration
-const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
 const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
