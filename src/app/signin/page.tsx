@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 
-const OIDC_PROVIDER_ID = process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID || "oidc";
+const OIDC_PROVIDER_ID = "oidc";
 
 export default function SignInPage() {
   const handleOIDCSignIn = async () => {

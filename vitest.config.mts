@@ -11,7 +11,7 @@ export default defineConfig({
       // Exactly 32 bytes for AES-256
       BETTER_AUTH_SECRET: "12345678901234567890123456789012",
       OIDC_PROVIDER_ID: "oidc",
-      OIDC_ISSUER: "https://test-issuer.com",
+      OIDC_ISSUER_URL: "https://test-issuer.com",
       OIDC_CLIENT_ID: "test-client-id",
       OIDC_CLIENT_SECRET: "test-client-secret",
       BETTER_AUTH_URL: "http://localhost:3000",
