@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/navbar";
-import "@/lib/api-client";
 import "./globals.css";
 
 const inter = Inter({

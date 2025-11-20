@@ -1,10 +1,11 @@
 "use server";
 
-import { getRegistryV01Servers } from "@/generated/sdk.gen";
+import { getAuthenticatedClient } from "@/lib/api-client";
 
 export async function getServersSummary() {
   try {
-    const resp = await getRegistryV01Servers();
+    const api = await getAuthenticatedClient();
+    const resp = await api.getRegistryV01Servers();
     const data = resp.data;
     const items = Array.isArray(data?.servers) ? data.servers : [];
 
