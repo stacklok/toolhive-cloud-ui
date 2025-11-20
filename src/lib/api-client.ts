@@ -22,11 +22,6 @@ import { getValidOidcToken } from "./auth/token";
 
 // Validate required environment variables at module load time (fail-fast)
 const API_BASE_URL = process.env.API_BASE_URL;
-if (!API_BASE_URL) {
-  throw new Error(
-    "API_BASE_URL environment variable is required but not set. Please configure it in your .env file.",
-  );
-}
 
 /**
  * Gets an authenticated API client with OIDC access token.
