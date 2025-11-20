@@ -32,6 +32,7 @@ const configuration = {
         "http://localhost:3001/api/auth/oauth2/callback/oidc",
         "http://localhost:3002/api/auth/oauth2/callback/oidc",
         "http://localhost:3003/api/auth/oauth2/callback/oidc",
+        "http://localhost:3000/api/auth/oauth2/callback/okta",
       ],
       response_types: ["code"],
       grant_types: ["authorization_code", "refresh_token"],
