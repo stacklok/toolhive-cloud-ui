@@ -8,7 +8,7 @@ export async function Navbar() {
   });
 
   return (
-    <header className="border-b">
+    <header className="border-b bg-muted/50">
       <div className="container mx-auto px-4 py-4">
         {session?.user?.name && <UserMenu userName={session.user.name} />}
       </div>
