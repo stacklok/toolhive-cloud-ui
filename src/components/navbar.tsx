@@ -8,8 +8,9 @@ export async function Navbar() {
   });
 
   return (
-    <header className="border-b bg-muted/50">
-      <div className="container mx-auto px-4 py-4">
+    <header className="w-full border-b bg-muted/50">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4">
+        <div>{/* Left side content placeholder */}</div>
         {session?.user?.name && <UserMenu userName={session.user.name} />}
       </div>
     </header>
