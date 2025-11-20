@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut } from "@/lib/auth/auth-client";
 
 interface UserMenuProps {
   userName: string;
@@ -24,6 +25,10 @@ function getInitials(name: string): string {
 export function UserMenu({ userName }: UserMenuProps) {
   const initials = getInitials(userName);
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -35,7 +40,7 @@ export function UserMenu({ userName }: UserMenuProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>Sign out</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleSignOut}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
