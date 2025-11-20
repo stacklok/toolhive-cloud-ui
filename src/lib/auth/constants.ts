@@ -6,7 +6,8 @@
 /**
  * OIDC Provider ID (e.g., "oidc", "okta")
  * Must use NEXT_PUBLIC_ prefix as it's needed both server-side (auth.ts) and client-side (signin page).
- * Not sensitive data - it's just an identifier.
+ * Note: This exposes the provider name to the client, which is generally acceptable
+ * but does reveal infrastructure details.
  */
 export const OIDC_PROVIDER_ID =
   process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID || "oidc";
