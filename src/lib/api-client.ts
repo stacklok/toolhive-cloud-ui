@@ -15,14 +15,25 @@
 
 import { headers as nextHeaders } from "next/headers";
 import { redirect } from "next/navigation";
-import { client } from "@/generated/client.gen";
+import { createClient, createConfig } from "@/generated/client";
 import * as apiServices from "@/generated/sdk.gen";
 import { auth } from "./auth/auth";
 import { getValidOidcToken } from "./auth/token";
 
+// Validate required environment variables at module load time (fail-fast)
+const API_BASE_URL = process.env.API_BASE_URL;
+if (!API_BASE_URL) {
+  throw new Error(
+    "API_BASE_URL environment variable is required but not set. Please configure it in your .env file.",
+  );
+}
+
 /**
  * Gets an authenticated API client with OIDC access token.
  * Automatically refreshes the token if expired.
+ *
+ * Creates a new client instance per request to avoid race conditions
+ * when handling multiple concurrent requests with different tokens.
  *
  * Use this in server actions and server components to make authenticated API calls.
  *
@@ -63,13 +74,15 @@ export async function getAuthenticatedClient(accessToken?: string) {
     }
   }
 
-  // Configure client with authentication
-  client.setConfig({
-    baseUrl: process.env.API_BASE_URL || "",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  // Create a new client instance per request to avoid race conditions
+  const authenticatedClient = createClient(
+    createConfig({
+      baseUrl: API_BASE_URL,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
+  );
 
-  return { ...apiServices, client };
+  return { ...apiServices, client: authenticatedClient };
 }
