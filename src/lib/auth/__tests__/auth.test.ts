@@ -49,7 +49,7 @@ vi.mock("better-auth/plugins", () => ({
   genericOAuth: vi.fn(() => ({})),
 }));
 
-describe("auth.ts", () => {
+describe("auth", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -204,16 +204,6 @@ describe("auth.ts", () => {
       };
 
       expect(dataWithoutRefresh.refreshToken).toBeUndefined();
-    });
-  });
-
-  describe("Token Expiration Constants", () => {
-    it("should have correct time constants", () => {
-      const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000;
-      const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60;
-
-      expect(TOKEN_ONE_HOUR_MS).toBe(3600000);
-      expect(TOKEN_SEVEN_DAYS_SECONDS).toBe(604800);
     });
   });
 });
