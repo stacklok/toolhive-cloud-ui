@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ChevronIndicator } from "@/components/ui/chevron-indicator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ export function UserMenu({ userName }: UserMenuProps) {
         <Button variant="ghost" className="flex items-center gap-2">
           <UserAvatar userName={userName} />
           <span>{userName}</span>
-          {isOpen ? <ChevronUp /> : <ChevronDown />}
+          <ChevronIndicator isOpen={isOpen} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
