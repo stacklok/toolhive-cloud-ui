@@ -80,7 +80,7 @@ describe("auth.ts", () => {
       expect(token).toBeNull();
     });
 
-    it("should return null and delete cookie when token is expired", async () => {
+    it("should return null when token is expired", async () => {
       const expiredTokenData: OidcTokenData = {
         accessToken: "expired-token",
         userId: "user-123",
@@ -96,7 +96,8 @@ describe("auth.ts", () => {
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
     });
 
     it("should return null when token belongs to different user", async () => {
@@ -135,7 +136,7 @@ describe("auth.ts", () => {
       expect(token).toBe("valid-access-token-123");
     });
 
-    it("should return null and delete cookie when token data is invalid", async () => {
+    it("should return null when token data is invalid", async () => {
       // Create invalid token data (missing required fields)
       const invalidData = { accessToken: "token" }; // Missing userId and expiresAt
       const invalidPayload = await encrypt(
@@ -148,7 +149,8 @@ describe("auth.ts", () => {
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
 
@@ -159,9 +161,10 @@ describe("auth.ts", () => {
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed - possible tampering or invalid format:",
+        "[Auth] Token decryption failed:",
         expect.any(Error),
       );
     });

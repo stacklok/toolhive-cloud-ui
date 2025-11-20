@@ -73,7 +73,7 @@ async function getTokenEndpoint(): Promise<string | null> {
  * Attempts to refresh the access token using the refresh token.
  * Returns new token data if successful, null otherwise.
  */
-async function refreshAccessToken(
+export async function refreshAccessToken(
   refreshToken: string,
   userId: string,
 ): Promise<OidcTokenData | null> {
@@ -127,6 +127,7 @@ async function refreshAccessToken(
     // Save the new token data in the cookie
     await saveTokenCookie(newTokenData);
 
+    console.log("[Auth] Token refreshed successfully");
     return newTokenData;
   } catch (error) {
     console.error("[Auth] Token refresh error:", error);
@@ -141,7 +142,12 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
+      maxAge: TOKEN_SEVEN_DAYS_SECONDS, // 7 days - match session duration!
     },
+    // Session duration should match or exceed refresh token lifetime
+    // This prevents Better Auth from logging out users before OIDC token refresh
+    expiresIn: TOKEN_SEVEN_DAYS_SECONDS, // 7 days in seconds
+    updateAge: 60 * 60 * 24, // Update session every 24 hours (in seconds)
   },
   plugins: [
     genericOAuth({
@@ -152,13 +158,13 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           redirectURI: `${BASE_URL}/api/auth/oauth2/callback/${OIDC_PROVIDER_ID}`,
           clientId: process.env.OIDC_CLIENT_ID || "",
           clientSecret: process.env.OIDC_CLIENT_SECRET || "",
-          scopes: ["openid", "email", "profile"],
+          scopes: ["openid", "email", "profile", "offline_access"],
           pkce: true,
         },
       ],
     }),
   ],
-  // Use databaseHooks to save tokens in HTTP-only cookie after account creation
+  // Use databaseHooks to save tokens in HTTP-only cookie after account creation/update
   databaseHooks: {
     account: {
       create: {
@@ -169,6 +175,36 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           refreshTokenExpiresAt?: Date | string | null;
           userId: string;
         }) => {
+          if (account.accessToken && account.userId) {
+            const expiresAt = account.accessTokenExpiresAt
+              ? new Date(account.accessTokenExpiresAt).getTime()
+              : Date.now() + TOKEN_ONE_HOUR_MS;
+
+            const refreshTokenExpiresAt = account.refreshTokenExpiresAt
+              ? new Date(account.refreshTokenExpiresAt).getTime()
+              : undefined;
+
+            const tokenData: OidcTokenData = {
+              accessToken: account.accessToken,
+              refreshToken: account.refreshToken || undefined,
+              expiresAt,
+              refreshTokenExpiresAt,
+              userId: account.userId,
+            };
+
+            await saveTokenCookie(tokenData);
+          }
+        },
+      },
+      update: {
+        after: async (account: {
+          accessToken?: string | null;
+          refreshToken?: string | null;
+          accessTokenExpiresAt?: Date | string | null;
+          refreshTokenExpiresAt?: Date | string | null;
+          userId: string;
+        }) => {
+          // Same logic as create - save tokens on re-login
           if (account.accessToken && account.userId) {
             const expiresAt = account.accessTokenExpiresAt
               ? new Date(account.accessTokenExpiresAt).getTime()
@@ -213,55 +249,23 @@ export async function getOidcProviderAccessToken(
     try {
       tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
     } catch (error) {
-      // Decryption failure indicates tampering, corruption, or wrong secret
-      console.error(
-        "[Auth] Token decryption failed - possible tampering or invalid format:",
-        error,
-      );
-      cookieStore.delete(COOKIE_NAME);
+      console.error("[Auth] Token decryption failed:", error);
       return null;
     }
 
     if (tokenData.userId !== userId) {
-      cookieStore.delete(COOKIE_NAME);
+      console.error("[Auth] Token userId mismatch");
       return null;
     }
 
     const now = Date.now();
+
     if (tokenData.expiresAt <= now) {
-      // Check if refresh token is also expired
-      if (
-        tokenData.refreshTokenExpiresAt &&
-        tokenData.refreshTokenExpiresAt <= now
-      ) {
-        console.log("[Auth] Both access and refresh tokens expired");
-        cookieStore.delete(COOKIE_NAME);
-        return null;
-      }
-
-      // Attempt to refresh the token if refresh token is available
-      if (tokenData.refreshToken) {
-        console.log("[Auth] Access token expired, attempting refresh...");
-        const refreshedData = await refreshAccessToken(
-          tokenData.refreshToken,
-          userId,
-        );
-
-        if (refreshedData) {
-          console.log("[Auth] Token refresh successful");
-          return refreshedData.accessToken;
-        }
-
-        console.log("[Auth] Token refresh failed, clearing cookie");
-      }
-
-      cookieStore.delete(COOKIE_NAME);
       return null;
     }
 
     return tokenData.accessToken;
   } catch (error) {
-    // Unexpected error (e.g., cookie operations failure)
     console.error("[Auth] Unexpected error reading OIDC token:", error);
     return null;
   }
