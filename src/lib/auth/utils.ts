@@ -12,10 +12,7 @@ import type { OidcTokenData } from "./types";
  * Uses SHA-256 to derive exactly 32 bytes (256 bits) from the provided secret,
  * ensuring compatibility with AES-256-GCM regardless of secret length.
  */
-function getSecret(secret: string | undefined): Uint8Array {
-  if (!secret) {
-    throw new Error("BETTER_AUTH_SECRET is required for encryption");
-  }
+function getSecret(secret: string): Uint8Array {
   // Hash the secret to get exactly 32 bytes for AES-256-GCM
   return new Uint8Array(createHash("sha256").update(secret).digest());
 }
@@ -27,7 +24,7 @@ function getSecret(secret: string | undefined): Uint8Array {
  */
 export async function encrypt(
   data: OidcTokenData,
-  secret: string | undefined,
+  secret: string,
 ): Promise<string> {
   const key = getSecret(secret);
   const plaintext = new TextEncoder().encode(JSON.stringify(data));
@@ -43,7 +40,7 @@ export async function encrypt(
  */
 export async function decrypt(
   jwe: string,
-  secret: string | undefined,
+  secret: string,
 ): Promise<OidcTokenData> {
   try {
     const key = getSecret(secret);
