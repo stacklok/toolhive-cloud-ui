@@ -21,23 +21,6 @@ describe("UserMenu", () => {
     expect(initialsElement).toBeTruthy();
   });
 
-  it("shows sign out option in dropdown menu when clicked", async () => {
-    const userEvent = (await import("@testing-library/user-event")).default;
-    const user = userEvent.setup();
-    const { container } = render(<UserMenu userName="Test User" />);
-
-    // Find and click the trigger (button with user name) within this render
-    const trigger = container.querySelector("button");
-    expect(trigger).toBeTruthy();
-    if (!trigger) return;
-
-    await user.click(trigger);
-
-    // Check that sign out menu item appears
-    const signOutItem = screen.getByText("Sign out");
-    expect(signOutItem).toBeTruthy();
-  });
-
   it("calls signOut when sign out menu item is clicked", async () => {
     const userEvent = (await import("@testing-library/user-event")).default;
     render(<UserMenu userName="Jane Smith" />);
