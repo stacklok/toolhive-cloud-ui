@@ -77,6 +77,11 @@ export async function refreshAccessToken(
   refreshToken: string,
   userId: string,
 ): Promise<OidcTokenData | null> {
+  if (!refreshToken || !userId) {
+    console.error("[Auth] Missing refresh token or userId");
+    return null;
+  }
+
   try {
     const tokenEndpoint = await getTokenEndpoint();
 
