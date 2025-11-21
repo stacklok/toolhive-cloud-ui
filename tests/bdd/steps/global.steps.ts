@@ -1,0 +1,41 @@
+import { Given, Then, When } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
+import type { PlaywrightWorld } from "../support/world";
+
+Given("I am on {string}", async function (this: PlaywrightWorld, path: string) {
+  await this.page.goto(`${this.baseUrl}${path}`);
+});
+
+When(
+  "I click the {string} button",
+  async function (this: PlaywrightWorld, label: string) {
+    await this.page.getByRole("button", { name: label }).click();
+  },
+);
+
+Then(
+  "I should see the text {string}",
+  async function (this: PlaywrightWorld, text: string) {
+    await expect(this.page.getByText(text)).toBeVisible();
+  },
+);
+
+Then(
+  "I should see a heading {string}",
+  async function (this: PlaywrightWorld, heading: string) {
+    await expect(
+      this.page.getByRole("heading", { name: heading }),
+    ).toBeVisible();
+  },
+);
+
+Then(
+  "I should be on {string}",
+  async function (this: PlaywrightWorld, path: string) {
+    await expect(this.page).toHaveURL(
+      new RegExp(
+        `${this.baseUrl}${path.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`,
+      ),
+    );
+  },
+);
