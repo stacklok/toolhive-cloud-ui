@@ -2,6 +2,7 @@
 
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import type { ButtonProps } from "./ui/button";
 import { Button } from "./ui/button";
 
@@ -33,7 +34,7 @@ export function HistoryBack({
       variant={variant}
       size={size}
       onClick={handleClick}
-      className={className}
+      className={cn("cursor-pointer", className)}
     >
       <ChevronLeft className="size-4" />
       Back
