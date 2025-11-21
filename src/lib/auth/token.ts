@@ -30,7 +30,7 @@ async function refreshOidcAccessToken(userId: string): Promise<string | null> {
     });
 
     if (!response.ok) {
-      console.error("[Token] Refresh failed:", response.status);
+      console.warn("[Token] Refresh failed:", response.status);
       return null;
     }
 

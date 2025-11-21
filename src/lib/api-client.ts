@@ -47,26 +47,23 @@ const API_BASE_URL = process.env.API_BASE_URL;
 export async function getAuthenticatedClient(accessToken?: string) {
   // If no token provided, get it from the session
   if (accessToken === undefined) {
-    try {
-      const session = await auth.api.getSession({
-        headers: await nextHeaders(),
-      });
+    const session = await auth.api.getSession({
+      headers: await nextHeaders(),
+    });
 
-      if (!session?.user?.id) {
-        redirect("/signin");
-      }
-
-      const token = await getValidOidcToken(session.user.id);
-
-      if (!token) {
-        redirect("/signin");
-      }
-
-      accessToken = token;
-    } catch (error) {
-      console.error("[API Client] Error getting access token:", error);
+    if (!session?.user?.id) {
+      console.log("[API Client] user not found, redirecting to signin");
       redirect("/signin");
     }
+
+    const token = await getValidOidcToken(session.user.id);
+
+    if (!token) {
+      console.log("[API Client] token not found, redirecting to signin");
+      redirect("/signin");
+    }
+
+    accessToken = token;
   }
 
   // Create a new client instance per request to avoid race conditions

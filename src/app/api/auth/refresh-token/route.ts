@@ -58,7 +58,10 @@ export async function POST(request: NextRequest) {
     if (!refreshedData) {
       console.error("[Refresh API] Token refresh failed");
       cookieStore.delete(COOKIE_NAME);
-      return NextResponse.json({ error: "Refresh failed" }, { status: 401 });
+      return NextResponse.json(
+        { error: "[Refresh API] Refresh failed" },
+        { status: 401 },
+      );
     }
 
     return NextResponse.json({
