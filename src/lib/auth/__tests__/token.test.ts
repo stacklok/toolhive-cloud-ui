@@ -58,11 +58,13 @@ vi.mock("better-auth/plugins", () => ({
 
 describe("token", () => {
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockNextHeaders.mockResolvedValue({
       get: vi.fn().mockReturnValue("cookie=value"),
@@ -138,7 +140,7 @@ describe("token", () => {
       const token = await getValidOidcToken(userId);
 
       expect(token).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
         "[Token] Refresh failed:",
         401,
       );
@@ -235,7 +237,7 @@ describe("token", () => {
       const token = await getValidOidcToken(userId);
 
       expect(token).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
         "[Token] Refresh failed:",
         401,
       );
@@ -254,7 +256,7 @@ describe("token", () => {
       const token = await getValidOidcToken(userId);
 
       expect(token).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
         "[Token] Refresh failed:",
         500,
       );
@@ -329,7 +331,7 @@ describe("token", () => {
 
       expect(token1).toBeNull();
       expect(token2).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(2);
     });
   });
 });

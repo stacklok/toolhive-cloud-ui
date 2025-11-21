@@ -99,14 +99,6 @@ export async function saveAccountToken(account: {
   refreshTokenExpiresAt?: Date | string | null;
   userId: string;
 }) {
-  console.log("[Save Token] Account data received:", {
-    hasAccessToken: !!account.accessToken,
-    hasRefreshToken: !!account.refreshToken,
-    userId: account.userId,
-    accessTokenExpiresAt: account.accessTokenExpiresAt,
-    refreshTokenExpiresAt: account.refreshTokenExpiresAt,
-  });
-
   if (account.accessToken && account.userId) {
     const expiresAt = account.accessTokenExpiresAt
       ? new Date(account.accessTokenExpiresAt).getTime()
