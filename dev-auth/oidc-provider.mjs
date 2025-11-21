@@ -1,3 +1,12 @@
+/**
+ * Dev-only OIDC provider for local testing.
+ *
+ * IMPORTANT: This is NOT for production use. It:
+ * - Auto logs-in a test user and auto-consents
+ * - Issues refresh tokens unconditionally (issueRefreshToken = true)
+ * - Uses very short AccessToken TTL (15s) to exercise refresh flow
+ * - Uses in-memory adapter and generated signing keys
+ */
 import { config } from "dotenv";
 import Provider from "oidc-provider";
 
@@ -70,13 +79,14 @@ const configuration = {
     devInteractions: { enabled: false },
   },
   // Explicitly declare supported scopes, including offline_access for refresh tokens
+  // Scopes supported by the dev provider (app requests offline_access in dev and prod)
   scopes: ["openid", "email", "profile", "offline_access"],
   claims: {
     email: ["email", "email_verified"],
     profile: ["name"],
   },
   ttl: {
-    // Make access tokens very short-lived to force refresh during dev
+    // Short-lived access tokens to force refresh during dev
     AccessToken: 15, // seconds
     RefreshToken: 86400 * 30, // 30 days
   },
@@ -154,6 +164,9 @@ oidc.listen(PORT, () => {
   console.log(`📝 Client ID: ${CLIENT_ID}`);
   console.log(`🔑 Client Secret: ${CLIENT_SECRET}`);
   console.log(`👤 Test user: test@example.com`);
+  console.log(
+    "⚠️  Dev-only settings: AccessToken TTL=15s, refresh tokens always issued (do not use in prod)",
+  );
   console.log(
     `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=${CLIENT_ID}\nOIDC_CLIENT_SECRET=${CLIENT_SECRET}\nOIDC_ISSUER_URL=${ISSUER}`,
   );

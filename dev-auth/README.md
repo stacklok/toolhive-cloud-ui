@@ -33,8 +33,18 @@ The provider is pre-configured with:
 - **Client ID**: `better-auth-dev`
 - **Client Secret**: `dev-secret-change-in-production`
 - **Test User**: `test@example.com` (Test User)
-- **Supported Scopes**: openid, email, profile
+- **Supported Scopes**: openid, email, profile, offline_access
 - **Redirect URIs**: Ports 3000-3003 supported
+
+## Dev-only behavior
+
+This provider is intended only for local development:
+
+- Issues refresh tokens unconditionally (independent of requested scopes)
+- Auto-consents and auto-logs in a test user
+- Access tokens expire quickly (15s) to exercise the refresh flow
+
+Do not use this configuration in production.
 
 ## For Production
 
