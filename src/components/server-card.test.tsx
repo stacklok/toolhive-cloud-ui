@@ -38,7 +38,7 @@ describe("ServerCard", () => {
     expect(screen.getByText("No description available")).toBeTruthy();
   });
 
-  it("had copy URL button", () => {
+  it("has copy URL button", () => {
     render(<ServerCard server={mockServer} serverUrl="/servers/test-server" />);
 
     const copyButton = screen.getByRole("button", { name: /copy url/i });
