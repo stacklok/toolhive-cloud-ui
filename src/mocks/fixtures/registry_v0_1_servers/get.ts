@@ -4,7 +4,7 @@ export default {
       server: {
         title: "consequat",
         name: "awslabs/aws-nova-canvas",
-        version: "do voluptate esse veniam",
+        version: "1.0.0",
         description: "Image generation using Amazon Nova Canvas",
         repository: { source: "github" },
         _meta: {
@@ -74,7 +74,7 @@ export default {
       server: {
         title: "nisi in consectetur ut dolore",
         name: "tinyfish/agentql-mcp",
-        version: "occaecat in labore",
+        version: "1.0.1",
         description: "A powerful MCP server for building AI agents",
         repository: { source: "github" },
         _meta: {
@@ -145,7 +145,7 @@ export default {
       server: {
         title: "id",
         name: "datastax/astra-db-mcp",
-        version: "ut do occaecat",
+        version: "1.0.2",
         description: "Integrate AI assistants with Astra DB",
         repository: { source: "github" },
         _meta: {
