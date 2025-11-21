@@ -33,8 +33,9 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
   }, [servers, searchQuery]);
 
   const handleServerClick = (server: V0ServerJson) => {
-    const encodedName = encodeURIComponent(server.name || "");
-    const detailUrl = `/catalog/${encodedName}/${server.version || "latest"}`;
+    if (!server.name) return;
+
+    const detailUrl = `/catalog/${server.name}/${server.version || "latest"}`;
     router.push(detailUrl);
   };
 
@@ -64,6 +65,7 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
           key={server.name}
           server={server}
           serverUrl={server.remotes?.[0]?.url}
+          onClick={() => handleServerClick(server)}
         />
       ))}
     </div>
