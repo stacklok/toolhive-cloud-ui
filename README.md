@@ -16,7 +16,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Authentication: the dev stack also starts a local OIDC provider (on :4000) and MSW mock API (on :9090). The `/signin` page initiates the OIDC flow and redirects back to `/catalog` on success.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
@@ -108,6 +108,30 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Testing
+
+### Unit/Component
+
+```bash
+pnpm test            # Vitest
+pnpm type-check      # TypeScript
+pnpm lint            # Biome
+```
+
+### BDD E2E (Cucumber + Playwright)
+
+Run the app and E2E tests locally:
+
+```bash
+pnpm exec playwright install   # one-time browser install
+pnpm dev                       # start Next (3000) + OIDC (4000) + Mock API (9090)
+pnpm run test:bdd              # run Cucumber scenarios (headless)
+pnpm run test:bdd:debug        # headed with Playwright Inspector (PWDEBUG=1)
+pnpm run test:bdd:trace        # capture Playwright traces (PWTRACE=1)
+```
+
+CI runs the E2E suite via `.github/workflows/bdd.yml`.
 
 ## Deploy on Vercel
 
