@@ -14,15 +14,15 @@ describe("ServerCard", () => {
     },
   };
 
-  it("renders server information with name, author and description", () => {
-    render(<ServerCard server={mockServer} url="/servers/test-server" />);
+  it("display server information with name, author and description", () => {
+    render(<ServerCard server={mockServer} serverUrl="/servers/test-server" />);
 
     expect(screen.getByText("test-org/test-server")).toBeTruthy();
     expect(screen.getByText("test-org")).toBeTruthy();
     expect(screen.getByText("This is a test server for MCP")).toBeTruthy();
   });
 
-  it("does not render author when repository data is missing", () => {
+  it("does not show author when repository data is missing", () => {
     const minimalServer: V0ServerJson = {
       name: undefined,
       description: undefined,
@@ -38,8 +38,8 @@ describe("ServerCard", () => {
     expect(screen.getByText("No description available")).toBeTruthy();
   });
 
-  it("renders copy URL button", () => {
-    render(<ServerCard server={mockServer} url="/servers/test-server" />);
+  it("had copy URL button", () => {
+    render(<ServerCard server={mockServer} serverUrl="/servers/test-server" />);
 
     const copyButton = screen.getByRole("button", { name: /copy url/i });
     expect(copyButton).toBeTruthy();
