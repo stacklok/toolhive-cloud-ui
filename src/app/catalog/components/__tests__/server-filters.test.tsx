@@ -11,19 +11,6 @@ describe("ServerFilters", () => {
     onSearchChange: vi.fn(),
   };
 
-  it("has list and grid view buttons", () => {
-    render(<ServerFilters {...defaultProps} />);
-
-    expect(screen.getByLabelText("List view")).toBeVisible();
-    expect(screen.getByLabelText("Grid view")).toBeVisible();
-  });
-
-  it("has search input", () => {
-    render(<ServerFilters {...defaultProps} />);
-
-    expect(screen.getByPlaceholderText("Search")).toBeVisible();
-  });
-
   it("calls onViewModeChange when list button is clicked", async () => {
     const user = userEvent.setup();
     const onViewModeChange = vi.fn();

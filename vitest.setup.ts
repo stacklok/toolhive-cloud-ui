@@ -18,6 +18,14 @@ vi.mock("next/headers", () => ({
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    prefetch: vi.fn(),
+  })),
 }));
 
 // Global auth server mock with default authenticated session
