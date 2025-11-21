@@ -37,7 +37,7 @@ const API_BASE_URL = process.env.API_BASE_URL;
  *
  * @example
  * ```typescript
- * export async function getServersSummary() {
+ * export async function getServers() {
  *   const api = await getAuthenticatedClient();
  *   const resp = await api.getRegistryV01Servers();
  *   return resp.data;
@@ -57,7 +57,6 @@ export async function getAuthenticatedClient(accessToken?: string) {
     }
 
     const token = await getValidOidcToken(session.user.id);
-
     if (!token) {
       console.log("[API Client] token not found, redirecting to signin");
       redirect("/signin");
