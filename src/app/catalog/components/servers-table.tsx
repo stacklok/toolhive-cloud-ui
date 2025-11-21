@@ -11,14 +11,15 @@ import {
 } from "@/components/ui/table";
 import type { V0ServerJson } from "@/generated/types.gen";
 
-interface ServerTableProps {
+interface ServersTableProps {
   servers: V0ServerJson[];
+  onServerClick?: (server: V0ServerJson) => void;
 }
 
 /**
  * Server table component that displays MCP servers in a table format
  */
-export function ServerTable({ servers }: ServerTableProps) {
+export function ServersTable({ servers, onServerClick }: ServersTableProps) {
   return (
     <div className="w-full overflow-hidden rounded-md border">
       <Table>
@@ -37,7 +38,11 @@ export function ServerTable({ servers }: ServerTableProps) {
               server.description || "No description available";
 
             return (
-              <TableRow key={server.name}>
+              <TableRow
+                key={server.name}
+                onClick={() => onServerClick?.(server)}
+                className={onServerClick ? "cursor-pointer" : undefined}
+              >
                 <TableCell className="font-medium">{serverName}</TableCell>
                 <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {description}

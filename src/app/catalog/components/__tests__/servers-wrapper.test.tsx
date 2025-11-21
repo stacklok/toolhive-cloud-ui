@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
-import { CatalogContainer } from "../catalog-container";
+import { ServersWrapper } from "../servers-wrapper";
 
 const mockServers: V0ServerJson[] = [
   {
@@ -19,23 +19,23 @@ const mockServers: V0ServerJson[] = [
   },
 ];
 
-describe("CatalogContainer", () => {
-  it("renders header with title", () => {
-    render(<CatalogContainer servers={mockServers} />);
+describe("ServersWrapper", () => {
+  it("has header with title", () => {
+    render(<ServersWrapper servers={mockServers} />);
 
     expect(screen.getByText("MCP Server Catalog")).toBeInTheDocument();
   });
 
-  it("renders catalog filters", () => {
-    render(<CatalogContainer servers={mockServers} />);
+  it("has catalog filters", () => {
+    render(<ServersWrapper servers={mockServers} />);
 
     expect(screen.getByLabelText("List view")).toBeInTheDocument();
     expect(screen.getByLabelText("Grid view")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
   });
 
-  it("renders servers in grid mode by default", () => {
-    render(<CatalogContainer servers={mockServers} />);
+  it("displays servers in grid mode by default", () => {
+    render(<ServersWrapper servers={mockServers} />);
 
     expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
     expect(screen.getByText("google-applications")).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe("CatalogContainer", () => {
 
   it("switches to list mode when list button is clicked", async () => {
     const user = userEvent.setup();
-    render(<CatalogContainer servers={mockServers} />);
+    render(<ServersWrapper servers={mockServers} />);
 
     await user.click(screen.getByLabelText("List view"));
 
@@ -54,7 +54,7 @@ describe("CatalogContainer", () => {
 
   it("switches back to grid mode when grid button is clicked", async () => {
     const user = userEvent.setup();
-    render(<CatalogContainer servers={mockServers} />);
+    render(<ServersWrapper servers={mockServers} />);
 
     await user.click(screen.getByLabelText("List view"));
     await user.click(screen.getByLabelText("Grid view"));
@@ -65,7 +65,7 @@ describe("CatalogContainer", () => {
 
   it("filters servers when typing in search", async () => {
     const user = userEvent.setup();
-    render(<CatalogContainer servers={mockServers} />);
+    render(<ServersWrapper servers={mockServers} />);
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "aws");
@@ -76,7 +76,7 @@ describe("CatalogContainer", () => {
 
   it("shows no results message when search has no matches", async () => {
     const user = userEvent.setup();
-    render(<CatalogContainer servers={mockServers} />);
+    render(<ServersWrapper servers={mockServers} />);
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "nonexistent");
@@ -88,7 +88,7 @@ describe("CatalogContainer", () => {
 
   it("maintains search when switching view modes", async () => {
     const user = userEvent.setup();
-    render(<CatalogContainer servers={mockServers} />);
+    render(<ServersWrapper servers={mockServers} />);
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "aws");

@@ -1,34 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { HeaderPage } from "@/components/header-page";
+import { PageHeader } from "@/components/header-page";
 import type { V0ServerJson } from "@/generated/types.gen";
-import { CatalogFilters } from "./catalog-filters";
-import { CatalogView } from "./catalog-view";
+import { ServerFilters } from "./server-filters";
+import { Servers } from "./servers";
 
-interface CatalogContainerProps {
+interface ServersWrapperProps {
   servers: V0ServerJson[];
 }
 
 /**
- * Container that manages shared state between filters and view
+ * Wrapper that manages shared state between filters and view
  */
-export function CatalogContainer({ servers }: CatalogContainerProps) {
+export function ServersWrapper({ servers }: ServersWrapperProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
-      <HeaderPage title="MCP Server Catalog">
-        <CatalogFilters
+      <PageHeader title="MCP Server Catalog">
+        <ServerFilters
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-      </HeaderPage>
+      </PageHeader>
 
-      <CatalogView
+      <Servers
         servers={servers}
         viewMode={viewMode}
         searchQuery={searchQuery}

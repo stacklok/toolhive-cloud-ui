@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
-import { CatalogView } from "../catalog-view";
+import { Servers } from "../servers";
 
 const mockServers: V0ServerJson[] = [
   {
@@ -24,12 +24,10 @@ const mockServers: V0ServerJson[] = [
   },
 ];
 
-describe("CatalogView", () => {
+describe("Servers", () => {
   describe("grid mode", () => {
-    it("renders servers in grid layout", () => {
-      render(
-        <CatalogView servers={mockServers} viewMode="grid" searchQuery="" />,
-      );
+    it("displays servers in grid layout", () => {
+      render(<Servers servers={mockServers} viewMode="grid" searchQuery="" />);
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -38,7 +36,7 @@ describe("CatalogView", () => {
 
     it("displays grid container", () => {
       const { container } = render(
-        <CatalogView servers={mockServers} viewMode="grid" searchQuery="" />,
+        <Servers servers={mockServers} viewMode="grid" searchQuery="" />,
       );
 
       const grid = container.querySelector(".grid");
@@ -47,10 +45,8 @@ describe("CatalogView", () => {
   });
 
   describe("list mode", () => {
-    it("renders servers in table layout", () => {
-      render(
-        <CatalogView servers={mockServers} viewMode="list" searchQuery="" />,
-      );
+    it("displays servers in table layout", () => {
+      render(<Servers servers={mockServers} viewMode="list" searchQuery="" />);
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -58,9 +54,7 @@ describe("CatalogView", () => {
     });
 
     it("displays table headers", () => {
-      render(
-        <CatalogView servers={mockServers} viewMode="list" searchQuery="" />,
-      );
+      render(<Servers servers={mockServers} viewMode="list" searchQuery="" />);
 
       expect(screen.getByText("Server")).toBeVisible();
       expect(screen.getByText("About")).toBeVisible();
@@ -70,7 +64,7 @@ describe("CatalogView", () => {
   describe("search functionality", () => {
     it("filters servers by name", () => {
       render(
-        <CatalogView servers={mockServers} viewMode="grid" searchQuery="aws" />,
+        <Servers servers={mockServers} viewMode="grid" searchQuery="aws" />,
       );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
@@ -80,11 +74,7 @@ describe("CatalogView", () => {
 
     it("filters servers by title", () => {
       render(
-        <CatalogView
-          servers={mockServers}
-          viewMode="grid"
-          searchQuery="google"
-        />,
+        <Servers servers={mockServers} viewMode="grid" searchQuery="google" />,
       );
 
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -93,7 +83,7 @@ describe("CatalogView", () => {
 
     it("filters servers by description", () => {
       render(
-        <CatalogView
+        <Servers
           servers={mockServers}
           viewMode="grid"
           searchQuery="workspace"
@@ -106,7 +96,7 @@ describe("CatalogView", () => {
 
     it("is case insensitive", () => {
       render(
-        <CatalogView servers={mockServers} viewMode="grid" searchQuery="AWS" />,
+        <Servers servers={mockServers} viewMode="grid" searchQuery="AWS" />,
       );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
@@ -114,7 +104,7 @@ describe("CatalogView", () => {
 
     it("shows no results message when search has no matches", () => {
       render(
-        <CatalogView
+        <Servers
           servers={mockServers}
           viewMode="grid"
           searchQuery="nonexistent"
@@ -129,13 +119,13 @@ describe("CatalogView", () => {
 
   describe("empty state", () => {
     it("shows no servers message when list is empty", () => {
-      render(<CatalogView servers={[]} viewMode="grid" searchQuery="" />);
+      render(<Servers servers={[]} viewMode="grid" searchQuery="" />);
 
       expect(screen.getByText("No servers available")).toBeVisible();
     });
 
     it("shows no servers message in list mode", () => {
-      render(<CatalogView servers={[]} viewMode="list" searchQuery="" />);
+      render(<Servers servers={[]} viewMode="list" searchQuery="" />);
 
       expect(screen.getByText("No servers available")).toBeVisible();
     });

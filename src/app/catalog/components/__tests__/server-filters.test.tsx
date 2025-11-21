@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { CatalogFilters } from "../catalog-filters";
+import { ServerFilters } from "../server-filters";
 
-describe("CatalogFilters", () => {
+describe("ServerFilters", () => {
   const defaultProps = {
     viewMode: "grid" as const,
     onViewModeChange: vi.fn(),
@@ -11,15 +11,15 @@ describe("CatalogFilters", () => {
     onSearchChange: vi.fn(),
   };
 
-  it("renders list and grid view buttons", () => {
-    render(<CatalogFilters {...defaultProps} />);
+  it("has list and grid view buttons", () => {
+    render(<ServerFilters {...defaultProps} />);
 
     expect(screen.getByLabelText("List view")).toBeVisible();
     expect(screen.getByLabelText("Grid view")).toBeVisible();
   });
 
-  it("renders search input", () => {
-    render(<CatalogFilters {...defaultProps} />);
+  it("has search input", () => {
+    render(<ServerFilters {...defaultProps} />);
 
     expect(screen.getByPlaceholderText("Search")).toBeVisible();
   });
@@ -29,7 +29,7 @@ describe("CatalogFilters", () => {
     const onViewModeChange = vi.fn();
 
     render(
-      <CatalogFilters {...defaultProps} onViewModeChange={onViewModeChange} />,
+      <ServerFilters {...defaultProps} onViewModeChange={onViewModeChange} />,
     );
 
     await user.click(screen.getByLabelText("List view"));
@@ -42,7 +42,7 @@ describe("CatalogFilters", () => {
     const onViewModeChange = vi.fn();
 
     render(
-      <CatalogFilters {...defaultProps} onViewModeChange={onViewModeChange} />,
+      <ServerFilters {...defaultProps} onViewModeChange={onViewModeChange} />,
     );
 
     await user.click(screen.getByLabelText("Grid view"));
@@ -54,9 +54,7 @@ describe("CatalogFilters", () => {
     const user = userEvent.setup();
     const onSearchChange = vi.fn();
 
-    render(
-      <CatalogFilters {...defaultProps} onSearchChange={onSearchChange} />,
-    );
+    render(<ServerFilters {...defaultProps} onSearchChange={onSearchChange} />);
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "test");
@@ -65,21 +63,21 @@ describe("CatalogFilters", () => {
   });
 
   it("displays search query value", () => {
-    render(<CatalogFilters {...defaultProps} searchQuery="aws" />);
+    render(<ServerFilters {...defaultProps} searchQuery="aws" />);
 
     const searchInput = screen.getByPlaceholderText("Search");
     expect(searchInput).toHaveValue("aws");
   });
 
   it("applies accent background to grid button when grid mode is active", () => {
-    render(<CatalogFilters {...defaultProps} viewMode="grid" />);
+    render(<ServerFilters {...defaultProps} viewMode="grid" />);
 
     const gridButton = screen.getByLabelText("Grid view");
     expect(gridButton).toHaveClass("bg-accent");
   });
 
   it("applies accent background to list button when list mode is active", () => {
-    render(<CatalogFilters {...defaultProps} viewMode="list" />);
+    render(<ServerFilters {...defaultProps} viewMode="list" />);
 
     const listButton = screen.getByLabelText("List view");
     expect(listButton).toHaveClass("bg-accent");

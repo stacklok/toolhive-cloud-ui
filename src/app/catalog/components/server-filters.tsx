@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-interface CatalogFiltersProps {
+interface ServerFiltersProps {
   viewMode: "grid" | "list";
   onViewModeChange: (mode: "grid" | "list") => void;
   searchQuery: string;
@@ -13,14 +13,14 @@ interface CatalogFiltersProps {
 }
 
 /**
- * Catalog filters component with view mode toggle and search functionality
+ * Server filters component with view mode toggle and search functionality
  */
-export function CatalogFilters({
+export function ServerFilters({
   viewMode,
   onViewModeChange,
   searchQuery,
   onSearchChange,
-}: CatalogFiltersProps) {
+}: ServerFiltersProps) {
   return (
     <div className="flex items-center gap-4">
       <div className="flex h-9 items-center gap-2 px-2">

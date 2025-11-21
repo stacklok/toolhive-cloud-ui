@@ -13,18 +13,22 @@ import type { V0ServerJson } from "@/generated/types.gen";
 interface ServerCardProps {
   server: V0ServerJson;
   serverUrl?: string;
+  onClick: () => void;
 }
 
 /**
  * Server card component that displays MCP server information
  * from the catalog
  */
-export function ServerCard({ server, serverUrl }: ServerCardProps) {
+export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
   const { name, description, repository } = server;
   const author = repository?.id;
 
   return (
-    <Card className="flex h-full w-full flex-col shadow-none rounded-md gap-4">
+    <Card
+      className="flex h-full w-full flex-col shadow-none rounded-md gap-4"
+      onClick={onClick}
+    >
       <CardHeader className="gap-2 pb-2">
         <CardTitle className="text-xl font-semibold leading-7 tracking-tight">
           {name}

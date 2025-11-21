@@ -1,11 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { ServerCard } from "./server-card";
-import { ServerTable } from "./server-table";
+import { ServersTable } from "./servers-table";
 
-interface CatalogViewProps {
+interface ServersProps {
   servers: V0ServerJson[];
   viewMode: "grid" | "list";
   searchQuery: string;
@@ -14,11 +15,9 @@ interface CatalogViewProps {
 /**
  * Client component that displays filtered servers based on view mode and search query
  */
-export function CatalogView({
-  servers,
-  viewMode,
-  searchQuery,
-}: CatalogViewProps) {
+export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
+  const router = useRouter();
+
   const filteredServers = useMemo(() => {
     if (!searchQuery.trim()) {
       return servers;
@@ -33,6 +32,12 @@ export function CatalogView({
     );
   }, [servers, searchQuery]);
 
+  const handleServerClick = (server: V0ServerJson) => {
+    const encodedName = encodeURIComponent(server.name || "");
+    const detailUrl = `/catalog/${encodedName}/${server.version || "latest"}`;
+    router.push(detailUrl);
+  };
+
   if (filteredServers.length === 0) {
     return (
       <div className="p-12 text-center">
@@ -44,7 +49,12 @@ export function CatalogView({
   }
 
   if (viewMode === "list") {
-    return <ServerTable servers={filteredServers} />;
+    return (
+      <ServersTable
+        servers={filteredServers}
+        onServerClick={handleServerClick}
+      />
+    );
   }
 
   return (
@@ -54,6 +64,7 @@ export function CatalogView({
           key={server.name}
           server={server}
           serverUrl={server.remotes?.[0]?.url}
+          onClick={() => handleServerClick(server)}
         />
       ))}
     </div>
