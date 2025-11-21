@@ -99,6 +99,14 @@ export async function saveAccountToken(account: {
   refreshTokenExpiresAt?: Date | string | null;
   userId: string;
 }) {
+  console.log("[Save Token] Account data received:", {
+    hasAccessToken: !!account.accessToken,
+    hasRefreshToken: !!account.refreshToken,
+    userId: account.userId,
+    accessTokenExpiresAt: account.accessTokenExpiresAt,
+    refreshTokenExpiresAt: account.refreshTokenExpiresAt,
+  });
+
   if (account.accessToken && account.userId) {
     const expiresAt = account.accessTokenExpiresAt
       ? new Date(account.accessTokenExpiresAt).getTime()
@@ -116,8 +124,23 @@ export async function saveAccountToken(account: {
       userId: account.userId,
     };
 
+    console.log("[Save Token] Token data to save:", {
+      hasAccessToken: !!tokenData.accessToken,
+      hasRefreshToken: !!tokenData.refreshToken,
+      expiresAt: new Date(tokenData.expiresAt).toISOString(),
+      refreshTokenExpiresAt: tokenData.refreshTokenExpiresAt
+        ? new Date(tokenData.refreshTokenExpiresAt).toISOString()
+        : "none",
+    });
+
     // Dynamic import to avoid circular dependency
     const { saveTokenCookie } = await import("./auth");
     await saveTokenCookie(tokenData);
+
+    console.log("[Save Token] Token cookie saved successfully");
+  } else {
+    console.warn(
+      "[Save Token] Missing accessToken or userId, not saving token",
+    );
   }
 }
