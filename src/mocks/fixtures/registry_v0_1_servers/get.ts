@@ -6,7 +6,7 @@ export default {
         name: "awslabs/aws-nova-canvas",
         version: "do voluptate esse veniam",
         description: "Image generation using Amazon Nova Canvas",
-        repository: { id: "awslabs", source: "github" },
+        repository: { source: "github" },
         _meta: {
           ullamco_566: false,
           "io.modelcontextprotocol.registry/publisher-provided": {
@@ -54,7 +54,13 @@ export default {
             ],
           },
         ],
-        remotes: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/awslabs/aws-nova-canvas",
+            headers: [],
+          },
+        ],
       },
       _meta: {
         "io.modelcontextprotocol.registry/official": {
@@ -70,7 +76,7 @@ export default {
         name: "tinyfish/agentql-mcp",
         version: "occaecat in labore",
         description: "A powerful MCP server for building AI agents",
-        repository: { id: "tinyfish", source: "github" },
+        repository: { source: "github" },
         _meta: {
           id58a: -54358865.657930315,
           qui2: -45037479,
@@ -117,7 +123,13 @@ export default {
             ],
           },
         ],
-        remotes: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/tinyfish/agentql-mcp",
+            headers: [],
+          },
+        ],
       },
       _meta: {
         dolor_3e9: 35203589,
@@ -135,7 +147,7 @@ export default {
         name: "datastax/astra-db-mcp",
         version: "ut do occaecat",
         description: "Integrate AI assistants with Astra DB",
-        repository: { id: "datastax", source: "github" },
+        repository: { source: "github" },
         _meta: {
           laborum_c_4: 59098891.74366808,
           "io.modelcontextprotocol.registry/publisher-provided": {
@@ -183,7 +195,13 @@ export default {
             ],
           },
         ],
-        remotes: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/datastax/astra-db-mcp",
+            headers: [],
+          },
+        ],
       },
       _meta: {
         "io.modelcontextprotocol.registry/official": {
@@ -199,11 +217,17 @@ export default {
         name: "microsoft/azure-mcp",
         version: "1.0.0",
         description: "Connect AI assistants to Azure services",
-        repository: { id: "microsoft", source: "github" },
+        repository: { source: "github" },
         _meta: {},
         icons: [],
         packages: [],
-        remotes: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/microsoft/azure-mcp",
+            headers: [],
+          },
+        ],
       },
       _meta: {
         "io.modelcontextprotocol.registry/official": {
@@ -218,8 +242,9 @@ export default {
         title: "google workspace",
         name: "google/mcp-google-apps",
         version: "1.0.0",
-        description: "Virtual MCP for Google Workspace apps",
-        repository: { id: "google", source: "github" },
+        description:
+          "Access your Google Workspace apps, including calendar, mail, drive, docs, slides and sheets",
+        repository: { source: "github" },
         _meta: {},
         icons: [],
         packages: [],
@@ -244,8 +269,9 @@ export default {
         title: "figma desktop",
         name: "figma/mcp-desktop",
         version: "1.0.0",
-        description: "Virtual MCP for Figma Desktop application",
-        repository: { id: "figma", source: "github" },
+        description:
+          "Connect AI assistants to Figma Desktop for design collaboration and automation",
+        repository: { source: "github" },
         _meta: {},
         icons: [],
         packages: [],
@@ -270,8 +296,9 @@ export default {
         title: "slack workspace",
         name: "slack/mcp-slack",
         version: "1.0.0",
-        description: "Virtual MCP for Slack workspaces",
-        repository: { id: "slack", source: "github" },
+        description:
+          "Integrate AI assistants with Slack for team communication and automation",
+        repository: { source: "github" },
         _meta: {},
         icons: [],
         packages: [],
@@ -293,18 +320,19 @@ export default {
     },
     {
       server: {
-        title: "jira management",
-        name: "atlassian/mcp-jira",
+        title: "github api",
+        name: "github/mcp-github",
         version: "1.0.0",
-        description: "Virtual MCP for managing Jira issues",
-        repository: { id: "atlassian", source: "github" },
+        description:
+          "Interact with GitHub repositories, issues, and pull requests",
+        repository: { source: "github" },
         _meta: {},
         icons: [],
         packages: [],
         remotes: [
           {
             type: "http",
-            url: "https://example.com/jira",
+            url: "https://example.com/github",
             headers: [],
           },
         ],
@@ -317,9 +345,188 @@ export default {
         },
       },
     },
+    {
+      server: {
+        title: "stripe payments",
+        name: "stripe/mcp-stripe",
+        version: "1.0.0",
+        description: "Manage Stripe payments, subscriptions, and customer data",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/stripe",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "notion workspace",
+        name: "notion/mcp-notion",
+        version: "1.0.0",
+        description: "Access and manage Notion pages, databases, and content",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/notion",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "salesforce crm",
+        name: "salesforce/mcp-salesforce",
+        version: "1.0.0",
+        description:
+          "Connect to Salesforce CRM for customer management and automation",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/salesforce",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "hubspot marketing",
+        name: "hubspot/mcp-hubspot",
+        version: "1.0.0",
+        description: "Integrate with HubSpot for marketing automation and CRM",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/hubspot",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "linear project",
+        name: "linear/mcp-linear",
+        version: "1.0.0",
+        description: "Manage Linear issues, projects, and team workflows",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/linear",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "trello boards",
+        name: "trello/mcp-trello",
+        version: "1.0.0",
+        description: "Access and manage Trello boards, cards, and lists",
+        repository: { source: "github" },
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [
+          {
+            type: "http",
+            url: "https://example.com/trello",
+            headers: [],
+          },
+        ],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
+    {
+      server: {
+        title: "jira management",
+        name: "atlassian/mcp-jira",
+        version: "1.0.0",
+        description:
+          "Manage Jira issues, projects, and workflows through AI assistants",
+        repository: { id: "atlassian", source: "github" },
+        websiteUrl: "https://github.com/atlassian/mcp-jira",
+        _meta: {},
+        icons: [],
+        packages: [],
+        remotes: [],
+      },
+      _meta: {
+        "io.modelcontextprotocol.registry/official": {
+          isLatest: true,
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
+        },
+      },
+    },
   ],
   metadata: {
-    count: 8,
+    count: 15,
     nextCursor: "next-page",
   },
 };
