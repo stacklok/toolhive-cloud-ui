@@ -65,16 +65,25 @@ const configuration = {
     },
   },
   features: {
-    devInteractions: { enabled: true }, // Enable dev interactions for easy testing
+    // Disable built-in dev interactions so our custom interaction logic below
+    // (auto-login + auto-consent that grants offline_access) takes effect
+    devInteractions: { enabled: false },
   },
+  // Explicitly declare supported scopes, including offline_access for refresh tokens
+  scopes: ["openid", "email", "profile", "offline_access"],
   claims: {
     email: ["email", "email_verified"],
     profile: ["name"],
   },
   ttl: {
-    AccessToken: 3600, // 1 hour
+    // Make access tokens very short-lived to force refresh during dev
+    AccessToken: 15, // seconds
     RefreshToken: 86400 * 30, // 30 days
   },
+  // For local testing we always issue a refresh_token on code exchange,
+  // regardless of requested scopes, to mirror common provider behavior (e.g., Okta configs)
+  // and make the refresh flow easy to validate.
+  issueRefreshToken: async () => true,
 };
 
 const oidc = new Provider(ISSUER, configuration);
@@ -107,12 +116,24 @@ oidc.use(async (ctx, next) => {
         clientId: interaction.params.client_id,
       });
 
-      grant.addOIDCScope(
-        interaction.params.scope
-          ?.split(" ")
-          .filter((scope) => ["openid", "email", "profile"].includes(scope))
-          .join(" ") || "openid email profile",
+      // Allow the app-requested scopes including offline_access to enable refresh tokens
+      const requestedScopes = interaction.params.scope
+        ?.split(" ")
+        .filter(Boolean) || ["openid", "email", "profile", "offline_access"];
+      const allowedScopes = ["openid", "email", "profile", "offline_access"];
+      const grantedScopes = requestedScopes.filter((s) =>
+        allowedScopes.includes(s),
       );
+      // Force offline_access to ensure refresh tokens in dev
+      if (!grantedScopes.includes("offline_access")) {
+        grantedScopes.push("offline_access");
+      }
+      const scopeString = grantedScopes.length
+        ? grantedScopes.join(" ")
+        : "openid email profile offline_access";
+      console.log("[OIDC] Requested scopes:", requestedScopes);
+      console.log("[OIDC] Granted scopes:", scopeString);
+      grant.addOIDCScope(scopeString);
 
       await grant.save();
 

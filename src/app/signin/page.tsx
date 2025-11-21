@@ -12,6 +12,8 @@ export default function SignInPage() {
       const { error } = await authClient.signIn.oauth2({
         providerId: OIDC_PROVIDER_ID,
         callbackURL: "/catalog",
+        // Request offline_access explicitly so node-oidc-provider issues a refresh token in dev
+        scope: "openid email profile offline_access",
       });
 
       if (error) {
