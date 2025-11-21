@@ -29,7 +29,11 @@ describe("ServerFilters", () => {
     const onViewModeChange = vi.fn();
 
     render(
-      <ServerFilters {...defaultProps} onViewModeChange={onViewModeChange} />,
+      <ServerFilters
+        {...defaultProps}
+        viewMode="list"
+        onViewModeChange={onViewModeChange}
+      />,
     );
 
     await user.click(screen.getByLabelText("Grid view"));
@@ -56,17 +60,17 @@ describe("ServerFilters", () => {
     expect(searchInput).toHaveValue("aws");
   });
 
-  it("applies accent background to grid button when grid mode is active", () => {
+  it("marks grid button as checked when grid mode is selected", () => {
     render(<ServerFilters {...defaultProps} viewMode="grid" />);
 
     const gridButton = screen.getByLabelText("Grid view");
-    expect(gridButton).toHaveClass("bg-accent");
+    expect(gridButton).toHaveAttribute("aria-checked", "true");
   });
 
-  it("applies accent background to list button when list mode is active", () => {
+  it("marks list button as checked when list mode is selected", () => {
     render(<ServerFilters {...defaultProps} viewMode="list" />);
 
     const listButton = screen.getByLabelText("List view");
-    expect(listButton).toHaveClass("bg-accent");
+    expect(listButton).toHaveAttribute("aria-checked", "true");
   });
 });

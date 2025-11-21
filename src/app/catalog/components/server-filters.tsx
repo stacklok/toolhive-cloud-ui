@@ -1,9 +1,8 @@
 "use client";
 
 import { LayoutGrid, List, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ServerFiltersProps {
   viewMode: "grid" | "list";
@@ -23,26 +22,20 @@ export function ServerFilters({
 }: ServerFiltersProps) {
   return (
     <div className="flex items-center gap-4">
-      <div className="flex h-9 items-center gap-2 px-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onViewModeChange("list")}
-          aria-label="List view"
-          className={cn("size-9", viewMode === "list" && "bg-accent")}
-        >
+      <ToggleGroup
+        type="single"
+        value={viewMode}
+        onValueChange={(value) => {
+          if (value) onViewModeChange(value as "grid" | "list");
+        }}
+      >
+        <ToggleGroupItem value="list" aria-label="List view">
           <List className="size-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onViewModeChange("grid")}
-          aria-label="Grid view"
-          className={cn("size-9", viewMode === "grid" && "bg-accent")}
-        >
+        </ToggleGroupItem>
+        <ToggleGroupItem value="grid" aria-label="Grid view">
           <LayoutGrid className="size-4" />
-        </Button>
-      </div>
+        </ToggleGroupItem>
+      </ToggleGroup>
 
       <div className="relative w-64">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
