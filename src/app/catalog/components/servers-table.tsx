@@ -47,11 +47,11 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                 <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {description}
                 </TableCell>
-                {url && (
-                  <TableCell>
+                <TableCell>
+                  {url ? (
                     <CopyUrlButton url={url} className="shadow-sm" />
-                  </TableCell>
-                )}
+                  ) : null}
+                </TableCell>
               </TableRow>
             );
           })}

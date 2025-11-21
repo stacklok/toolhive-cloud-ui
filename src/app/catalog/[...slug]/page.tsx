@@ -12,9 +12,14 @@ interface CatalogDetailPageProps {
 export default async function CatalogDetailPage({
   params,
 }: CatalogDetailPageProps) {
-  const {
-    slug: [repoName, serverName, version],
-  } = await params;
+  const { slug } = await params;
+
+  // Validate that slug has exactly 3 segments: [repoName, serverName, version]
+  if (slug.length !== 3) {
+    notFound();
+  }
+
+  const [repoName, serverName, version] = slug;
 
   const serverResponse = await getServerDetails(
     `${repoName}/${serverName}`,
