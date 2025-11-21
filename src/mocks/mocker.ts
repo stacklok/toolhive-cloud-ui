@@ -394,7 +394,9 @@ export function autoGenerateHandlers() {
       const operation = (pathItem as Record<string, unknown>)[method];
       if (!operation) continue;
 
-      const mswPath = `*/${rawPath.replace(/^\//, "").replace(/\{([^}]+)\}/g, ":$1")}`;
+      const mswPath = `*/${rawPath
+        .replace(/^\//, "")
+        .replace(/\{([^}]+)\}/g, ":$1")}`;
 
       result.push(
         handlersByMethod[method](mswPath, async () => {
@@ -500,7 +502,9 @@ export function autoGenerateHandlers() {
             }
           } catch (e) {
             return new HttpResponse(
-              `[auto-mocker] Missing mock fixture: ${relPath}. ${e instanceof Error ? e.message : ""}`,
+              `[auto-mocker] Missing mock fixture: ${relPath}. ${
+                e instanceof Error ? e.message : ""
+              }`,
               { status: 500 },
             );
           }
@@ -542,7 +546,9 @@ export function autoGenerateHandlers() {
             }
           } else {
             // No JSON schema to validate against: explicit failure
-            const message = `no JSON schema for ${method.toUpperCase()} ${rawPath} status ${successStatus ?? "200"}`;
+            const message = `no JSON schema for ${method.toUpperCase()} ${rawPath} status ${
+              successStatus ?? "200"
+            }`;
             console.error("[auto-mocker]", message);
             return new HttpResponse(`[auto-mocker] ${message}`, {
               status: 500,
@@ -560,11 +566,12 @@ export function autoGenerateHandlers() {
               const s = (jsonValue as Record<string, unknown>).servers;
               if (Array.isArray(s)) serversLen = s.length;
             }
-            // biome-ignore lint: dev fixture response summary
             console.log(
               `[auto-mocker] respond ${method.toUpperCase()} ${rawPath} -> ${
                 successStatus ? Number(successStatus) : 200
-              } ${serversLen !== undefined ? `servers=${serversLen}` : ""} (${fixtureFileName})`,
+              } ${
+                serversLen !== undefined ? `servers=${serversLen}` : ""
+              } (${fixtureFileName})`,
             );
           } catch {}
           return HttpResponse.json(jsonValue, {

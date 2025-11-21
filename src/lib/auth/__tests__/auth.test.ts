@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OidcTokenData } from "../auth";
-import {
-  clearOidcProviderToken,
-  encrypt,
-  getOidcProviderAccessToken,
-} from "../auth";
+import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
+import type { OidcTokenData } from "../types";
+import { encrypt } from "../utils";
 
 // Mock jose library to avoid Uint8Array issues in jsdom
 vi.mock("jose", () => ({
@@ -52,7 +49,7 @@ vi.mock("better-auth/plugins", () => ({
   genericOAuth: vi.fn(() => ({})),
 }));
 
-describe("auth.ts", () => {
+describe("auth", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -83,20 +80,24 @@ describe("auth.ts", () => {
       expect(token).toBeNull();
     });
 
-    it("should return null and delete cookie when token is expired", async () => {
+    it("should return null when token is expired", async () => {
       const expiredTokenData: OidcTokenData = {
         accessToken: "expired-token",
         userId: "user-123",
         expiresAt: Date.now() - 1000, // Expired 1 second ago
       };
 
-      const encryptedPayload = await encrypt(expiredTokenData);
+      const encryptedPayload = await encrypt(
+        expiredTokenData,
+        process.env.BETTER_AUTH_SECRET as string,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
     });
 
     it("should return null when token belongs to different user", async () => {
@@ -106,7 +107,10 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000,
       };
 
-      const encryptedPayload = await encrypt(tokenData);
+      const encryptedPayload = await encrypt(
+        tokenData,
+        process.env.BETTER_AUTH_SECRET as string,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -121,7 +125,10 @@ describe("auth.ts", () => {
         expiresAt: Date.now() + 3600000, // Valid for 1 hour
       };
 
-      const encryptedPayload = await encrypt(tokenData);
+      const encryptedPayload = await encrypt(
+        tokenData,
+        process.env.BETTER_AUTH_SECRET as string,
+      );
       mockCookies.get.mockReturnValue({ value: encryptedPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
@@ -129,17 +136,21 @@ describe("auth.ts", () => {
       expect(token).toBe("valid-access-token-123");
     });
 
-    it("should return null and delete cookie when token data is invalid", async () => {
+    it("should return null when token data is invalid", async () => {
       // Create invalid token data (missing required fields)
       const invalidData = { accessToken: "token" }; // Missing userId and expiresAt
-      const invalidPayload = await encrypt(invalidData as OidcTokenData);
+      const invalidPayload = await encrypt(
+        invalidData as OidcTokenData,
+        process.env.BETTER_AUTH_SECRET as string,
+      );
 
       mockCookies.get.mockReturnValue({ value: invalidPayload });
 
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
 
@@ -150,9 +161,10 @@ describe("auth.ts", () => {
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Cookie deletion is now handled in the refresh API route, not here
+      expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed - possible tampering or invalid format:",
+        "[Auth] Token decryption failed:",
         expect.any(Error),
       );
     });
@@ -192,16 +204,6 @@ describe("auth.ts", () => {
       };
 
       expect(dataWithoutRefresh.refreshToken).toBeUndefined();
-    });
-  });
-
-  describe("Token Expiration Constants", () => {
-    it("should have correct time constants", () => {
-      const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000;
-      const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60;
-
-      expect(TOKEN_ONE_HOUR_MS).toBe(3600000);
-      expect(TOKEN_SEVEN_DAYS_SECONDS).toBe(604800);
     });
   });
 });

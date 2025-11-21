@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { UserMenu } from "@/components/user-menu";
 import { signOut } from "@/lib/auth/auth-client";
 
