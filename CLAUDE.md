@@ -205,6 +205,7 @@ pnpm generate-client:nofetch # Regenerate without fetching
 ### Mocking & Testing
 
 - **MSW Auto-Mocker**
+
   - Auto-generates handlers from `swagger.json` and creates fixtures under `src/mocks/fixtures` on first run.
   - Strict validation with Ajv + ajv-formats; fixtures are type-checked against `@api/types.gen` by default.
   - Hand-written, non-schema mocks live in `src/mocks/customHandlers` and take precedence over schema-based mocks.
@@ -274,7 +275,13 @@ git push origin v0.x.x
 ### Authentication Not Working
 
 - **Development**: Ensure OIDC mock is running (`pnpm oidc`)
-- **Production**: Check environment variables (OIDC_ISSUER, CLIENT_ID, etc.)
+- **Production**: Check environment variables:
+  - `OIDC_ISSUER_URL` - OIDC provider URL
+  - `OIDC_CLIENT_ID` - OAuth2 client ID
+  - `OIDC_CLIENT_SECRET` - OAuth2 client secret
+  - `NEXT_PUBLIC_OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - Required, must use `NEXT_PUBLIC_` prefix. Not sensitive data - it's just an identifier.
+  - `BETTER_AUTH_URL` - Application base URL
+  - `BETTER_AUTH_SECRET` - Secret for token encryption
 
 ### API Calls Failing
 

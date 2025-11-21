@@ -40,6 +40,9 @@ The provider is pre-configured with:
 
 Replace this with a real OIDC provider (Okta, Keycloak, Auth0, etc.) by updating the environment variables in `.env.local`:
 
-- `OIDC_ISSUER`
-- `OIDC_CLIENT_ID`
-- `OIDC_CLIENT_SECRET`
+- `OIDC_ISSUER_URL` - OIDC provider URL
+- `OIDC_CLIENT_ID` - OAuth2 client ID
+- `OIDC_CLIENT_SECRET` - OAuth2 client secret
+- `NEXT_PUBLIC_OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - **Required**, must use `NEXT_PUBLIC_` prefix. Not sensitive data - it's just an identifier.
+- `BETTER_AUTH_URL` - Application base URL (e.g., `http://localhost:3000`)
+- `BETTER_AUTH_SECRET` - Secret for token encryption
