@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
-import { ServerCard } from "./server-card";
+import { ServerCard } from "../server-card";
 
 describe("ServerCard", () => {
   const mockServer: V0ServerJson = {
