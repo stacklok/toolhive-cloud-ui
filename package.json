@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently -n \"OIDC,Mock,Next\" -c \"blue,magenta,green\" \"pnpm oidc\" \"pnpm mock:server\" \"pnpm dev:next\"",
     "dev:next": "next dev",
+    "dev:mock-server": "concurrently -n \"Mock,Next\" -c \"magenta,green\" \"pnpm mock:server\" \"pnpm dev:next\"",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
