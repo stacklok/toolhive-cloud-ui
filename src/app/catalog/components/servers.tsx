@@ -18,6 +18,7 @@ interface ServersProps {
 export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
   const router = useRouter();
 
+  // this will be replace by nuqs later
   const filteredServers = useMemo(() => {
     if (!searchQuery.trim()) {
       return servers;
