@@ -15,30 +15,26 @@ import type { V0ServerJson } from "@/generated/types.gen";
 
 interface ServerCardProps {
   server: V0ServerJson;
-  /**
-   * The MCP server URL
-   */
-  url?: string;
+  serverUrl?: string;
 }
 
 /**
  * Server card component that displays MCP server information
- * from the catalog, following the Figma design specifications.
+ * from the catalog
  */
-export function ServerCard({ server, url }: ServerCardProps) {
+export function ServerCard({ server, serverUrl }: ServerCardProps) {
   const { name, description, repository, remotes } = server;
-  const serverName = name;
   const author = repository?.id;
   const isVirtualMcp = remotes && remotes.length > 0;
 
   const handleCopyUrl = async () => {
-    if (!url) {
+    if (!serverUrl) {
       toast.error("URL not available");
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(serverUrl);
       toast.success("URL copied to clipboard");
     } catch {
       toast.error("Failed to copy URL");
@@ -49,10 +45,10 @@ export function ServerCard({ server, url }: ServerCardProps) {
     <Card className="flex h-full w-full flex-col shadow-none rounded-md">
       <CardHeader className="gap-2 pb-4">
         <CardTitle className="text-xl font-semibold leading-7 tracking-tight">
-          {serverName}
+          {name}
         </CardTitle>
         <CardDescription className="flex items-center gap-1.5 text-xs leading-5">
-          <span>{author}</span>
+          {author && <span>{author}</span>}
           {isVirtualMcp && (
             <Badge variant="secondary" className="text-xs">
               Virtual MCP
