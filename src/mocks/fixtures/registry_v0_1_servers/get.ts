@@ -5,8 +5,13 @@ export default {
         title: "consequat",
         name: "awslabs/aws-nova-canvas",
         version: "1.0.0",
-        description: "Image generation using Amazon Nova Canvas",
-        repository: { source: "github" },
+        description:
+          "MCP server for AI-powered image generation using Amazon Nova Canvas and AWS services",
+        repository: {
+          source: "github",
+          id: "awslabs",
+          url: "https://github.com/awslabs/aws-nova-canvas",
+        },
         _meta: {
           ullamco_566: false,
           "io.modelcontextprotocol.registry/publisher-provided": {
@@ -76,7 +81,11 @@ export default {
         name: "tinyfish/agentql-mcp",
         version: "1.0.1",
         description: "A powerful MCP server for building AI agents",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "tinyfish",
+          url: "https://github.com/tinyfish/agentql-mcp",
+        },
         _meta: {
           id58a: -54358865.657930315,
           qui2: -45037479,
@@ -147,7 +156,11 @@ export default {
         name: "datastax/astra-db-mcp",
         version: "1.0.2",
         description: "Integrate AI assistants with Astra DB",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "datastax",
+          url: "https://github.com/datastax/astra-db-mcp",
+        },
         _meta: {
           laborum_c_4: 59098891.74366808,
           "io.modelcontextprotocol.registry/publisher-provided": {
@@ -217,7 +230,11 @@ export default {
         name: "microsoft/azure-mcp",
         version: "1.0.0",
         description: "Connect AI assistants to Azure services",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "microsoft",
+          url: "https://github.com/microsoft/azure-mcp",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -244,7 +261,11 @@ export default {
         version: "1.0.0",
         description:
           "Access your Google Workspace apps, including calendar, mail, drive, docs, slides and sheets",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "google",
+          url: "https://github.com/google/mcp-google-apps",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -271,7 +292,11 @@ export default {
         version: "1.0.0",
         description:
           "Connect AI assistants to Figma Desktop for design collaboration and automation",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "figma",
+          url: "https://github.com/figma/mcp-desktop",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -298,7 +323,11 @@ export default {
         version: "1.0.0",
         description:
           "Integrate AI assistants with Slack for team communication and automation",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "slack",
+          url: "https://github.com/slack/mcp-slack",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -325,7 +354,11 @@ export default {
         version: "1.0.0",
         description:
           "Interact with GitHub repositories, issues, and pull requests",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "github",
+          url: "https://github.com/github/mcp-github",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -351,7 +384,11 @@ export default {
         name: "stripe/mcp-stripe",
         version: "1.0.0",
         description: "Manage Stripe payments, subscriptions, and customer data",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "stripe",
+          url: "https://github.com/stripe/mcp-stripe",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -377,7 +414,11 @@ export default {
         name: "notion/mcp-notion",
         version: "1.0.0",
         description: "Access and manage Notion pages, databases, and content",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "notion",
+          url: "https://github.com/notion/mcp-notion",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -404,7 +445,11 @@ export default {
         version: "1.0.0",
         description:
           "Connect to Salesforce CRM for customer management and automation",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "salesforce",
+          url: "https://github.com/salesforce/mcp-salesforce",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -430,7 +475,11 @@ export default {
         name: "hubspot/mcp-hubspot",
         version: "1.0.0",
         description: "Integrate with HubSpot for marketing automation and CRM",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "hubspot",
+          url: "https://github.com/hubspot/mcp-hubspot",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -456,7 +505,11 @@ export default {
         name: "linear/mcp-linear",
         version: "1.0.0",
         description: "Manage Linear issues, projects, and team workflows",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "linear",
+          url: "https://github.com/linear/mcp-linear",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -482,7 +535,11 @@ export default {
         name: "trello/mcp-trello",
         version: "1.0.0",
         description: "Access and manage Trello boards, cards, and lists",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "trello",
+          url: "https://github.com/trello/mcp-trello",
+        },
         _meta: {},
         icons: [],
         packages: [],
@@ -509,7 +566,11 @@ export default {
         version: "1.0.0",
         description:
           "Manage Jira issues, projects, and workflows through AI assistants",
-        repository: { source: "github" },
+        repository: {
+          source: "github",
+          id: "atlassian",
+          url: "https://github.com/atlassian/mcp-jira",
+        },
         websiteUrl: "https://github.com/atlassian/mcp-jira",
         _meta: {},
         icons: [],
