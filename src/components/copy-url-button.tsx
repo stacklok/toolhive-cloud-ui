@@ -36,6 +36,7 @@ export function CopyUrlButton({
       size={size}
       onClick={handleCopyUrl}
       aria-label="Copy URL"
+      className="cursor-pointer"
       {...props}
     >
       <Copy className="size-4" />

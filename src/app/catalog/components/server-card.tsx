@@ -41,9 +41,7 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
         <p className="line-clamp-3 text-sm leading-[18px] text-muted-foreground cursor-pointer">
           {description || "No description available"}
         </p>
-        {serverUrl && (
-          <CopyUrlButton url={serverUrl} className="w-fit cursor-pointer" />
-        )}
+        {serverUrl && <CopyUrlButton url={serverUrl} className="w-fit" />}
       </CardContent>
     </Card>
   );
