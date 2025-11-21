@@ -12,13 +12,21 @@ let browser: Browser | undefined;
 setDefaultTimeout(60 * 1000); // 60s per step
 
 Before(async function (this: PlaywrightWorld) {
+  const isDebug = !!process.env.PWDEBUG;
   if (!browser) {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch({
+      headless: !isDebug,
+      slowMo: isDebug ? 100 : 0,
+    });
   }
   const context: BrowserContext = await browser.newContext();
   const page: Page = await context.newPage();
   this.context = context;
   this.page = page;
+
+  if (isDebug) {
+    await this.page.pause();
+  }
 });
 
 After(async function (this: PlaywrightWorld) {
