@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import Home from "../page";
+import Home from "@/app/(authed)/page";
 
 test("Home page renders welcome heading and link to catalog when user is logged in", async () => {
   render(await Home());
