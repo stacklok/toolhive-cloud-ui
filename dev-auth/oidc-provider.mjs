@@ -160,9 +160,6 @@ oidc.listen(PORT, () => {
   console.log(`🔑 Client Secret: ${CLIENT_SECRET}`);
   console.log(`👤 Test user: test@example.com`);
   console.log(
-    "⚠️  Dev-only settings: AccessToken TTL=15s, refresh tokens always issued (do not use in prod)",
-  );
-  console.log(
     `\n⚙️  Update your .env.local with:\nOIDC_CLIENT_ID=${CLIENT_ID}\nOIDC_CLIENT_SECRET=${CLIENT_SECRET}\nOIDC_ISSUER_URL=${ISSUER}`,
   );
 });
