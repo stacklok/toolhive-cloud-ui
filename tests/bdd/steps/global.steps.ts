@@ -6,9 +6,9 @@ Given("I am on {string}", async function (this: PlaywrightWorld, path: string) {
   await this.page.goto(`${this.baseUrl}${path}`);
 });
 
-// Generic click step using a custom {role} parameter type
+// Generic click step using the {role} parameter type (canonical phrases only)
 When(
-  'I click the "{string}" {role}',
+  "I click on the {string} {role}",
   async function (this: PlaywrightWorld, label: string, role: AriaRole) {
     await this.page.getByRole(role, { name: label }).click();
   },
