@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOut } from "@/components/sign-out-button";
 import { auth } from "@/lib/auth/auth";
-import { getServersSummary } from "./actions";
+import { getServersSummary } from "../../catalog/actions";
 
 export default async function CatalogPage() {
   const session = await auth.api.getSession({
