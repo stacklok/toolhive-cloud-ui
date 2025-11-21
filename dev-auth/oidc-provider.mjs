@@ -1,3 +1,12 @@
+/**
+ * Dev-only OIDC provider for local testing.
+ *
+ * IMPORTANT: This is NOT for production use. It:
+ * - Auto logs-in a test user and auto-consents
+ * - Issues refresh tokens unconditionally (issueRefreshToken = true)
+ * - Uses very short AccessToken TTL (15s) to exercise refresh flow
+ * - Uses in-memory adapter and generated signing keys
+ */
 import { config } from "dotenv";
 import Provider from "oidc-provider";
 
@@ -65,16 +74,24 @@ const configuration = {
     },
   },
   features: {
-    devInteractions: { enabled: true }, // Enable dev interactions for easy testing
+    // Disable built-in dev interactions in favor of our custom auto-login
+    // and auto-consent middleware used for local testing.
+    devInteractions: { enabled: false },
   },
+  // Explicitly declare supported scopes, including offline_access for refresh tokens
+  // Scopes supported by the dev provider (app requests offline_access in dev and prod)
+  scopes: ["openid", "email", "profile", "offline_access"],
   claims: {
     email: ["email", "email_verified"],
     profile: ["name"],
   },
   ttl: {
-    AccessToken: 3600, // 1 hour
+    // Short-lived access tokens to force refresh during dev
+    AccessToken: 15, // seconds
     RefreshToken: 86400 * 30, // 30 days
   },
+  // Dev-only: always issue refresh tokens to make the flow reliable locally
+  issueRefreshToken: async () => true,
 };
 
 const oidc = new Provider(ISSUER, configuration);
@@ -107,12 +124,17 @@ oidc.use(async (ctx, next) => {
         clientId: interaction.params.client_id,
       });
 
-      grant.addOIDCScope(
-        interaction.params.scope
-          ?.split(" ")
-          .filter((scope) => ["openid", "email", "profile"].includes(scope))
-          .join(" ") || "openid email profile",
+      // Grant requested scopes intersected with allowed ones
+      const requestedScopes = interaction.params.scope
+        ?.split(" ")
+        .filter(Boolean) || ["openid", "email", "profile"];
+      const allowedScopes = ["openid", "email", "profile", "offline_access"];
+      const grantedScopes = requestedScopes.filter((s) =>
+        allowedScopes.includes(s),
       );
+      // Dev-only provider already issues refresh tokens unconditionally via
+      // `issueRefreshToken`, so we don't need to force-add offline_access here.
+      grant.addOIDCScope(grantedScopes.join(" "));
 
       await grant.save();
 
