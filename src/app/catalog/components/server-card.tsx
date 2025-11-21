@@ -13,7 +13,7 @@ import type { V0ServerJson } from "@/generated/types.gen";
 interface ServerCardProps {
   server: V0ServerJson;
   serverUrl?: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 /**
@@ -27,7 +27,7 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
   return (
     <Card
       className="flex h-full w-full flex-col shadow-none rounded-md gap-4"
-      onClick={onClick}
+      onClick={onClick ? () => onClick() : undefined}
     >
       <CardHeader className="gap-2 pb-2">
         <CardTitle className="text-xl font-semibold leading-7 tracking-tight">

@@ -64,7 +64,6 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
           key={server.name}
           server={server}
           serverUrl={server.remotes?.[0]?.url}
-          onClick={() => handleServerClick(server)}
         />
       ))}
     </div>
