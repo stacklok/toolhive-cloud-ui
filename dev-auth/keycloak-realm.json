@@ -1,0 +1,91 @@
+{
+  "id": "toolhive",
+  "realm": "toolhive",
+  "displayName": "ToolHive Cloud UI",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "clients": [
+    {
+      "clientId": "toolhive-cloud-ui",
+      "name": "ToolHive Cloud UI",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "toolhive-client-secret",
+      "redirectUris": [
+        "http://localhost:3000/api/auth/oauth2/callback/oidc",
+        "http://localhost:3001/api/auth/oauth2/callback/oidc",
+        "http://localhost:3002/api/auth/oauth2/callback/oidc",
+        "http://localhost:3003/api/auth/oauth2/callback/oidc"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003"
+      ],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "attributes": {
+        "access.token.lifespan": "3600",
+        "client.secret.creation.time": "0"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "test",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "test@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "user",
+        "description": "User role"
+      }
+    ]
+  },
+  "defaultRole": {
+    "name": "default-roles-toolhive",
+    "description": "Default role for new users",
+    "composite": true,
+    "composites": {
+      "realm": ["user"]
+    }
+  }
+}
