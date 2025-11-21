@@ -1,2 +1,2 @@
 #!/bin/sh
-npx tsc --noEmit
+pnpm type-check
