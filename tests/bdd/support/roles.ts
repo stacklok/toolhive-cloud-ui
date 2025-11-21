@@ -37,12 +37,5 @@ const buildAllowedRolePhrases = (): Record<string, AriaRole> => {
 export const allowedRolePhrases = buildAllowedRolePhrases();
 
 // Inverse lookup for recommendations (ARIA role → preferred phrase)
-export const preferredPhraseByRole: Record<AriaRole, string> = Object.entries(
-  allowedRolePhrases,
-).reduce(
-  (acc, [phrase, role]) => {
-    acc[role] = phrase;
-    return acc;
-  },
-  {} as Record<AriaRole, string>,
-);
+// Note: We intentionally omit an inverse mapping (role -> preferred phrase)
+// to keep this surface minimal. Add it here if you want suggestion messages.
