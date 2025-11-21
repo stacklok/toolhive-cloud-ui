@@ -14,13 +14,7 @@ When(
   },
 );
 
-// Backward-compatible convenience wrapper for "button" steps
-When(
-  "I click the {string} button",
-  async function (this: PlaywrightWorld, label: string) {
-    await this.page.getByRole("button", { name: label }).click();
-  },
-);
+// Intentionally avoid per-role variants (e.g., button) to keep steps DRY and consistent.
 
 Then(
   "I should see the text {string}",

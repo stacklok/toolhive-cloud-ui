@@ -1,6 +1,10 @@
 import { defineParameterType } from "@cucumber/cucumber";
 import type { AriaRole } from "@playwright/test";
-import { roleAliases, validAriaRoles } from "./roles.ts";
+import {
+  allowedRolePhrases,
+  preferredPhraseByRole,
+  validAriaRoles,
+} from "./roles.ts";
 
 defineParameterType({
   name: "role",
@@ -9,30 +13,29 @@ defineParameterType({
   transformer: (text: string): AriaRole => {
     const input = text.trim().toLowerCase();
 
-    // 1) Exact match
+    // Accept only canonical phrases to reduce variants
+    const canonical = allowedRolePhrases[input];
+    if (canonical) {
+      return canonical;
+    }
+
+    // If user provided an ARIA role directly, recommend the canonical phrase
     if (validAriaRoles.has(input)) {
-      return input as AriaRole;
+      const role = input as AriaRole;
+      const preferred = preferredPhraseByRole[role];
+      if (preferred && preferred !== input) {
+        throw new Error(
+          `Use canonical role phrase "${preferred}" instead of "${input}".`,
+        );
+      }
+      // Role equals its canonical phrase (e.g., "button", "link", "checkbox")
+      return role;
     }
 
-    // 2) Compact variant: remove spaces and hyphens
-    const compact = input.replace(/[\s-]+/g, "");
-    if (validAriaRoles.has(compact)) {
-      return compact as AriaRole;
-    }
-
-    // 3) Aliases
-    const alias = roleAliases[input];
-    if (alias) {
-      return alias;
-    }
-
-    // 4) Helpful error
-    const sample = Array.from(validAriaRoles).slice(0, 15).join(", ");
+    // Helpful error with allowed phrases
+    const examples = Object.keys(allowedRolePhrases).slice(0, 10).join(", ");
     throw new Error(
-      `Unknown role "${text}".\n` +
-        `- Tried: "${input}" and "${compact}".\n` +
-        "- Add an alias in roleAliases if this is a valid custom phrase.\n" +
-        `- Example known roles: ${sample} ...`,
+      `Unknown role phrase "${text}". Use one of the canonical phrases (e.g., ${examples} ...).`,
     );
   },
 });
