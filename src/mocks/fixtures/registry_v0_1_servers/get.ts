@@ -509,7 +509,7 @@ export default {
         version: "1.0.0",
         description:
           "Manage Jira issues, projects, and workflows through AI assistants",
-        repository: { id: "atlassian", source: "github" },
+        repository: { source: "github" },
         websiteUrl: "https://github.com/atlassian/mcp-jira",
         _meta: {},
         icons: [],

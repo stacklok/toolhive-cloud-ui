@@ -37,7 +37,7 @@ export function ServerCard({ server, serverUrl }: ServerCardProps) {
         <p className="line-clamp-3 text-sm leading-[18px] text-muted-foreground">
           {description || "No description available"}
         </p>
-        {serverUrl && <CopyUrlButton url={serverUrl || ""} className="w-fit" />}
+        {serverUrl && <CopyUrlButton url={serverUrl} className="w-fit" />}
       </CardContent>
     </Card>
   );
