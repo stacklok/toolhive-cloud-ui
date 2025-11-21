@@ -1,5 +1,9 @@
 import { TextDecoder, TextEncoder } from "node:util";
-import { vi } from "vitest";
+import * as testingLibraryMatchers from "@testing-library/jest-dom/matchers";
+import { expect, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
+
+expect.extend(testingLibraryMatchers);
 
 // Polyfill TextEncoder/TextDecoder for jsdom environment
 // These are needed for jose encryption/decryption in tests
