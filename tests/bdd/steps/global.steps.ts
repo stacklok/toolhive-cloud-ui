@@ -1,11 +1,20 @@
 import { Given, Then, When } from "@cucumber/cucumber";
-import { expect } from "@playwright/test";
+import { type AriaRole, expect } from "@playwright/test";
 import type { PlaywrightWorld } from "../support/world";
 
 Given("I am on {string}", async function (this: PlaywrightWorld, path: string) {
   await this.page.goto(`${this.baseUrl}${path}`);
 });
 
+// Generic click step using a custom {role} parameter type
+When(
+  'I click the "{string}" {role}',
+  async function (this: PlaywrightWorld, label: string, role: AriaRole) {
+    await this.page.getByRole(role, { name: label }).click();
+  },
+);
+
+// Backward-compatible convenience wrapper for "button" steps
 When(
   "I click the {string} button",
   async function (this: PlaywrightWorld, label: string) {

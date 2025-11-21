@@ -4,6 +4,8 @@ module.exports = {
     require: [
       "tests/bdd/support/world.ts",
       "tests/bdd/support/hooks.ts",
+      "tests/bdd/support/roles.ts",
+      "tests/bdd/support/parameter-types.ts",
       "tests/bdd/steps/**/*.ts",
     ],
     paths: ["tests/bdd/features/**/*.feature"],
