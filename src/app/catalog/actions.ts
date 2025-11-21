@@ -26,29 +26,3 @@ export async function getServers(): Promise<V0ServerJson[]> {
     .map((item) => item?.server)
     .filter((server): server is V0ServerJson => server != null);
 }
-
-export async function getServersSummary() {
-  const api = await getAuthenticatedClient();
-  const resp = await api.getRegistryV01Servers({ client: api.client });
-
-  if (resp.error) {
-    console.error("[catalog] Failed to fetch servers:", resp.error);
-    return { count: 0, titles: [], sample: [] };
-  }
-
-  if (!resp.data) {
-    return { count: 0, titles: [], sample: [] };
-  }
-
-  const items = Array.isArray(resp.data?.servers) ? resp.data.servers : [];
-
-  const sample = items.slice(0, 5).map((it) => ({
-    title: it?.server?.title ?? it?.server?.name ?? "Unknown",
-    name: it?.server?.name ?? "unknown",
-    version: it?.server?.version,
-  }));
-
-  const titles = sample.map((s) => s.title);
-
-  return { count: items.length, titles, sample };
-}
