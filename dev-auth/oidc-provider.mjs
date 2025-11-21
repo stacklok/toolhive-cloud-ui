@@ -74,8 +74,8 @@ const configuration = {
     },
   },
   features: {
-    // Disable built-in dev interactions so our custom interaction logic below
-    // (auto-login + auto-consent that grants offline_access) takes effect
+    // Disable built-in dev interactions in favor of our custom auto-login
+    // and auto-consent middleware used for local testing.
     devInteractions: { enabled: false },
   },
   // Explicitly declare supported scopes, including offline_access for refresh tokens
@@ -132,14 +132,9 @@ oidc.use(async (ctx, next) => {
       const grantedScopes = requestedScopes.filter((s) =>
         allowedScopes.includes(s),
       );
-      // Ensure offline_access is granted in dev so refresh tokens are issued
-      if (!grantedScopes.includes("offline_access")) {
-        grantedScopes.push("offline_access");
-      }
-      const scopeString = grantedScopes.length
-        ? grantedScopes.join(" ")
-        : "openid email profile";
-      grant.addOIDCScope(scopeString);
+      // Dev-only provider already issues refresh tokens unconditionally via
+      // `issueRefreshToken`, so we don't need to force-add offline_access here.
+      grant.addOIDCScope(grantedScopes.join(" "));
 
       await grant.save();
 
