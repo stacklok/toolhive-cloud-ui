@@ -79,7 +79,7 @@ For convenience, common pnpm commands are also available as Make targets:
 make install         # Install dependencies
 make dev             # Run dev server (pnpm dev)
 make dev-next        # Run only Next.js (pnpm dev:next)
-make dev-mock        # Run with MSW only (pnpm dev:mock-server)
+make dev-mock-server # Run with MSW only (pnpm dev:mock-server)
 make lint            # Run linter
 make format          # Format code
 make test            # Run tests

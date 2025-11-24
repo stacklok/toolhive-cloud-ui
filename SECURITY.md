@@ -24,7 +24,7 @@ The ToolHive community asks that all suspected vulnerabilities be handled in acc
 
 If anyone knows of a publicly disclosed security vulnerability please IMMEDIATELY email [security@stacklok.com](mailto:security@stacklok.com) to inform us about the vulnerability so that we may start the patch, release, and communication process.
 
-If a reporter contacts the us to express intent to make an issue public before a fix is available, we will request if the issue can be handled via a private disclosure process. If the reporter denies the request, we will move swiftly with the fix and release process.
+If a reporter contacts us to express intent to make an issue public before a fix is available, we will request if the issue can be handled via a private disclosure process. If the reporter denies the request, we will move swiftly with the fix and release process.
 
 ## Patch, release, and public communication
 
@@ -42,8 +42,8 @@ All of the timelines below are suggestions and assume a Private Disclosure.
 
 These steps should be completed within the first 24 hours of Disclosure.
 
-- The security team will work quickly to identify relevant engineers from the affected projects and packages and being those engineers into the [security advisory](https://docs.github.com/en/code-security/security-advisories/) thread.
-- These selected developers become the "Fix Team" (the fix team is often drawn from the projects MAINTAINERS)
+- The security team will work quickly to identify relevant engineers from the affected projects and packages and bring those engineers into the [security advisory](https://docs.github.com/en/code-security/security-advisories/) thread.
+- These selected developers become the "Fix Team" (the fix team is often drawn from the project's MAINTAINERS)
 
 ### Fix development process
 

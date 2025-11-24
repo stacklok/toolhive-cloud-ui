@@ -1,4 +1,4 @@
-.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client
+.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc
 
 # Variables
 IMAGE_NAME := toolhive-cloud-ui
