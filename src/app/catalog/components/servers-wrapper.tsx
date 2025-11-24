@@ -18,7 +18,7 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <PageHeader title="MCP Server Catalog">
         <ServerFilters
           viewMode={viewMode}
@@ -28,11 +28,13 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
         />
       </PageHeader>
 
-      <Servers
-        servers={servers}
-        viewMode={viewMode}
-        searchQuery={searchQuery}
-      />
-    </>
+      <div className="flex-1 overflow-auto">
+        <Servers
+          servers={servers}
+          viewMode={viewMode}
+          searchQuery={searchQuery}
+        />
+      </div>
+    </div>
   );
 }
