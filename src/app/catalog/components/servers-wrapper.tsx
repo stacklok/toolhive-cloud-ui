@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { PageHeader } from "@/components/header-page";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { ServerFilters } from "./server-filters";
@@ -10,21 +10,39 @@ interface ServersWrapperProps {
   servers: V0ServerJson[];
 }
 
+const VIEW_MODES = ["grid", "list"] as const;
+
 /**
  * Wrapper that manages shared state between filters and view
+ * State is persisted in URL query parameters for shareable links
  */
 export function ServersWrapper({ servers }: ServersWrapperProps) {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [{ viewMode, search }, setFilters] = useQueryStates(
+    {
+      viewMode: parseAsStringLiteral(VIEW_MODES).withDefault("grid"),
+      search: parseAsString.withDefault(""),
+    },
+    {
+      shallow: false,
+    },
+  );
+
+  const handleViewModeChange = (newViewMode: "grid" | "list") => {
+    setFilters({ viewMode: newViewMode, search });
+  };
+
+  const handleSearchChange = (newSearch: string) => {
+    setFilters({ search: newSearch, viewMode });
+  };
 
   return (
     <div className="flex flex-col h-full">
       <PageHeader title="MCP Server Catalog">
         <ServerFilters
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
+          onViewModeChange={handleViewModeChange}
+          searchQuery={search}
+          onSearchChange={handleSearchChange}
         />
       </PageHeader>
 
@@ -32,7 +50,7 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
         <Servers
           servers={servers}
           viewMode={viewMode}
-          searchQuery={searchQuery}
+          searchQuery={search}
         />
       </div>
     </div>

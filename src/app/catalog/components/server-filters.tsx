@@ -1,6 +1,7 @@
 "use client";
 
-import { LayoutGrid, List, Search } from "lucide-react";
+import { LayoutGrid, List, Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
@@ -40,12 +41,24 @@ export function ServerFilters({
       <div className="relative w-64">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          type="search"
+          type="text"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-9 pl-9"
+          className="h-9 px-9"
         />
+        {searchQuery && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onSearchChange("")}
+            className="text-muted-foreground hover:text-foreground absolute
+            top-1/2 right-1 size-7 -translate-y-1/2"
+            aria-label="Clear search"
+          >
+            <X className="size-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
