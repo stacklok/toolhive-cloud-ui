@@ -9,7 +9,7 @@ export async function Navbar() {
   });
 
   return (
-    <header className="w-full border-b bg-muted/50 flex items-center justify-between px-8 py-5 h-16">
+    <header className="w-full border-b bg-muted/50 flex items-center justify-between pl-8 pr-4 py-5 h-16">
       <NavbarLogo />
       {session?.user?.name && <UserMenu userName={session.user.name} />}
     </header>
