@@ -28,11 +28,11 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
   );
 
   const handleViewModeChange = (newViewMode: "grid" | "list") => {
-    setFilters({ viewMode: newViewMode, search });
+    setFilters({ viewMode: newViewMode });
   };
 
   const handleSearchChange = (newSearch: string) => {
-    setFilters({ search: newSearch, viewMode });
+    setFilters({ search: newSearch });
   };
 
   return (

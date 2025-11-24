@@ -52,8 +52,7 @@ export function ServerFilters({
             variant="ghost"
             size="icon"
             onClick={() => onSearchChange("")}
-            className="text-muted-foreground hover:text-foreground absolute
-            top-1/2 right-1 size-7 -translate-y-1/2"
+            className="absolute top-1/2 right-1 size-7 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             aria-label="Clear search"
           >
             <X className="size-4" />
