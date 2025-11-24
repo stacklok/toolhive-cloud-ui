@@ -28,7 +28,7 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
         />
       </PageHeader>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto pr-4">
         <Servers
           servers={servers}
           viewMode={viewMode}
