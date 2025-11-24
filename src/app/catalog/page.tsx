@@ -15,11 +15,5 @@ export default async function CatalogPage() {
 
   const servers = await getServers();
 
-  return (
-    <div className="flex min-h-screen flex-col">
-      <div className="container mx-auto space-y-6 py-2">
-        <ServersWrapper servers={servers} />
-      </div>
-    </div>
-  );
+  return <ServersWrapper servers={servers} />;
 }

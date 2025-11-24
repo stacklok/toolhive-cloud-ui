@@ -6,9 +6,11 @@ export default async function CatalogLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <Navbar />
-      {children}
-    </>
+      <main className="flex flex-col flex-1 overflow-hidden px-4 py-5">
+        {children}
+      </main>
+    </div>
   );
 }
