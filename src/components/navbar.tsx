@@ -9,11 +9,9 @@ export async function Navbar() {
   });
 
   return (
-    <header className="w-full border-b bg-muted/50">
-      <div className="container mx-auto flex items-center justify-between px-4 py-4">
-        <NavbarLogo />
-        {session?.user?.name && <UserMenu userName={session.user.name} />}
-      </div>
+    <header className="w-full border-b bg-muted/50 flex items-center justify-between px-8 py-5 h-16">
+      <NavbarLogo />
+      {session?.user?.name && <UserMenu userName={session.user.name} />}
     </header>
   );
 }
