@@ -28,11 +28,11 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
   );
 
   const handleViewModeChange = (newViewMode: "grid" | "list") => {
-    setFilters({ viewMode: newViewMode });
+    setFilters((prev) => ({ ...prev, viewMode: newViewMode }));
   };
 
   const handleSearchChange = (newSearch: string) => {
-    setFilters({ search: newSearch });
+    setFilters((prev) => ({ ...prev, search: newSearch }));
   };
 
   return (
@@ -47,11 +47,7 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
       </PageHeader>
 
       <div className="flex-1 overflow-auto">
-        <Servers
-          servers={servers}
-          viewMode={viewMode}
-          searchQuery={search}
-        />
+        <Servers servers={servers} viewMode={viewMode} searchQuery={search} />
       </div>
     </div>
   );

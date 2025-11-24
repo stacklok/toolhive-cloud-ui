@@ -5,8 +5,13 @@ import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { ServersWrapper } from "../servers-wrapper";
 
-function renderWithNuqs(ui: React.ReactElement) {
-  return render(<NuqsTestingAdapter>{ui}</NuqsTestingAdapter>);
+function renderWithNuqs(
+  ui: React.ReactElement,
+  searchParams?: URLSearchParams,
+) {
+  return render(
+    <NuqsTestingAdapter searchParams={searchParams}>{ui}</NuqsTestingAdapter>,
+  );
 }
 
 const mockServers: V0ServerJson[] = [
@@ -28,22 +33,22 @@ describe("ServersWrapper", () => {
   it("has header with title", () => {
     renderWithNuqs(<ServersWrapper servers={mockServers} />);
 
-    expect(screen.getByText("MCP Server Catalog")).toBeInTheDocument();
+    expect(screen.getByText("MCP Server Catalog")).toBeVisible();
   });
 
   it("has catalog filters", () => {
     renderWithNuqs(<ServersWrapper servers={mockServers} />);
 
-    expect(screen.getByLabelText("List view")).toBeInTheDocument();
-    expect(screen.getByLabelText("Grid view")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
+    expect(screen.getByLabelText("List view")).toBeVisible();
+    expect(screen.getByLabelText("Grid view")).toBeVisible();
+    expect(screen.getByPlaceholderText("Search")).toBeVisible();
   });
 
   it("displays servers in grid mode by default", () => {
     renderWithNuqs(<ServersWrapper servers={mockServers} />);
 
-    expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
-    expect(screen.getByText("google-applications")).toBeInTheDocument();
+    expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+    expect(screen.getByText("google-applications")).toBeVisible();
   });
 
   it("switches to list mode when list button is clicked", async () => {
@@ -52,9 +57,11 @@ describe("ServersWrapper", () => {
 
     await user.click(screen.getByLabelText("List view"));
 
-    expect(screen.getByText("Server")).toBeInTheDocument();
-    expect(screen.getByText("About")).toBeInTheDocument();
-    expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Server")).toBeVisible();
+      expect(screen.getByText("About")).toBeVisible();
+      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+    });
   });
 
   it("switches back to grid mode when grid button is clicked", async () => {
@@ -64,8 +71,10 @@ describe("ServersWrapper", () => {
     await user.click(screen.getByLabelText("List view"));
     await user.click(screen.getByLabelText("Grid view"));
 
-    expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
-    expect(screen.queryByText("Server")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.queryByText("Server")).not.toBeInTheDocument();
+    });
   });
 
   it("filters servers when typing in search", async () => {
@@ -75,8 +84,10 @@ describe("ServersWrapper", () => {
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "aws");
 
-    expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
-    expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
+    });
   });
 
   it("shows no results message when search has no matches", async () => {
@@ -86,26 +97,42 @@ describe("ServersWrapper", () => {
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "nonexistent");
 
-    expect(
-      screen.getByText('No servers found matching "nonexistent"'),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText('No servers found matching "nonexistent"'),
+      ).toBeVisible();
+    });
   });
 
   it("maintains search when switching view modes", async () => {
     const user = userEvent.setup();
     renderWithNuqs(<ServersWrapper servers={mockServers} />);
 
-    const searchInput = screen.getByPlaceholderText("Search");
+    const searchInput = screen.getByPlaceholderText(
+      "Search",
+    ) as HTMLInputElement;
     await user.type(searchInput, "aws");
 
-    expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
-    expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
+    });
 
     await user.click(screen.getByLabelText("List view"));
 
     await waitFor(() => {
-      expect(screen.getByText("aws-nova-canvas")).toBeInTheDocument();
-      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
+      expect(screen.getByText("Server")).toBeVisible();
+    });
+
+    expect(searchInput.value).toBe("aws");
+
+    await waitFor(() => {
+      const awsCanvas = screen.queryByText("aws-nova-canvas");
+      const googleApps = screen.queryByText("google-applications");
+
+      expect(awsCanvas).toBeInTheDocument();
+      expect(awsCanvas).toBeVisible();
+      expect(googleApps).not.toBeInTheDocument();
     });
   });
 });
