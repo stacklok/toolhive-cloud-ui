@@ -1,5 +1,6 @@
 import {
   After,
+  AfterAll,
   Before,
   type ITestCaseHookParameter,
   setDefaultTimeout,
@@ -57,4 +58,11 @@ After(async function (this: PlaywrightWorld, scenario: ITestCaseHookParameter) {
   }
   if (this.page) await this.page.close();
   if (this.context) await this.context.close();
+});
+
+AfterAll(async () => {
+  if (browser) {
+    await browser.close();
+    browser = undefined;
+  }
 });
