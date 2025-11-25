@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ServerDetailContent } from "./server-detail-content";
+import { ServerAboutTab } from "./server-about-tab";
 
 interface ServersDetailTabsProps {
   description?: string;
@@ -23,10 +23,10 @@ export function ServersDetailTabs({
         >
           About
         </TabsTrigger>
-        {/* Disabled. Currently the api is not supporting it */}
+
         <TabsTrigger
           value="tools"
-          disabled
+          disabled // Disabled. No API support yet
           className="border-none data-[state=active]:bg-accent
                 data-[state=active]:text-accent-foreground w-full cursor-pointer
                 justify-start py-2 data-[state=active]:shadow-none"
@@ -36,7 +36,7 @@ export function ServersDetailTabs({
       </TabsList>
 
       <TabsContent value="about" className="flex-1 space-y-6 mt-5">
-        <ServerDetailContent
+        <ServerAboutTab
           description={description}
           serverUrl={serverUrl}
           repositoryUrl={repositoryUrl}
