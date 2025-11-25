@@ -1,3 +1,9 @@
+## Note: This is an experimental project that is actively being developed and tested - features may change without notice
+
+[![Release][release-img]][release] [![Build status][ci-img]][ci]
+[![License: Apache 2.0][license-img]][license]
+[![Discord][discord-img]][discord]
+
 # ToolHive Cloud UI
 
 A Next.js application for visualizing MCP (Model Context Protocol) servers running in user infrastructure with easy URL copying for integration with AI agents.
@@ -466,3 +472,14 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
+
+<!-- Badge references -->
+
+[release-img]: https://img.shields.io/github/v/release/stacklok/toolhive-cloud-ui?style=flat-square
+[release]: https://github.com/stacklok/toolhive-cloud-ui/releases
+[ci-img]: https://img.shields.io/github/actions/workflow/status/stacklok/toolhive-cloud-ui/ci.yml?branch=main&style=flat-square
+[ci]: https://github.com/stacklok/toolhive-cloud-ui/actions
+[license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square
+[license]: https://github.com/stacklok/toolhive-cloud-ui/blob/main/LICENSE
+[discord-img]: https://img.shields.io/discord/1204796009658040360?label=discord&logo=discord&style=flat-square
+[discord]: https://discord.gg/stacklok
