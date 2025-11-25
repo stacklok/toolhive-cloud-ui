@@ -474,7 +474,7 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](./LICEN
 
 <!-- Badge references -->
 
-[license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square
-[license]: https://github.com/stacklok/toolhive-cloud-ui/blob/main/LICENSE
-[discord-img]: https://img.shields.io/discord/1204796009658040360?label=discord&logo=discord&style=flat-square
+[license-img]: https://img.shields.io/badge/License-Apache2.0-blue.svg?style=flat
+[license]: https://opensource.org/licenses/Apache-2.0
+[discord-img]: https://img.shields.io/discord/1184987096302239844?style=flat&logo=discord&logoColor=white&label=Discord
 [discord]: https://discord.gg/stacklok
