@@ -1,21 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
-import Home from "@/app/(authed)/page";
+import * as nextNavigation from "next/navigation";
+import { expect, test, vi } from "vitest";
+import Home from "@/app/page";
 
-test("Home page renders welcome heading and link to catalog when user is logged in", async () => {
-  render(await Home());
-
-  expect(
-    screen.getByRole("heading", {
-      level: 1,
-      name: /Welcome to ToolHive Cloud UI/i,
-    }),
-  ).toBeDefined();
-
-  expect(screen.getByText(/You are logged in as/i)).toBeDefined();
-  expect(screen.getByText(/test@example.com/i)).toBeDefined();
-
-  const catalogLink = screen.getByRole("link", { name: /Go to Catalog/i });
-  expect(catalogLink).toBeDefined();
-  expect(catalogLink.getAttribute("href")).toBe("/catalog");
+test("Home redirects to /catalog when user is logged in", async () => {
+  const redirectSpy = vi.spyOn(nextNavigation, "redirect");
+  await Home();
+  expect(redirectSpy).toHaveBeenCalledWith("/catalog");
 });

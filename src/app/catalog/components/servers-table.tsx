@@ -25,9 +25,9 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
       <Table>
         <TableHeader className="bg-muted/50">
           <TableRow>
-            <TableHead className="w-[187px]">Server</TableHead>
-            <TableHead>About</TableHead>
-            <TableHead className="w-[120px]" />
+            <TableHead className="w-2/12 pl-4">Server</TableHead>
+            <TableHead className="w-9/12">About</TableHead>
+            <TableHead className="w-1/12" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -43,7 +43,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                 onClick={() => onServerClick?.(server)}
                 className={onServerClick ? "cursor-pointer" : undefined}
               >
-                <TableCell className="font-medium">{serverName}</TableCell>
+                <TableCell className="font-medium pl-4">{serverName}</TableCell>
                 <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {description}
                 </TableCell>

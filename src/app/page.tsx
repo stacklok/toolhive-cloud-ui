@@ -1,10 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
-import { getServers } from "./actions";
-import { ServersWrapper } from "./components/servers-wrapper";
 
-export default async function CatalogPage() {
+export default async function Home() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -13,7 +11,6 @@ export default async function CatalogPage() {
     redirect("/signin");
   }
 
-  const servers = await getServers();
-
-  return <ServersWrapper servers={servers} />;
+  // Authenticated: redirect straight to Catalog
+  redirect("/catalog");
 }

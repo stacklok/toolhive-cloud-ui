@@ -50,15 +50,17 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
 
   if (viewMode === "list") {
     return (
-      <ServersTable
-        servers={filteredServers}
-        onServerClick={handleServerClick}
-      />
+      <div className="pb-6">
+        <ServersTable
+          servers={filteredServers}
+          onServerClick={handleServerClick}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 pb-6 md:grid-cols-2 lg:grid-cols-3 px-4">
       {filteredServers.map((server) => (
         <ServerCard
           key={server.name}
