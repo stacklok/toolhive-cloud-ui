@@ -8,21 +8,21 @@ import { Button } from "./ui/button";
 
 interface HistoryBackProps {
   className?: string;
-  fallbackUrl?: string;
+  href?: string;
   variant?: ButtonProps["variant"];
   size?: ButtonProps["size"];
 }
 
-export function HistoryBack({
+export function NavigateBackButton({
   className,
-  fallbackUrl = "/",
+  href = "/",
   variant = "secondary",
   size = "sm",
 }: HistoryBackProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(fallbackUrl);
+    router.push(href);
   };
 
   return (

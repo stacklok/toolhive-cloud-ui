@@ -1,4 +1,4 @@
-import { HistoryBack } from "@/components/history-back";
+import { NavigateBackButton } from "@/components/navigate-back-button";
 import { Badge } from "@/components/ui/badge";
 
 interface ServerDetailTitleProps {
@@ -14,8 +14,8 @@ export function ServerDetailTitle({
 }: ServerDetailTitleProps) {
   return (
     <div className="flex flex-col gap-5">
-      <HistoryBack
-        fallbackUrl="/catalog"
+      <NavigateBackButton
+        href="/catalog"
         variant="secondary"
         size="sm"
         className="w-fit"
