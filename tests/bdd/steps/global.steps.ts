@@ -6,6 +6,13 @@ Given("I am on {string}", async function (this: PlaywrightWorld, path: string) {
   await this.page.goto(`${this.baseUrl}${path}`);
 });
 
+Given("I am logged in", async function (this: PlaywrightWorld) {
+  await this.page.goto(`${this.baseUrl}/signin`);
+  await this.page.getByRole("button", { name: "Okta" }).click();
+  // Wait for auth to complete (redirects away from signin)
+  await this.page.waitForURL((url) => !url.pathname.startsWith("/signin"));
+});
+
 // Generic click step using the {role} parameter type (canonical phrases only)
 When(
   "I click on the {string} {role}",

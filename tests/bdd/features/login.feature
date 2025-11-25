@@ -7,9 +7,8 @@ Feature: Login flow
     And I should see a heading "MCP Server Catalog"
 
   Scenario: Log out from Catalog
-    Given I am on "/signin"
-    When I click on the "Okta" button
-    Then I should be on "/catalog"
+    Given I am logged in
+    And I am on "/catalog"
     When I click on the "Test User" button
     And I click on the "Sign out" menu item
     Then I should be on "/signin"

@@ -30,6 +30,13 @@ Before(async function (this: PlaywrightWorld) {
   this.context = context;
   this.page = page;
 
+  // Hide Next.js dev overlay to keep traces clean
+  await this.page.addInitScript(() => {
+    const style = document.createElement("style");
+    style.textContent = "nextjs-portal { display: none !important; }";
+    document.head.appendChild(style);
+  });
+
   if (TRACE_ENABLED) {
     await this.context.tracing.start({ screenshots: true, snapshots: true });
   }
