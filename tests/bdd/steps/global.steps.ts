@@ -26,8 +26,8 @@ Then(
 );
 
 Then(
-  "I should see a heading {string}",
-  async function (this: PlaywrightWorld, heading: string) {
+  "I should see {article} {string} heading",
+  async function (this: PlaywrightWorld, _article: null, heading: string) {
     await expect(
       this.requirePage().getByRole("heading", { name: heading }),
     ).toBeVisible();

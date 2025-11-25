@@ -17,3 +17,10 @@ defineParameterType({
     throw new Error(`Unknown role phrase "${text}".`);
   },
 });
+
+defineParameterType({
+  name: "article",
+  useForSnippets: false,
+  regexp: /a|an/,
+  transformer: () => null,
+});

@@ -262,25 +262,25 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ### Testing
 
+#### Unit/Component Tests
+
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test --watch
-
-# Run tests with coverage
-pnpm test --coverage
-
-# Run specific test file
-pnpm test src/components/navbar.test.tsx
+pnpm test              # Run all tests
+pnpm test --watch      # Watch mode
+pnpm test --coverage   # With coverage
 ```
 
-Tests use:
+Uses Vitest + Testing Library + MSW.
 
-- **Vitest** - Test runner
-- **Testing Library** - React component testing
-- **MSW** - API mocking
+#### BDD E2E Tests (Cucumber + Playwright)
+
+```bash
+pnpm exec playwright install   # One-time browser install
+pnpm dev                       # Start dev stack
+pnpm run test:bdd              # Run scenarios (headless)
+pnpm run test:bdd:debug        # With Playwright Inspector
+pnpm run test:bdd:trace        # Capture traces
+```
 
 ### Mock Server
 

@@ -4,7 +4,7 @@ Feature: Login flow
     Given I am on "/signin"
     When I click on the "Okta" button
     Then I should be on "/catalog"
-    And I should see a heading "MCP Server Catalog"
+    And I should see an "MCP Server Catalog" heading
 
   Scenario: Log out from Catalog
     Given I am logged in
