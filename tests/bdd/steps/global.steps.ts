@@ -19,13 +19,6 @@ When(
 );
 
 Then(
-  "I should see the text {string}",
-  async function (this: PlaywrightWorld, text: string) {
-    await expect(this.requirePage().getByText(text)).toBeVisible();
-  },
-);
-
-Then(
   "I should see {article} {string} heading",
   async function (this: PlaywrightWorld, _article: null, heading: string) {
     await expect(
