@@ -4,32 +4,8 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type GithubComStacklokToolhiveRegistryServerInternalServiceDeployedServer =
-  {
-    endpoint_url?: string;
-    image?: string;
-    name?: string;
-    namespace?: string;
-    ready?: boolean;
-    status?: string;
-    transport?: string;
-  };
-
-export type InternalApiV0EnvVarDetail = {
-  default?: string;
-  description?: string;
-  name?: string;
-  required?: boolean;
-  secret?: boolean;
-};
-
 export type InternalApiV0ErrorResponse = {
   error?: string;
-};
-
-export type InternalApiV0ListServersResponse = {
-  servers?: Array<InternalApiV0ServerSummaryResponse>;
-  total?: number;
 };
 
 export type InternalApiV0RegistryInfoResponse = {
@@ -37,38 +13,6 @@ export type InternalApiV0RegistryInfoResponse = {
   source?: string;
   total_servers?: number;
   version?: string;
-};
-
-export type InternalApiV0ServerDetailResponse = {
-  args?: Array<string>;
-  description?: string;
-  env_vars?: Array<InternalApiV0EnvVarDetail>;
-  image?: string;
-  metadata?: {
-    [key: string]: unknown;
-  };
-  name?: string;
-  permissions?: {
-    [key: string]: unknown;
-  };
-  repository_url?: string;
-  status?: string;
-  tags?: Array<string>;
-  tier?: string;
-  tools?: Array<string>;
-  transport?: string;
-  volumes?: {
-    [key: string]: unknown;
-  };
-};
-
-export type InternalApiV0ServerSummaryResponse = {
-  description?: string;
-  name?: string;
-  status?: string;
-  tier?: string;
-  tools_count?: number;
-  transport?: string;
 };
 
 export type ModelArgument = {
@@ -287,158 +231,6 @@ export type GetApiV0RegistryOpenapiYamlResponses = {
 
 export type GetApiV0RegistryOpenapiYamlResponse =
   GetApiV0RegistryOpenapiYamlResponses[keyof GetApiV0RegistryOpenapiYamlResponses];
-
-export type GetApiV0RegistryServersData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path?: never;
-  query?: {
-    /**
-     * Response format
-     */
-    format?: "toolhive" | "upstream";
-  };
-  url: "/api/v0/registry/servers";
-};
-
-export type GetApiV0RegistryServersErrors = {
-  /**
-   * Bad Request
-   */
-  400: InternalApiV0ErrorResponse;
-  /**
-   * Not Implemented
-   */
-  501: InternalApiV0ErrorResponse;
-};
-
-export type GetApiV0RegistryServersError =
-  GetApiV0RegistryServersErrors[keyof GetApiV0RegistryServersErrors];
-
-export type GetApiV0RegistryServersResponses = {
-  /**
-   * OK
-   */
-  200: InternalApiV0ListServersResponse;
-};
-
-export type GetApiV0RegistryServersResponse =
-  GetApiV0RegistryServersResponses[keyof GetApiV0RegistryServersResponses];
-
-export type GetApiV0RegistryServersDeployedData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path?: never;
-  query?: never;
-  url: "/api/v0/registry/servers/deployed";
-};
-
-export type GetApiV0RegistryServersDeployedErrors = {
-  /**
-   * Internal Server Error
-   */
-  500: InternalApiV0ErrorResponse;
-};
-
-export type GetApiV0RegistryServersDeployedError =
-  GetApiV0RegistryServersDeployedErrors[keyof GetApiV0RegistryServersDeployedErrors];
-
-export type GetApiV0RegistryServersDeployedResponses = {
-  /**
-   * OK
-   */
-  200: Array<GithubComStacklokToolhiveRegistryServerInternalServiceDeployedServer>;
-};
-
-export type GetApiV0RegistryServersDeployedResponse =
-  GetApiV0RegistryServersDeployedResponses[keyof GetApiV0RegistryServersDeployedResponses];
-
-export type GetApiV0RegistryServersDeployedByNameData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Server registry name
-     */
-    name: string;
-  };
-  query?: never;
-  url: "/api/v0/registry/servers/deployed/{name}";
-};
-
-export type GetApiV0RegistryServersDeployedByNameErrors = {
-  /**
-   * Bad Request
-   */
-  400: InternalApiV0ErrorResponse;
-  /**
-   * Internal Server Error
-   */
-  500: InternalApiV0ErrorResponse;
-};
-
-export type GetApiV0RegistryServersDeployedByNameError =
-  GetApiV0RegistryServersDeployedByNameErrors[keyof GetApiV0RegistryServersDeployedByNameErrors];
-
-export type GetApiV0RegistryServersDeployedByNameResponses = {
-  /**
-   * OK
-   */
-  200: Array<GithubComStacklokToolhiveRegistryServerInternalServiceDeployedServer>;
-};
-
-export type GetApiV0RegistryServersDeployedByNameResponse =
-  GetApiV0RegistryServersDeployedByNameResponses[keyof GetApiV0RegistryServersDeployedByNameResponses];
-
-export type GetApiV0RegistryServersByNameData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Server name
-     */
-    name: string;
-  };
-  query?: {
-    /**
-     * Response format
-     */
-    format?: "toolhive" | "upstream";
-  };
-  url: "/api/v0/registry/servers/{name}";
-};
-
-export type GetApiV0RegistryServersByNameErrors = {
-  /**
-   * Bad Request
-   */
-  400: InternalApiV0ErrorResponse;
-  /**
-   * Not Found
-   */
-  404: InternalApiV0ErrorResponse;
-  /**
-   * Not Implemented
-   */
-  501: InternalApiV0ErrorResponse;
-};
-
-export type GetApiV0RegistryServersByNameError =
-  GetApiV0RegistryServersByNameErrors[keyof GetApiV0RegistryServersByNameErrors];
-
-export type GetApiV0RegistryServersByNameResponses = {
-  /**
-   * OK
-   */
-  200: InternalApiV0ServerDetailResponse;
-};
-
-export type GetApiV0RegistryServersByNameResponse =
-  GetApiV0RegistryServersByNameResponses[keyof GetApiV0RegistryServersByNameResponses];
 
 export type GetExtensionV0RegistriesData = {
   body?: {
@@ -1021,24 +813,6 @@ export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResp
 
 export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponse =
   GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses[keyof GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses];
-
-export type PostV0PublishData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path?: never;
-  query?: never;
-  url: "/v0/publish";
-};
-
-export type PostV0PublishErrors = {
-  /**
-   * Not Implemented
-   */
-  501: InternalApiV0ErrorResponse;
-};
-
-export type PostV0PublishError = PostV0PublishErrors[keyof PostV0PublishErrors];
 
 export type GetVersionData = {
   body?: never;

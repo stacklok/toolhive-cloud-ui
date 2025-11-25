@@ -12,18 +12,6 @@ import type {
   GetApiV0RegistryInfoResponses,
   GetApiV0RegistryOpenapiYamlData,
   GetApiV0RegistryOpenapiYamlResponses,
-  GetApiV0RegistryServersByNameData,
-  GetApiV0RegistryServersByNameErrors,
-  GetApiV0RegistryServersByNameResponses,
-  GetApiV0RegistryServersData,
-  GetApiV0RegistryServersDeployedByNameData,
-  GetApiV0RegistryServersDeployedByNameErrors,
-  GetApiV0RegistryServersDeployedByNameResponses,
-  GetApiV0RegistryServersDeployedData,
-  GetApiV0RegistryServersDeployedErrors,
-  GetApiV0RegistryServersDeployedResponses,
-  GetApiV0RegistryServersErrors,
-  GetApiV0RegistryServersResponses,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesData,
@@ -57,8 +45,6 @@ import type {
   PostRegistryByRegistryNameV01PublishErrors,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
-  PostV0PublishData,
-  PostV0PublishErrors,
   PutExtensionV0RegistriesByRegistryNameData,
   PutExtensionV0RegistriesByRegistryNameErrors,
   PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
@@ -125,108 +111,6 @@ export const getApiV0RegistryOpenapiYaml = <
   >({
     url: "/api/v0/registry/openapi.yaml",
     ...options,
-  });
-};
-
-/**
- * List all servers
- *
- * Get a list of all available MCP servers in the registry
- *
- * @deprecated
- */
-export const getApiV0RegistryServers = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiV0RegistryServersData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetApiV0RegistryServersResponses,
-    GetApiV0RegistryServersErrors,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/servers",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-};
-
-/**
- * List deployed servers
- *
- * Get a list of all currently deployed MCP servers
- *
- * @deprecated
- */
-export const getApiV0RegistryServersDeployed = <
-  ThrowOnError extends boolean = false,
->(
-  options?: Options<GetApiV0RegistryServersDeployedData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetApiV0RegistryServersDeployedResponses,
-    GetApiV0RegistryServersDeployedErrors,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/servers/deployed",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-};
-
-/**
- * Get deployed servers by registry name
- *
- * Get all deployed MCP servers that match the specified server registry name
- *
- * @deprecated
- */
-export const getApiV0RegistryServersDeployedByName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<GetApiV0RegistryServersDeployedByNameData, ThrowOnError>,
-) => {
-  return (options.client ?? client).get<
-    GetApiV0RegistryServersDeployedByNameResponses,
-    GetApiV0RegistryServersDeployedByNameErrors,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/servers/deployed/{name}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-};
-
-/**
- * Get server by name
- *
- * Get detailed information about a specific MCP server
- *
- * @deprecated
- */
-export const getApiV0RegistryServersByName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<GetApiV0RegistryServersByNameData, ThrowOnError>,
-) => {
-  return (options.client ?? client).get<
-    GetApiV0RegistryServersByNameResponses,
-    GetApiV0RegistryServersByNameErrors,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/servers/{name}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
   });
 };
 
@@ -613,30 +497,6 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
       },
     });
   };
-
-/**
- * Publish MCP server (Not Implemented)
- *
- * Publish a new MCP server to the registry or update an existing one
- *
- * @deprecated
- */
-export const postV0Publish = <ThrowOnError extends boolean = false>(
-  options?: Options<PostV0PublishData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).post<
-    unknown,
-    PostV0PublishErrors,
-    ThrowOnError
-  >({
-    url: "/v0/publish",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-};
 
 /**
  * Version information

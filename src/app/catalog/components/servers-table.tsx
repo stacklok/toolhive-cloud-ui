@@ -48,7 +48,9 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                   {description}
                 </TableCell>
                 <TableCell>
-                  <CopyUrlButton url={url} className="shadow-sm" />
+                  {url ? (
+                    <CopyUrlButton url={url} className="shadow-sm" />
+                  ) : null}
                 </TableCell>
               </TableRow>
             );

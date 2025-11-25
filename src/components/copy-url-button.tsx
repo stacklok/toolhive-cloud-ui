@@ -19,11 +19,8 @@ export function CopyUrlButton({
   size = "sm",
   ...props
 }: CopyUrlButtonProps) {
-  const handleCopyUrl = async () => {
-    if (!url) {
-      toast.error("URL not available");
-      return;
-    }
+  const handleCopyUrl = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
 
     try {
       await navigator.clipboard.writeText(url);
@@ -39,6 +36,7 @@ export function CopyUrlButton({
       size={size}
       onClick={handleCopyUrl}
       aria-label="Copy URL"
+      className="cursor-pointer"
       {...props}
     >
       <Copy className="size-4" />
