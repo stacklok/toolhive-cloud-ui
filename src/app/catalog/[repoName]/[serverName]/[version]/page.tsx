@@ -5,21 +5,16 @@ import { ServersDetailTabs } from "./components/servers-detail-tabs";
 
 interface CatalogDetailPageProps {
   params: Promise<{
-    slug: string[];
+    repoName: string;
+    serverName: string;
+    version: string;
   }>;
 }
 
 export default async function CatalogDetailPage({
   params,
 }: CatalogDetailPageProps) {
-  const { slug } = await params;
-
-  // Validate that slug has exactly 3 segments: [repoName, serverName, version]
-  if (slug.length !== 3) {
-    notFound();
-  }
-
-  const [repoName, serverName, version] = slug;
+  const { repoName, serverName, version } = await params;
 
   const { data: serverResponse, response } = await getServerDetails(
     `${repoName}/${serverName}`,
