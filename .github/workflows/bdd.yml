@@ -25,6 +25,8 @@ jobs:
         run: pnpm exec playwright install --with-deps
 
       - name: Start dev stack (Next + OIDC + Mock)
+        env:
+          API_BASE_URL: http://localhost:9090
         run: |
           pnpm dev &
           echo $! > dev.pid
