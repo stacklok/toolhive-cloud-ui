@@ -27,6 +27,12 @@ jobs:
       - name: Start dev stack (Next + OIDC + Mock)
         env:
           API_BASE_URL: http://localhost:9090
+          OIDC_ISSUER_URL: http://localhost:4000
+          OIDC_CLIENT_ID: better-auth-dev
+          OIDC_CLIENT_SECRET: dev-secret-change-in-production
+          NEXT_PUBLIC_OIDC_PROVIDER_ID: okta
+          BETTER_AUTH_URL: http://localhost:3000
+          BETTER_AUTH_SECRET: ci-test-secret-not-for-production
         run: |
           pnpm dev &
           echo $! > dev.pid
