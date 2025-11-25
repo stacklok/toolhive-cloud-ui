@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createServer } from "@mswjs/http-middleware";
 import { config } from "dotenv";
+import { HttpResponse, http } from "msw";
 import { handlers } from "./handlers";
 
 // Load .env first, then .env.local (which overrides .env)
@@ -21,7 +22,12 @@ if (!port) {
   throw new Error("API_BASE_URL must include a port number");
 }
 
-const httpServer = createServer(...handlers);
+// Add health check endpoint for CI readiness checks
+const healthHandler = http.get("*/health", () => {
+  return HttpResponse.json({ status: "ok" });
+});
+
+const httpServer = createServer(healthHandler, ...handlers);
 
 httpServer.on("request", (req: IncomingMessage, _res: ServerResponse) => {
   console.log(`[mock] ${req.method} ${req.url}`);

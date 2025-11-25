@@ -30,8 +30,8 @@ jobs:
         run: |
           pnpm dev &
           echo $! > dev.pid
-          # Wait for Next (3000), OIDC (4000 - use discovery endpoint), and Mock API (9090)
-          for url in http://localhost:3000 http://localhost:4000/.well-known/openid-configuration http://localhost:9090; do
+          # Wait for Next (3000), OIDC (4000 - use discovery endpoint), and Mock API (9090 - use health endpoint)
+          for url in http://localhost:3000 http://localhost:4000/.well-known/openid-configuration http://localhost:9090/health; do
             echo "Waiting for $url..."
             up=false
             for i in {1..60}; do
