@@ -4,19 +4,19 @@ import { injectAuthCookies } from "../support/auth.ts";
 import type { PlaywrightWorld } from "../support/world";
 
 Given("I am on {string}", async function (this: PlaywrightWorld, path: string) {
-  await this.page.goto(`${this.baseUrl}${path}`);
+  await this.requirePage().goto(`${this.baseUrl}${path}`);
 });
 
 Given("I am logged in", async function (this: PlaywrightWorld) {
   // Perform login in a separate page and inject cookies into context
-  await injectAuthCookies(this.context);
+  await injectAuthCookies(this.requireContext());
 });
 
 // Generic click step using the {role} parameter type (canonical phrases only)
 When(
   "I click on the {string} {role}",
   async function (this: PlaywrightWorld, label: string, role: AriaRole) {
-    await this.page.getByRole(role, { name: label }).click();
+    await this.requirePage().getByRole(role, { name: label }).click();
   },
 );
 
@@ -25,7 +25,7 @@ When(
 Then(
   "I should see the text {string}",
   async function (this: PlaywrightWorld, text: string) {
-    await expect(this.page.getByText(text)).toBeVisible();
+    await expect(this.requirePage().getByText(text)).toBeVisible();
   },
 );
 
@@ -33,7 +33,7 @@ Then(
   "I should see a heading {string}",
   async function (this: PlaywrightWorld, heading: string) {
     await expect(
-      this.page.getByRole("heading", { name: heading }),
+      this.requirePage().getByRole("heading", { name: heading }),
     ).toBeVisible();
   },
 );
@@ -41,7 +41,7 @@ Then(
 Then(
   "I should be on {string}",
   async function (this: PlaywrightWorld, path: string) {
-    await expect(this.page).toHaveURL(
+    await expect(this.requirePage()).toHaveURL(
       new RegExp(
         `${this.baseUrl}${path.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`,
       ),

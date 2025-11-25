@@ -50,10 +50,11 @@ Before(async function (this: PlaywrightWorld) {
 After(async function (this: PlaywrightWorld, scenario: ITestCaseHookParameter) {
   if (TRACE_ENABLED && this.context) {
     const safeName = scenario.pickle.name.replace(/[^a-z0-9-]+/gi, "_");
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const { mkdir } = await import("node:fs/promises");
     await mkdir("test-results/traces", { recursive: true });
     await this.context.tracing.stop({
-      path: `test-results/traces/${safeName}.zip`,
+      path: `test-results/traces/${safeName}_${timestamp}.zip`,
     });
   }
   if (this.page) await this.page.close();

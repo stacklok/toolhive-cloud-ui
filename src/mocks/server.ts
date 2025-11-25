@@ -30,6 +30,8 @@ const healthHandler = http.get("*/health", () => {
 const httpServer = createServer(healthHandler, ...handlers);
 
 httpServer.on("request", (req: IncomingMessage, _res: ServerResponse) => {
+  // Skip logging health checks to reduce CI noise
+  if (req.url?.includes("/health")) return;
   console.log(`[mock] ${req.method} ${req.url}`);
 });
 
