@@ -16,7 +16,7 @@ import type { PlaywrightWorld } from "./world";
 let browser: Browser | undefined;
 const TRACE_ENABLED = process.env.PWTRACE === "1";
 
-setDefaultTimeout(60 * 1000); // 60s per step
+setDefaultTimeout(60_000);
 
 Before(async function (this: PlaywrightWorld) {
   const isDebug = !!process.env.PWDEBUG;
@@ -31,8 +31,8 @@ Before(async function (this: PlaywrightWorld) {
   this.context = context;
   this.page = page;
 
-  // Hide Next.js dev overlay to keep traces clean
   await this.page.addInitScript(() => {
+    // Hide Next.js dev overlay
     const style = document.createElement("style");
     style.textContent = "nextjs-portal { display: none !important; }";
     document.head.appendChild(style);
