@@ -1,4 +1,4 @@
-.PHONY: help build start stop restart logs clean dev shell rebuild
+.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc
 
 # Variables
 IMAGE_NAME := toolhive-cloud-ui
@@ -11,7 +11,19 @@ RELEASE_NAME := toolhive-cloud-ui
 help:
 	@echo "ToolHive Cloud UI - Available Commands"
 	@echo ""
-	@echo "Docker (Local Development):"
+	@echo "Development (pnpm):"
+	@echo "  make install        - Install dependencies (pnpm install)"
+	@echo "  make dev            - Run dev server with OIDC mock and MSW"
+	@echo "  make dev-next       - Run only Next.js dev server"
+	@echo "  make dev-mock-server - Run Next.js with MSW (requires real OIDC)"
+	@echo "  make dev-mock-oidc  - Run Next.js with OIDC mock (requires real API)"
+	@echo "  make lint           - Run linter (Biome)"
+	@echo "  make format         - Format code (Biome)"
+	@echo "  make test           - Run tests (Vitest)"
+	@echo "  make type-check     - TypeScript type checking"
+	@echo "  make generate-client - Generate API client from backend"
+	@echo ""
+	@echo "Docker (Production):"
 	@echo "  make build          - Build production Docker image"
 	@echo "  make start          - Start Docker container"
 	@echo "  make stop           - Stop Docker container"
@@ -27,9 +39,6 @@ help:
 	@echo "  make kind-logs      - View application logs"
 	@echo "  make kind-uninstall - Uninstall from Kind"
 	@echo "  make kind-delete    - Delete Kind cluster"
-	@echo ""
-	@echo "Development:"
-	@echo "  make dev            - Run Next.js dev server"
 
 ## Build the production docker image
 build:
@@ -59,9 +68,55 @@ clean: stop
 	@docker rmi $(IMAGE_NAME):$(IMAGE_TAG) > /dev/null 2>&1 || true
 	@echo "Cleanup complete"
 
-## Run development server locally
+## Install dependencies
+install:
+	@echo "Installing dependencies with pnpm..."
+	@pnpm install
+
+## Run development server with OIDC mock and MSW mock server
 dev:
-	pnpm dev
+	@echo "Starting dev server (Next.js + OIDC + MSW)..."
+	@pnpm dev
+
+## Run only Next.js dev server
+dev-next:
+	@echo "Starting Next.js dev server only..."
+	@pnpm dev:next
+
+## Run Next.js with MSW mock server (requires real OIDC configured)
+dev-mock-server:
+	@echo "Starting Next.js with MSW mock server (requires OIDC in .env.local)..."
+	@pnpm dev:mock-server
+
+## Run Next.js with OIDC mock (requires real backend API configured)
+dev-mock-oidc:
+	@echo "Starting Next.js with OIDC mock (requires API_BASE_URL in .env.local)..."
+	@pnpm dev:mock-oidc
+
+## Run linter
+lint:
+	@echo "Running linter..."
+	@pnpm lint
+
+## Format code
+format:
+	@echo "Formatting code..."
+	@pnpm format
+
+## Run tests
+test:
+	@echo "Running tests..."
+	@pnpm test
+
+## TypeScript type checking
+type-check:
+	@echo "Type checking..."
+	@pnpm type-check
+
+## Generate API client from backend
+generate-client:
+	@echo "Generating API client..."
+	@pnpm generate-client
 
 ## Open shell in running container
 shell:

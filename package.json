@@ -7,6 +7,7 @@
     "dev": "concurrently -n \"OIDC,Mock,Next\" -c \"blue,magenta,green\" \"pnpm oidc\" \"pnpm mock:server\" \"pnpm dev:next\"",
     "dev:next": "next dev",
     "dev:mock-server": "concurrently -n \"Mock,Next\" -c \"magenta,green\" \"pnpm mock:server\" \"pnpm dev:next\"",
+    "dev:mock-oidc": "concurrently -n \"OIDC,Next\" -c \"blue,green\" \"pnpm oidc\" \"pnpm dev:next\"",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -20,6 +21,7 @@
     "generate-client:nofetch": "openapi-ts",
     "mock:server": "tsx src/mocks/server.ts"
   },
+  "license": "Apache-2.0",
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
