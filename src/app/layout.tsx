@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -21,14 +22,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        {children}
-        <Toaster
-          richColors
-          duration={2000}
-          position="bottom-right"
-          offset={{ top: 50 }}
-          closeButton
-        />
+        <NuqsAdapter>
+          {children}
+          <Toaster
+            richColors
+            duration={2000}
+            position="bottom-right"
+            offset={{ top: 50 }}
+            closeButton
+          />
+        </NuqsAdapter>
       </body>
     </html>
   );
