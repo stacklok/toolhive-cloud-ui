@@ -21,16 +21,18 @@ export default async function CatalogDetailPage({
 
   const [repoName, serverName, version] = slug;
 
-  const serverResponse = await getServerDetails(
+  const { data: serverResponse, response } = await getServerDetails(
     `${repoName}/${serverName}`,
     version,
   );
 
-  if (!serverResponse?.server) {
+  // error should be handled in a special error.tsx component https://github.com/stacklok/toolhive-cloud-ui/issues/94
+
+  if (response?.status === 404) {
     notFound();
   }
 
-  const server = serverResponse.server;
+  const server = serverResponse?.server ?? {};
 
   return (
     <div className="mx-auto flex flex-col gap-2 pt-5 pb-8 px-8">
