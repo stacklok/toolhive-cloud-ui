@@ -17,7 +17,11 @@ A Next.js application for visualizing MCP (Model Context Protocol) servers runni
 - **Node.js** 20+ and **pnpm** 10+
 - For Kubernetes deployment: **Docker**, **Kind**, **Helm**, **kubectl**
 
-### Installation
+## Developer Guide
+
+### Local Development
+
+This section covers all available commands and development workflows.
 
 ```bash
 # Install dependencies
@@ -27,20 +31,12 @@ pnpm install
 cp .env.example .env.local
 ```
 
-### Development
-
 ```bash
 # Start full dev environment (Next.js + OIDC mock + MSW mock server)
 pnpm dev
 
 # Application will be available at http://localhost:3000
 ```
-
-For more development options, see the [Developer Guide](#developer-guide) below.
-
-## Developer Guide
-
-This section covers all available commands and development workflows.
 
 ### Available Commands
 
