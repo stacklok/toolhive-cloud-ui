@@ -17,7 +17,7 @@ if (!port) {
   throw new Error("API_BASE_URL must include a port number");
 }
 
-const healthHandler = http.get("*/health", () => {
+const healthHandler = http.get("/health", () => {
   return HttpResponse.json({ status: "ok" });
 });
 
