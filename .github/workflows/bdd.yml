@@ -31,13 +31,19 @@ jobs:
           # Wait for Next (3000), OIDC (4000), and Mock API (9090)
           for url in http://localhost:3000 http://localhost:4000 http://localhost:9090; do
             echo "Waiting for $url..."
+            up=false
             for i in {1..60}; do
               if curl -sf "$url" >/dev/null; then
                 echo "$url is up"
+                up=true
                 break
               fi
               sleep 2
             done
+            if [ "$up" = false ]; then
+              echo "ERROR: $url failed to start"
+              exit 1
+            fi
           done
 
       - name: Run BDD tests

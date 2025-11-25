@@ -3,8 +3,8 @@ import type { AriaRole } from "@playwright/test";
 import { allowedRolePhrases } from "./roles.ts";
 
 // Build a tight, case-insensitive pattern from the canonical phrases
-const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const phrases = Object.keys(allowedRolePhrases).map(escape).join("|");
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const phrases = Object.keys(allowedRolePhrases).map(escapeRegex).join("|");
 // Important: do not anchor (no ^ or $). Cucumber composes parameter regexps
 // into a larger expression; anchors can prevent proper matching.
 const rolePattern = new RegExp(`(?:${phrases})`);
