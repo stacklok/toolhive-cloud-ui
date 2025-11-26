@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+# Playwright/Cucumber E2E artifacts
+test-results/
+playwright-report/
+blob-report/
 
 # next.js
 /.next/

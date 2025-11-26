@@ -1,0 +1,66 @@
+name: BDD E2E
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Run BDD (Cucumber + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Start dev stack (Next + OIDC + Mock)
+        env:
+          API_BASE_URL: http://localhost:9090
+          OIDC_ISSUER_URL: http://localhost:4000
+          OIDC_CLIENT_ID: better-auth-dev
+          OIDC_CLIENT_SECRET: dev-secret-change-in-production
+          NEXT_PUBLIC_OIDC_PROVIDER_ID: okta
+          BETTER_AUTH_URL: http://localhost:3000
+          BETTER_AUTH_SECRET: ci-test-secret-not-for-production
+        run: |
+          pnpm dev &
+          echo $! > dev.pid
+          # Wait for Next (3000), OIDC (4000 - use discovery endpoint), and Mock API (9090 - use health endpoint)
+          for url in http://localhost:3000 http://localhost:4000/.well-known/openid-configuration http://localhost:9090/health; do
+            echo "Waiting for $url..."
+            up=false
+            for i in {1..60}; do
+              if curl -sf "$url" >/dev/null; then
+                echo "$url is up"
+                up=true
+                break
+              fi
+              sleep 2
+            done
+            if [ "$up" = false ]; then
+              echo "ERROR: $url failed to start"
+              exit 1
+            fi
+          done
+
+      - name: Run BDD tests
+        env:
+          BASE_URL: http://localhost:3000
+        run: pnpm run test:bdd
+
+      - name: Cleanup dev
+        if: always()
+        run: |
+          if [ -f dev.pid ]; then kill $(cat dev.pid) || true; fi
+
