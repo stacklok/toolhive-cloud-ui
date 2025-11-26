@@ -1,5 +1,5 @@
-import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { IllustrationNoLocation } from "@/components/illustrations/illustration-no-location";
 import { NavigateBackButton } from "@/components/navigate-back-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,9 +17,7 @@ export default function NotFound() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="w-full max-w-md shadow-none">
           <CardContent className="pt-6 pb-6 flex flex-col items-center text-center gap-4">
-            <div className="rounded-full p-3">
-              <AlertCircle className="size-8" />
-            </div>
+            <IllustrationNoLocation className="size-32" />
 
             <div className="space-y-2">
               <h2 className="text-2xl font-bold tracking-tight">
