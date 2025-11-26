@@ -21,7 +21,7 @@ export const IllustrationEmptyInbox = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      fill="transparent"
+      fill="none"
       fillRule="evenodd"
       d="M79.098 82.954C79.098 88.504 74.129 94 68 94c-6.129 0-11.098-5.498-11.098-11.046 0-.18.006-1.358.016-1.535H36l8.161-19.843C44.513 60.633 45.49 60 46.587 60h42.826c1.098 0 2.074.634 2.426 1.575L100 81.42H79.082c.01.177.016 1.356.016 1.535z"
       clipRule="evenodd"

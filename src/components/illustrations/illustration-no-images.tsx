@@ -14,7 +14,7 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      fill="transparent"
+      fill="none"
       fillRule="evenodd"
       d="m31.045 105.717-3.696.525a3.619 3.619 0 0 1-4.096-3.085l-9.996-71.925a3.646 3.646 0 0 1 3.098-4.107l71.037-10.097a3.618 3.618 0 0 1 4.097 3.085l.858 6.18 9.206 66.599c.306 2.213-1.22 4.257-3.408 4.566a4.25 4.25 0 0 1-.07.01l-67.03 8.249z"
       clipRule="evenodd"
@@ -38,7 +38,7 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      fill="transparent"
+      fill="none"
       fillRule="evenodd"
       d="m51.98 80.882 9.798-6.608a4 4 0 0 1 5.168.594l7.173 7.723a1 1 0 0 0 1.362.096l15.34-12.43a4 4 0 0 1 5.878.937l9.98 15.437 1.434 2.392-.687 8.125a1 1 0 0 1-1.106.91l-56.963-6.33a1 1 0 0 1-.886-1.085l.755-8.199 2.755-1.562z"
       clipRule="evenodd"

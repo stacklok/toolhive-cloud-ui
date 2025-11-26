@@ -31,7 +31,7 @@ export const IllustrationNoSearchResults = (props: SVGProps<SVGSVGElement>) => (
       d="m97.11 85.805 6.001 6"
     />
     <path
-      fill="transparent"
+      fill="none"
       fillRule="evenodd"
       stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
@@ -45,7 +45,7 @@ export const IllustrationNoSearchResults = (props: SVGProps<SVGSVGElement>) => (
       d="m107.111 92.805 11 11"
     />
     <path
-      fill="transparent"
+      fill="none"
       fillRule="evenodd"
       d="M63.11 47.806c0 11.597 9.403 21 21 21 2.279 0 4.473-.363 6.527-1.034-3.353 8.32-11.504 14.194-21.026 14.194-12.516 0-22.661-10.145-22.661-22.66 0-11.341 8.33-20.736 19.206-22.4a20.913 20.913 0 0 0-3.045 10.9z"
       clipRule="evenodd"
