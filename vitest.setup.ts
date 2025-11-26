@@ -64,7 +64,6 @@ vi.mock("sonner", () => ({
   },
 }));
 
-// Theme provider mock; individual tests can customize return values
 export const mockSetTheme = vi.fn();
 vi.mock("next-themes", () => ({
   useTheme: () => ({

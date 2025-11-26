@@ -110,12 +110,10 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      // The mock returns "system" as the current theme
       const systemMenuItem = screen
         .getByText(/use system settings/i)
         .closest('[data-slot="dropdown-menu-item"]');
       expect(systemMenuItem).toBeInTheDocument();
-      // Check that there's a check icon (lucide adds the class "lucide-check")
       const checkIcon = systemMenuItem?.querySelector(".lucide-check");
       expect(checkIcon).toBeInTheDocument();
     });
