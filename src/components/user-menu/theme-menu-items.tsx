@@ -2,32 +2,47 @@
 
 import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import type { ReactNode } from "react";
 import {
   DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 
-export function ThemeMenuItems() {
-  const { theme, setTheme } = useTheme();
+type Theme = "light" | "dark" | "system";
 
+interface ThemeMenuItemProps {
+  children: ReactNode;
+  theme: Theme;
+}
+
+function ThemeMenuItem({ children, theme }: ThemeMenuItemProps) {
+  const { theme: activeTheme, setTheme } = useTheme();
+  const isActive = activeTheme === theme;
+
+  return (
+    <DropdownMenuItem onSelect={() => setTheme(theme)}>
+      {children}
+      {isActive && <Check className="ml-auto" />}
+    </DropdownMenuItem>
+  );
+}
+
+export function ThemeMenuItems() {
   return (
     <>
       <DropdownMenuLabel>Theme</DropdownMenuLabel>
-      <DropdownMenuItem onSelect={() => setTheme("light")}>
+      <ThemeMenuItem theme="light">
         <Sun />
         Light mode
-        {theme === "light" && <Check className="ml-auto" />}
-      </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => setTheme("dark")}>
+      </ThemeMenuItem>
+      <ThemeMenuItem theme="dark">
         <Moon />
         Dark mode
-        {theme === "dark" && <Check className="ml-auto" />}
-      </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => setTheme("system")}>
+      </ThemeMenuItem>
+      <ThemeMenuItem theme="system">
         <Monitor />
         Use system settings
-        {theme === "system" && <Check className="ml-auto" />}
-      </DropdownMenuItem>
+      </ThemeMenuItem>
     </>
   );
 }
