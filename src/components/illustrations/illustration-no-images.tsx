@@ -8,7 +8,7 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      fill="var(--background)"
+      fill="var(--color-background)"
       fillRule="evenodd"
       d="m28.518 110.127-4.07.572a4 4 0 0 1-4.518-3.404L8.797 28.073a4 4 0 0 1 3.404-4.517L90.432 12.56a4 4 0 0 1 4.518 3.404l.957 6.808"
       clipRule="evenodd"
@@ -20,19 +20,19 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeWidth={2.5}
       d="m28.518 110.127-4.07.572a4 4 0 0 1-4.518-3.404L8.797 28.073a4 4 0 0 1 3.404-4.517L90.432 12.56a4 4 0 0 1 4.518 3.404l.957 6.808m.833 4.612.5 3.12"
     />
     <path
-      fill="var(--background)"
-      stroke="var(--muted-foreground)"
+      fill="var(--color-background)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="M42.062 31.493a2.75 2.75 0 0 1 3.022-2.448l78.567 8.258a2.75 2.75 0 0 1 2.448 3.022l-8.362 79.562a2.75 2.75 0 0 1-3.023 2.447l-78.567-8.257a2.75 2.75 0 0 1-2.448-3.023l8.363-79.561z"
     />
     <path
-      fill="var(--background)"
+      fill="var(--color-background)"
       fillRule="evenodd"
       d="M48.933 40.259a3 3 0 0 1 3.297-2.67l62.655 6.585a3 3 0 0 1 2.67 3.297l-5.54 52.71a3 3 0 0 1-3.297 2.67l-62.655-6.585a3 3 0 0 1-2.67-3.297l5.54-52.71z"
       clipRule="evenodd"
@@ -44,7 +44,7 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="M50.176 40.39a1.75 1.75 0 0 1 1.923-1.558l62.655 6.585a1.75 1.75 0 0 1 1.558 1.924l-5.54 52.709a1.75 1.75 0 0 1-1.923 1.558l-62.655-6.586a1.75 1.75 0 0 1-1.558-1.923l5.54-52.71z"
     />
@@ -52,13 +52,13 @@ export const IllustrationNoImages = (props: SVGProps<SVGSVGElement>) => (
       cx={64.272}
       cy={56.954}
       r={6}
-      fill="var(--background)"
-      stroke="var(--muted-foreground)"
+      fill="var(--color-background)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       transform="rotate(6 64.272 56.954)"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeWidth={2.5}
       d="m49.97 82.429 11.808-8.155a4 4 0 0 1 5.168.594l7.173 7.723a1 1 0 0 0 1.362.096l15.34-12.43a4 4 0 0 1 5.878.937l11.064 17.556"

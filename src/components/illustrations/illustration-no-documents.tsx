@@ -8,13 +8,13 @@ export const IllustrationNoDocuments = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      fill="var(--background)"
+      fill="var(--color-background)"
       fillRule="evenodd"
       d="m90.811 31.608 9.302 67.843.836 6.806a4 4 0 0 1-3.483 4.457l-58.56 7.191a4 4 0 0 1-4.458-3.483l-9.015-73.427a2 2 0 0 1 1.74-2.23l.022-.002 4.858-.545m3.928-.44 4.588-.515-4.588.515z"
       clipRule="evenodd"
     />
     <path
-      fill="var(--muted-foreground)"
+      fill="var(--color-muted-foreground)"
       d="M92.05 31.438a1.25 1.25 0 0 0-2.477.34l2.477-.34zm8.063 68.013 1.241-.153a.103.103 0 0 1-.002-.017l-1.239.17zm.836 6.806 1.241-.153-1.241.153zm-3.483 4.457.153 1.241-.153-1.241zm-58.56 7.191.152 1.24-.152-1.24zm-4.458-3.483 1.24-.152-1.24.152zm-7.253-75.659.139 1.242-.14-1.242zm4.997.697a1.25 1.25 0 1 0-.278-2.484l.278 2.484zm3.65-2.925a1.25 1.25 0 0 0 .279 2.485l-.279-2.485zm4.866 1.97a1.25 1.25 0 1 0-.279-2.484l.279 2.484zm48.865-6.728 9.302 67.843 2.477-.34-9.302-67.842-2.477.34zm9.3 67.826.835 6.806 2.482-.305-.836-6.806-2.481.305zm.835 6.806a2.75 2.75 0 0 1-2.394 3.065l.305 2.481a5.25 5.25 0 0 0 4.571-5.851l-2.482.305zm-2.394 3.065-58.56 7.19.304 2.481 58.56-7.19-.304-2.481zm-58.56 7.19a2.75 2.75 0 0 1-3.065-2.394l-2.481.304a5.25 5.25 0 0 0 5.85 4.571l-.304-2.481zm-3.065-2.394-9.016-73.428-2.481.305 9.016 73.427 2.48-.304zm-9.016-73.428a.75.75 0 0 1 .653-.836l-.305-2.481a3.25 3.25 0 0 0-2.83 3.622l2.482-.305zm.653-.836h.008l-.279-2.485a3.888 3.888 0 0 0-.034.004l.305 2.481zm.008 0 4.858-.546-.278-2.484-4.859.545.279 2.484zm8.787-.986 4.587-.515-.279-2.484-4.587.514.279 2.485z"
     />
     <path
@@ -24,20 +24,20 @@ export const IllustrationNoDocuments = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      fill="var(--background)"
-      stroke="var(--muted-foreground)"
+      fill="var(--color-background)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="M45.061 21.608a2.75 2.75 0 0 1 2.75-2.75h45.557c.73 0 1.428.29 1.944.805l13.443 13.435a2.75 2.75 0 0 1 .806 1.945v62.565a2.75 2.75 0 0 1-2.75 2.75h-59a2.75 2.75 0 0 1-2.75-2.75v-76z"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2.5}
       d="M93.811 20.01v11.598a3 3 0 0 0 3 3h7.934"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2.5}

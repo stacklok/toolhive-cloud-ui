@@ -8,8 +8,8 @@ export const IllustrationStop = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      fill="var(--background)"
-      stroke="var(--muted-foreground)"
+      fill="var(--color-background)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="m107.008 47.608-83.68 7.32a2 2 0 0 0-1.819 2.167l5.317 60.768a1.999 1.999 0 0 0 2.166 1.818l83.681-7.321a2 2 0 0 0 1.818-2.167l-5.317-60.767a2 2 0 0 0-2.166-1.819z"
     />
@@ -26,13 +26,13 @@ export const IllustrationStop = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="M78.58 72.507 64.075 97.625a14.93 14.93 0 0 0 7.806.008c8.002-2.144 12.751-10.369 10.607-18.37a14.932 14.932 0 0 0-3.91-6.756zm-14.462-3.852C56.116 70.8 51.367 79.026 53.51 87.028a14.933 14.933 0 0 0 3.68 6.522l14.416-24.967a14.934 14.934 0 0 0-7.49.074z"
       clipRule="evenodd"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeWidth={2.5}
       d="M78.354 63.733a22.126 22.126 0 0 1 3.658 2.449m2.53 2.452a21.911 21.911 0 0 1 4.708 8.816c3.145 11.737-3.82 23.8-15.556 26.945-11.736 3.145-23.8-3.82-26.944-15.556-3.145-11.737 3.82-23.8 15.556-26.945a21.897 21.897 0 0 1 12.347.278"
@@ -44,14 +44,14 @@ export const IllustrationStop = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2.5}
       d="m30.194 48.886 3.618-3.231m2.635-2.354 23.568-21.046m11.637 2.824 28.931 17.648"
     />
     <path
-      stroke="var(--muted-foreground)"
+      stroke="var(--color-muted-foreground)"
       strokeWidth={2.5}
       d="M64.5 25.144a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"
     />
