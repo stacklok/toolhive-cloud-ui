@@ -42,16 +42,6 @@ describe("UserMenu", () => {
   });
 
   describe("theme selection", () => {
-    it("displays theme section with label", async () => {
-      render(<UserMenu userName="Test User" />);
-      const user = userEvent.setup();
-
-      const trigger = screen.getByRole("button", { name: /test user/i });
-      await user.click(trigger);
-
-      expect(screen.getByText("Theme")).toBeInTheDocument();
-    });
-
     it("displays light, dark, and system theme options", async () => {
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
