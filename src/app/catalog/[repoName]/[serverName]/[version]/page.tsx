@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getServerDetails } from "./actions";
+import { ServerDetail } from "./components/server-detail";
 import { ServerDetailTitle } from "./components/server-detail-title";
-import { ServersDetailTabs } from "./components/servers-detail-tabs";
 
 interface CatalogDetailPageProps {
   params: Promise<{
@@ -37,7 +37,7 @@ export default async function CatalogDetailPage({
         version={version}
       />
 
-      <ServersDetailTabs
+      <ServerDetail
         description={server.description}
         serverUrl={server.remotes?.[0]?.url}
         repositoryUrl={server.repository?.url}
