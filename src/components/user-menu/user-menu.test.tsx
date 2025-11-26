@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { UserMenu } from "@/components/user-menu";
 import { signOut } from "@/lib/auth/auth-client";
+import { mockSetTheme } from "../../../vitest.setup";
 
 describe("UserMenu", () => {
   it.each([
@@ -22,7 +24,6 @@ describe("UserMenu", () => {
   });
 
   it("calls signOut when sign out menu item is clicked", async () => {
-    const userEvent = (await import("@testing-library/user-event")).default;
     render(<UserMenu userName="Jane Smith" />);
     const user = userEvent.setup();
 
@@ -38,5 +39,39 @@ describe("UserMenu", () => {
     await user.click(signOutItem);
 
     expect(signOut).toHaveBeenCalledOnce();
+  });
+
+  describe("theme selection", () => {
+    it("displays light, dark, and system theme options", async () => {
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      expect(screen.getByText(/light mode/i)).toBeInTheDocument();
+      expect(screen.getByText(/dark mode/i)).toBeInTheDocument();
+      expect(screen.getByText(/use system settings/i)).toBeInTheDocument();
+    });
+
+    it.each([
+      { theme: "light", label: /light mode/i },
+      { theme: "dark", label: /dark mode/i },
+      { theme: "system", label: /use system settings/i },
+    ])("calls setTheme with '$theme' when $theme option is clicked", async ({
+      theme,
+      label,
+    }) => {
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      const option = screen.getByText(label);
+      await user.click(option);
+
+      expect(mockSetTheme).toHaveBeenCalledWith(theme);
+    });
   });
 });
