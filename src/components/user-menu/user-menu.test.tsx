@@ -64,43 +64,24 @@ describe("UserMenu", () => {
       expect(screen.getByText(/use system settings/i)).toBeInTheDocument();
     });
 
-    it("calls setTheme with 'light' when light option is clicked", async () => {
+    it.each([
+      { theme: "light", label: /light mode/i },
+      { theme: "dark", label: /dark mode/i },
+      { theme: "system", label: /use system settings/i },
+    ])("calls setTheme with '$theme' when $theme option is clicked", async ({
+      theme,
+      label,
+    }) => {
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const lightOption = screen.getByText(/light mode/i);
-      await user.click(lightOption);
+      const option = screen.getByText(label);
+      await user.click(option);
 
-      expect(mockSetTheme).toHaveBeenCalledWith("light");
-    });
-
-    it("calls setTheme with 'dark' when dark option is clicked", async () => {
-      render(<UserMenu userName="Test User" />);
-      const user = userEvent.setup();
-
-      const trigger = screen.getByRole("button", { name: /test user/i });
-      await user.click(trigger);
-
-      const darkOption = screen.getByText(/dark mode/i);
-      await user.click(darkOption);
-
-      expect(mockSetTheme).toHaveBeenCalledWith("dark");
-    });
-
-    it("calls setTheme with 'system' when system option is clicked", async () => {
-      render(<UserMenu userName="Test User" />);
-      const user = userEvent.setup();
-
-      const trigger = screen.getByRole("button", { name: /test user/i });
-      await user.click(trigger);
-
-      const systemOption = screen.getByText(/use system settings/i);
-      await user.click(systemOption);
-
-      expect(mockSetTheme).toHaveBeenCalledWith("system");
+      expect(mockSetTheme).toHaveBeenCalledWith(theme);
     });
   });
 });
