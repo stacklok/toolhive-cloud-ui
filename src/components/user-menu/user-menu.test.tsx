@@ -69,15 +69,9 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      expect(
-        screen.getByRole("menuitemradio", { name: /light mode/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("menuitemradio", { name: /dark mode/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("menuitemradio", { name: /use system settings/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/light mode/i)).toBeInTheDocument();
+      expect(screen.getByText(/dark mode/i)).toBeInTheDocument();
+      expect(screen.getByText(/use system settings/i)).toBeInTheDocument();
     });
 
     it("calls setTheme with 'light' when light option is clicked", async () => {
@@ -88,9 +82,7 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const lightOption = screen.getByRole("menuitemradio", {
-        name: /light mode/i,
-      });
+      const lightOption = screen.getByText(/light mode/i);
       await user.click(lightOption);
 
       expect(mockSetTheme).toHaveBeenCalledWith("light");
@@ -104,9 +96,7 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const darkOption = screen.getByRole("menuitemradio", {
-        name: /dark mode/i,
-      });
+      const darkOption = screen.getByText(/dark mode/i);
       await user.click(darkOption);
 
       expect(mockSetTheme).toHaveBeenCalledWith("dark");
@@ -120,15 +110,13 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const systemOption = screen.getByRole("menuitemradio", {
-        name: /use system settings/i,
-      });
+      const systemOption = screen.getByText(/use system settings/i);
       await user.click(systemOption);
 
       expect(mockSetTheme).toHaveBeenCalledWith("system");
     });
 
-    it("shows the current theme as selected", async () => {
+    it("shows checkmark on the current theme", async () => {
       const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
@@ -136,10 +124,14 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const systemOption = screen.getByRole("menuitemradio", {
-        name: /use system settings/i,
-      });
-      expect(systemOption).toHaveAttribute("aria-checked", "true");
+      // The mock returns "system" as the current theme
+      const systemMenuItem = screen
+        .getByText(/use system settings/i)
+        .closest('[data-slot="dropdown-menu-item"]');
+      expect(systemMenuItem).toBeInTheDocument();
+      // Check that there's a check icon (lucide adds the class "lucide-check")
+      const checkIcon = systemMenuItem?.querySelector(".lucide-check");
+      expect(checkIcon).toBeInTheDocument();
     });
   });
 });
