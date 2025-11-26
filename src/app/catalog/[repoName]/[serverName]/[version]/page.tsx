@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getServerDetails } from "./actions";
+import { ServerDetail } from "./components/server-detail";
 import { ServerDetailTitle } from "./components/server-detail-title";
-import { ServersDetailTabs } from "./components/servers-detail-tabs";
 
 interface CatalogDetailPageProps {
   params: Promise<{
@@ -30,14 +30,14 @@ export default async function CatalogDetailPage({
   const server = serverResponse?.server ?? {};
 
   return (
-    <div className="mx-auto flex flex-col gap-2 pt-5 pb-8 px-8">
+    <div className="flex flex-col gap-2 pt-5 pb-8 px-4">
       <ServerDetailTitle
         publisher={server.repository?.source}
         serverName={server.name || "Unknown server"}
         version={version}
       />
 
-      <ServersDetailTabs
+      <ServerDetail
         description={server.description}
         serverUrl={server.remotes?.[0]?.url}
         repositoryUrl={server.repository?.url}
