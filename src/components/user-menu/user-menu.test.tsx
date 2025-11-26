@@ -1,7 +1,16 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { UserMenu } from "@/components/user-menu";
 import { signOut } from "@/lib/auth/auth-client";
+
+const mockSetTheme = vi.fn();
+
+vi.mock("next-themes", () => ({
+  useTheme: () => ({
+    theme: "system",
+    setTheme: mockSetTheme,
+  }),
+}));
 
 describe("UserMenu", () => {
   it.each([
@@ -38,5 +47,95 @@ describe("UserMenu", () => {
     await user.click(signOutItem);
 
     expect(signOut).toHaveBeenCalledOnce();
+  });
+
+  describe("theme selection", () => {
+    it("displays theme section with label", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      expect(screen.getByText("Theme")).toBeInTheDocument();
+    });
+
+    it("displays light, dark, and system theme options", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      expect(
+        screen.getByRole("menuitemradio", { name: /light/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("menuitemradio", { name: /dark/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("menuitemradio", { name: /system/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("calls setTheme with 'light' when light option is clicked", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      const lightOption = screen.getByRole("menuitemradio", { name: /light/i });
+      await user.click(lightOption);
+
+      expect(mockSetTheme).toHaveBeenCalledWith("light");
+    });
+
+    it("calls setTheme with 'dark' when dark option is clicked", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      const darkOption = screen.getByRole("menuitemradio", { name: /dark/i });
+      await user.click(darkOption);
+
+      expect(mockSetTheme).toHaveBeenCalledWith("dark");
+    });
+
+    it("calls setTheme with 'system' when system option is clicked", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      const systemOption = screen.getByRole("menuitemradio", {
+        name: /system/i,
+      });
+      await user.click(systemOption);
+
+      expect(mockSetTheme).toHaveBeenCalledWith("system");
+    });
+
+    it("shows the current theme as selected", async () => {
+      const userEvent = (await import("@testing-library/user-event")).default;
+      render(<UserMenu userName="Test User" />);
+      const user = userEvent.setup();
+
+      const trigger = screen.getByRole("button", { name: /test user/i });
+      await user.click(trigger);
+
+      const systemOption = screen.getByRole("menuitemradio", {
+        name: /system/i,
+      });
+      expect(systemOption).toHaveAttribute("aria-checked", "true");
+    });
   });
 });
