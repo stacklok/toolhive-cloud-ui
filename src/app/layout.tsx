@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { GlobalProviders } from "@/components/global-providers";
+import { ClientProviders } from "@/components/client-providers";
+import { ServerProviders } from "@/components/server-providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,7 +22,9 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
-        <GlobalProviders>{children}</GlobalProviders>
+        <ServerProviders>
+          <ClientProviders>{children}</ClientProviders>
+        </ServerProviders>
       </body>
     </html>
   );
