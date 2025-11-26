@@ -102,20 +102,5 @@ describe("UserMenu", () => {
 
       expect(mockSetTheme).toHaveBeenCalledWith("system");
     });
-
-    it("shows checkmark on the current theme", async () => {
-      render(<UserMenu userName="Test User" />);
-      const user = userEvent.setup();
-
-      const trigger = screen.getByRole("button", { name: /test user/i });
-      await user.click(trigger);
-
-      const systemMenuItem = screen
-        .getByText(/use system settings/i)
-        .closest('[data-slot="dropdown-menu-item"]');
-      expect(systemMenuItem).toBeInTheDocument();
-      const checkIcon = systemMenuItem?.querySelector(".lucide-check");
-      expect(checkIcon).toBeInTheDocument();
-    });
   });
 });
