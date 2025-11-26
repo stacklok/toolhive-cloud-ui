@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
+import { GlobalProviders } from "@/components/global-providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,23 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NuqsAdapter>
-            {children}
-            <Toaster
-              richColors
-              duration={2000}
-              position="bottom-right"
-              offset={{ top: 50 }}
-              closeButton
-            />
-          </NuqsAdapter>
-        </ThemeProvider>
+        <GlobalProviders>{children}</GlobalProviders>
       </body>
     </html>
   );
