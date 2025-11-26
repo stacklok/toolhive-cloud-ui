@@ -70,13 +70,13 @@ describe("UserMenu", () => {
       await user.click(trigger);
 
       expect(
-        screen.getByRole("menuitemradio", { name: /light/i }),
+        screen.getByRole("menuitemradio", { name: /light mode/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("menuitemradio", { name: /dark/i }),
+        screen.getByRole("menuitemradio", { name: /dark mode/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("menuitemradio", { name: /system/i }),
+        screen.getByRole("menuitemradio", { name: /use system settings/i }),
       ).toBeInTheDocument();
     });
 
@@ -88,7 +88,9 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const lightOption = screen.getByRole("menuitemradio", { name: /light/i });
+      const lightOption = screen.getByRole("menuitemradio", {
+        name: /light mode/i,
+      });
       await user.click(lightOption);
 
       expect(mockSetTheme).toHaveBeenCalledWith("light");
@@ -102,7 +104,9 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      const darkOption = screen.getByRole("menuitemradio", { name: /dark/i });
+      const darkOption = screen.getByRole("menuitemradio", {
+        name: /dark mode/i,
+      });
       await user.click(darkOption);
 
       expect(mockSetTheme).toHaveBeenCalledWith("dark");
@@ -117,7 +121,7 @@ describe("UserMenu", () => {
       await user.click(trigger);
 
       const systemOption = screen.getByRole("menuitemradio", {
-        name: /system/i,
+        name: /use system settings/i,
       });
       await user.click(systemOption);
 
@@ -133,7 +137,7 @@ describe("UserMenu", () => {
       await user.click(trigger);
 
       const systemOption = screen.getByRole("menuitemradio", {
-        name: /system/i,
+        name: /use system settings/i,
       });
       expect(systemOption).toHaveAttribute("aria-checked", "true");
     });

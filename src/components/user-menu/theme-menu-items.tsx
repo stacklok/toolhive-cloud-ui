@@ -14,9 +14,11 @@ export function ThemeMenuItems() {
     <>
       <DropdownMenuLabel>Theme</DropdownMenuLabel>
       <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-        <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-        <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-        <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="light">Light mode</DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="dark">Dark mode</DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="system">
+          Use system settings
+        </DropdownMenuRadioItem>
       </DropdownMenuRadioGroup>
     </>
   );
