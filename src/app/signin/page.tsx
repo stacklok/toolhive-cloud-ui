@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
+import { ToolhiveIcon } from "@/components/toolhive-icon";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
@@ -38,14 +39,8 @@ export default function SignInPage() {
       {/* Left Side - Logo Section */}
       <div className="hidden md:flex w-1/2 bg-muted/80 border-r border-border items-start p-10">
         <div className="flex items-center gap-4">
-          <Image
-            src="/toolhive-icon.svg"
-            alt="Toolhive Icon"
-            width={24}
-            height={24}
-            className="shrink-0"
-          />
-          <h1 className="text-4xl font-bold tracking-tight">Toolhive</h1>
+          <ToolhiveIcon size={24} className="shrink-0" />
+          <h1 className="text-4xl font-bold tracking-tight">ToolHive</h1>
         </div>
       </div>
 
