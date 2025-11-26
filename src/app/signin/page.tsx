@@ -39,7 +39,7 @@ export default function SignInPage() {
       {/* Left Side - Logo Section */}
       <div className="hidden md:flex w-1/2 bg-muted/80 border-r border-border items-start p-10">
         <div className="flex items-center gap-4">
-          <ToolhiveIcon size={24} className="shrink-0" />
+          <ToolhiveIcon className="h-5 shrink-0" />
           <h1 className="text-4xl font-bold tracking-tight">ToolHive</h1>
         </div>
       </div>
