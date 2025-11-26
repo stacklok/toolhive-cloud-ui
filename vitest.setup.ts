@@ -64,6 +64,16 @@ vi.mock("sonner", () => ({
   },
 }));
 
+// Theme provider mock; individual tests can customize return values
+export const mockSetTheme = vi.fn();
+vi.mock("next-themes", () => ({
+  useTheme: () => ({
+    theme: "system",
+    setTheme: mockSetTheme,
+  }),
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Auth client baseline mock; individual tests can customize return values
 vi.mock("@/lib/auth/auth-client", () => ({
   authClient: {

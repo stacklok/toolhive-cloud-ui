@@ -1,16 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { UserMenu } from "@/components/user-menu";
 import { signOut } from "@/lib/auth/auth-client";
-
-const mockSetTheme = vi.fn();
-
-vi.mock("next-themes", () => ({
-  useTheme: () => ({
-    theme: "system",
-    setTheme: mockSetTheme,
-  }),
-}));
+import { mockSetTheme } from "../../../vitest.setup";
 
 describe("UserMenu", () => {
   it.each([
