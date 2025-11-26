@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { UserMenu } from "@/components/user-menu";
 import { signOut } from "@/lib/auth/auth-client";
@@ -23,7 +24,6 @@ describe("UserMenu", () => {
   });
 
   it("calls signOut when sign out menu item is clicked", async () => {
-    const userEvent = (await import("@testing-library/user-event")).default;
     render(<UserMenu userName="Jane Smith" />);
     const user = userEvent.setup();
 
@@ -43,7 +43,6 @@ describe("UserMenu", () => {
 
   describe("theme selection", () => {
     it("displays theme section with label", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
@@ -54,7 +53,6 @@ describe("UserMenu", () => {
     });
 
     it("displays light, dark, and system theme options", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
@@ -67,7 +65,6 @@ describe("UserMenu", () => {
     });
 
     it("calls setTheme with 'light' when light option is clicked", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
@@ -81,7 +78,6 @@ describe("UserMenu", () => {
     });
 
     it("calls setTheme with 'dark' when dark option is clicked", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
@@ -95,7 +91,6 @@ describe("UserMenu", () => {
     });
 
     it("calls setTheme with 'system' when system option is clicked", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
@@ -109,7 +104,6 @@ describe("UserMenu", () => {
     });
 
     it("shows checkmark on the current theme", async () => {
-      const userEvent = (await import("@testing-library/user-event")).default;
       render(<UserMenu userName="Test User" />);
       const user = userEvent.setup();
 
