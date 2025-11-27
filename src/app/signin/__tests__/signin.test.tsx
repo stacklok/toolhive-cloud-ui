@@ -124,13 +124,11 @@ describe("SignInPage", () => {
 
     render(<SignInButton providerId="okta" />);
 
-    // Should show "Okta" button (capitalized from providerId)
-    expect(screen.getByRole("button", { name: /Okta/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Okta" })).toBeDefined();
 
     const oktaButton = screen.getByRole("button", { name: /Okta/i });
     await user.click(oktaButton);
 
-    // Should call authClient.signIn.oauth2 with providerId: "okta"
     await waitFor(() => {
       expect(authClient.signIn.oauth2).toHaveBeenCalledWith({
         providerId: "okta",
