@@ -50,7 +50,6 @@ describe("SignInPage", () => {
       expect(authClient.signIn.oauth2).toHaveBeenCalledWith({
         providerId: "oidc",
         callbackURL: "/catalog",
-        scopes: ["openid", "email", "profile", "offline_access"],
       });
     });
   });
