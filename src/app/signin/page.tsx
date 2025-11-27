@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
-import { ToolhiveIcon } from "@/components/toolhive-icon";
+import { ToolHiveIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
@@ -13,7 +13,6 @@ export default function SignInPage() {
       const { error } = await authClient.signIn.oauth2({
         providerId: OIDC_PROVIDER_ID,
         callbackURL: "/catalog",
-        scopes: ["openid", "email", "profile", "offline_access"],
       });
 
       if (error) {
@@ -36,18 +35,15 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-screen w-full">
-      {/* Left Side - Logo Section */}
       <div className="hidden md:flex w-1/2 bg-muted/80 border-r border-border items-start p-10">
         <div className="flex items-center gap-4">
-          <ToolhiveIcon className="h-5 shrink-0" />
+          <ToolHiveIcon className="size-8 shrink-0" />
           <h1 className="text-4xl font-bold tracking-tight">ToolHive</h1>
         </div>
       </div>
 
-      {/* Right Side - Sign In Form */}
       <div className="flex w-full md:w-1/2 items-center justify-center p-8">
         <div className="flex flex-col items-center space-y-6 w-full max-w-[350px]">
-          {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <h2 className="text-3xl font-semibold tracking-tight">Sign in</h2>
             <p className="text-sm text-muted-foreground">
@@ -55,7 +51,6 @@ export default function SignInPage() {
             </p>
           </div>
 
-          {/* Sign In Button */}
           <Button
             onClick={handleOIDCSignIn}
             className="w-full h-9 gap-2"

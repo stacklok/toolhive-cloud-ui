@@ -1,4 +1,4 @@
-export function ToolhiveIcon({ className }: { className?: string }) {
+export function ToolHiveIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 21 22"
