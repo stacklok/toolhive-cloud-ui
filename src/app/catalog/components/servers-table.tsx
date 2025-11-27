@@ -22,7 +22,7 @@ interface ServersTableProps {
 export function ServersTable({ servers, onServerClick }: ServersTableProps) {
   return (
     <div className="w-full overflow-hidden rounded-md border">
-      <Table>
+      <Table className="table-fixed">
         <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead className="w-2/12 pl-4">Server</TableHead>
@@ -44,7 +44,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                 className={onServerClick ? "cursor-pointer" : undefined}
               >
                 <TableCell className="font-medium pl-4">{serverName}</TableCell>
-                <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">
+                <TableCell className="max-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
                   {description}
                 </TableCell>
                 <TableCell>
