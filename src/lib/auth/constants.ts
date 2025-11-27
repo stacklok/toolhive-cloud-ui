@@ -18,6 +18,7 @@ export const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 export const BETTER_AUTH_SECRET =
   process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret";
+export const OIDC_SCOPES = process.env.OIDC_SCOPES?.split(",") ?? [];
 
 // Token expiration constants (in milliseconds and seconds)
 export const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // 3,600,000 ms (1 hour)
