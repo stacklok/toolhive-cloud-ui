@@ -1,4 +1,5 @@
 import { ToolHiveIcon } from "@/components/icons";
+import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
 import { SignInButton } from "./signin-button";
 
 export default function SignInPage() {
@@ -20,7 +21,7 @@ export default function SignInPage() {
             </p>
           </div>
 
-          <SignInButton />
+          <SignInButton providerId={OIDC_PROVIDER_ID} />
         </div>
       </div>
     </div>
