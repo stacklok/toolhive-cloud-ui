@@ -220,7 +220,7 @@ pnpm dev:mock-server
 OIDC_ISSUER_URL=https://your-oidc-provider.com
 OIDC_CLIENT_ID=your-client-id
 OIDC_CLIENT_SECRET=your-client-secret
-NEXT_PUBLIC_OIDC_PROVIDER_ID=okta  # or your provider
+OIDC_PROVIDER_ID=okta  # or your provider
 BETTER_AUTH_SECRET=your-secret
 BETTER_AUTH_URL=http://localhost:3000
 ```
@@ -248,7 +248,7 @@ pnpm dev:next
 OIDC_ISSUER_URL=https://your-oidc-provider.com
 OIDC_CLIENT_ID=your-client-id
 OIDC_CLIENT_SECRET=your-client-secret
-NEXT_PUBLIC_OIDC_PROVIDER_ID=okta
+OIDC_PROVIDER_ID=okta
 
 # Real backend API
 API_BASE_URL=https://your-backend-api.com
@@ -302,15 +302,15 @@ See [`docs/mocks.md`](./docs/mocks.md) for details.
 
 ### Required for Production
 
-| Variable                       | Description                  | Example                                 |
-| ------------------------------ | ---------------------------- | --------------------------------------- |
-| `OIDC_ISSUER_URL`              | OIDC provider's issuer URL   | `https://auth.example.com`              |
-| `OIDC_CLIENT_ID`               | OAuth2 client ID             | `your-client-id`                        |
-| `OIDC_CLIENT_SECRET`           | OAuth2 client secret         | `your-client-secret`                    |
-| `NEXT_PUBLIC_OIDC_PROVIDER_ID` | Provider identifier (public) | `okta`, `auth0`, `oidc`                 |
-| `BETTER_AUTH_SECRET`           | Secret for token encryption  | Generate with `openssl rand -base64 32` |
-| `BETTER_AUTH_URL`              | Application base URL         | `https://your-app.example.com`          |
-| `API_BASE_URL`                 | Backend API URL              | `https://api.example.com`               |
+| Variable             | Description                 | Example                                 |
+| -------------------- | --------------------------- | --------------------------------------- |
+| `OIDC_ISSUER_URL`    | OIDC provider's issuer URL  | `https://auth.example.com`              |
+| `OIDC_CLIENT_ID`     | OAuth2 client ID            | `your-client-id`                        |
+| `OIDC_CLIENT_SECRET` | OAuth2 client secret        | `your-client-secret`                    |
+| `OIDC_PROVIDER_ID`   | Provider identifier         | `okta`, `auth0`, `oidc`                 |
+| `BETTER_AUTH_SECRET` | Secret for token encryption | Generate with `openssl rand -base64 32` |
+| `BETTER_AUTH_URL`    | Application base URL        | `https://your-app.example.com`          |
+| `API_BASE_URL`       | Backend API URL             | `https://api.example.com`               |
 
 ### Optional
 
@@ -327,7 +327,7 @@ NODE_ENV=development
 OIDC_ISSUER_URL=http://localhost:3001
 OIDC_CLIENT_ID=web-client
 OIDC_CLIENT_SECRET=web-secret
-NEXT_PUBLIC_OIDC_PROVIDER_ID=oidc
+OIDC_PROVIDER_ID=oidc
 BETTER_AUTH_URL=http://localhost:3000
 API_BASE_URL=http://localhost:9090
 ```
