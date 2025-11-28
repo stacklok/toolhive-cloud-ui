@@ -118,11 +118,9 @@ describe("ServersWrapper", () => {
       expect(screen.getByText("No results found")).toBeVisible();
     });
 
-    // Click the "Clear search" button in the empty state (the one with visible text, not the icon button)
     const clearButtons = screen.getAllByRole("button", {
       name: /clear search/i,
     });
-    // The empty state button has visible text "Clear search", the search input has an icon
     const emptyStateClearButton = clearButtons.find(
       (btn) => btn.textContent === "Clear search",
     );
