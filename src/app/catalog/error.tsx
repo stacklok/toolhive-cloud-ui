@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import { ErrorPage } from "@/components/error-page";
-import { Button } from "@/components/ui/button";
+import { RuntimeError } from "@/components/error-page";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -10,20 +8,5 @@ interface ErrorProps {
 }
 
 export default function CatalogErrorPage({ error, reset }: ErrorProps) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-
-  return (
-    <ErrorPage
-      title="Something went wrong"
-      actions={
-        <Button onClick={reset} variant="default">
-          Try again
-        </Button>
-      }
-    >
-      An unexpected error occurred. Please try again.
-    </ErrorPage>
-  );
+  return <RuntimeError error={error} reset={reset} />;
 }
