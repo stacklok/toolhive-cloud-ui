@@ -13,12 +13,15 @@
 
 "use server";
 
-import { headers as nextHeaders } from "next/headers";
+import { cookies, headers as nextHeaders } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient, createConfig } from "@/generated/client";
 import * as apiServices from "@/generated/sdk.gen";
 import { auth } from "./auth/auth";
 import { getValidOidcToken } from "./auth/token";
+
+const MOCK_SCENARIO_COOKIE = "mock-scenario";
+const MOCK_SCENARIO_HEADER = "X-Mock-Scenario";
 
 // Validate required environment variables at module load time (fail-fast)
 const API_BASE_URL = process.env.API_BASE_URL;
@@ -65,13 +68,24 @@ export async function getAuthenticatedClient(accessToken?: string) {
     accessToken = token;
   }
 
+  const requestHeaders: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+
+  // Mock scenario header is only used in development for testing different backend states
+  if (process.env.NODE_ENV === "development") {
+    const cookieStore = await cookies();
+    const mockScenario = cookieStore.get(MOCK_SCENARIO_COOKIE)?.value;
+    if (mockScenario) {
+      requestHeaders[MOCK_SCENARIO_HEADER] = mockScenario;
+    }
+  }
+
   // Create a new client instance per request to avoid race conditions
   const authenticatedClient = createClient(
     createConfig({
       baseUrl: API_BASE_URL,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: requestHeaders,
     }),
   );
 

@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { EmptyState } from "./empty-state";
 import { ServerCard } from "./server-card";
 import { ServersTable } from "./servers-table";
 
@@ -10,12 +12,18 @@ interface ServersProps {
   servers: V0ServerJson[];
   viewMode: "grid" | "list";
   searchQuery: string;
+  onClearSearch: () => void;
 }
 
 /**
  * Client component that displays filtered servers based on view mode and search query
  */
-export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
+export function Servers({
+  servers,
+  viewMode,
+  searchQuery,
+  onClearSearch,
+}: ServersProps) {
   const router = useRouter();
 
   // this will be replace by nuqs later
@@ -41,12 +49,26 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
   };
 
   if (filteredServers.length === 0) {
+    if (searchQuery) {
+      return (
+        <EmptyState
+          variant="no-matching-items"
+          title="No results found"
+          description={`We couldn't find any servers matching "${searchQuery}". Try adjusting your search.`}
+          actions={
+            <Button variant="outline" onClick={onClearSearch}>
+              Clear search
+            </Button>
+          }
+        />
+      );
+    }
     return (
-      <div className="p-12 text-center">
-        {searchQuery
-          ? `No servers found matching "${searchQuery}"`
-          : "No servers available"}
-      </div>
+      <EmptyState
+        variant="no-items"
+        title="No servers available"
+        description="There are no MCP servers in the catalog yet. Check back later."
+      />
     );
   }
 
