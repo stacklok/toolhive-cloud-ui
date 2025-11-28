@@ -3,12 +3,15 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
-import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
-export function SignInButton() {
+
+export function SignInButton({ providerId }: { providerId: string }) {
+  const isOktaProvider = providerId === "okta";
+  const providerName = providerId.charAt(0).toUpperCase() + providerId.slice(1);
+
   const handleOIDCSignIn = async () => {
     try {
       const { error } = await authClient.signIn.oauth2({
-        providerId: OIDC_PROVIDER_ID,
+        providerId,
         callbackURL: "/catalog",
       });
 
@@ -36,14 +39,16 @@ export function SignInButton() {
       className="w-full h-9 gap-2"
       size="default"
     >
-      <Image
-        src="/okta-icon.svg"
-        alt="Okta"
-        width={16}
-        height={16}
-        className="shrink-0"
-      />
-      <span>Okta</span>
+      {isOktaProvider && (
+        <Image
+          src="/okta-icon.svg"
+          alt={providerName}
+          width={16}
+          height={16}
+          className="shrink-0"
+        />
+      )}
+      <span>{providerName}</span>
     </Button>
   );
 }
