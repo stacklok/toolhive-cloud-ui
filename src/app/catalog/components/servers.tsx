@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { EmptyState } from "./empty-state";
 import { ServerCard } from "./server-card";
 import { ServersTable } from "./servers-table";
 
@@ -42,11 +43,10 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
 
   if (filteredServers.length === 0) {
     return (
-      <div className="p-12 text-center">
-        {searchQuery
-          ? `No servers found matching "${searchQuery}"`
-          : "No servers available"}
-      </div>
+      <EmptyState
+        variant={searchQuery ? "no-results" : "no-servers"}
+        searchQuery={searchQuery}
+      />
     );
   }
 

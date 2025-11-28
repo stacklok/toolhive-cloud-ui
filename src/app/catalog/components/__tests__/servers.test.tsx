@@ -111,8 +111,9 @@ describe("Servers", () => {
         />,
       );
 
+      expect(screen.getByText("No results found")).toBeVisible();
       expect(
-        screen.getByText('No servers found matching "nonexistent"'),
+        screen.getByText(/couldn't find any servers matching "nonexistent"/),
       ).toBeVisible();
     });
   });
@@ -122,12 +123,23 @@ describe("Servers", () => {
       render(<Servers servers={[]} viewMode="grid" searchQuery="" />);
 
       expect(screen.getByText("No servers available")).toBeVisible();
+      expect(
+        screen.getByText(/no MCP servers in the catalog yet/i),
+      ).toBeVisible();
     });
 
     it("shows no servers message in list mode", () => {
       render(<Servers servers={[]} viewMode="list" searchQuery="" />);
 
       expect(screen.getByText("No servers available")).toBeVisible();
+    });
+
+    it("displays illustration in empty state", () => {
+      const { container } = render(
+        <Servers servers={[]} viewMode="grid" searchQuery="" />,
+      );
+
+      expect(container.querySelector("svg")).toBeInTheDocument();
     });
   });
 });
