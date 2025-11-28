@@ -3,7 +3,7 @@ import { IllustrationEmptyInbox } from "@/components/illustrations/illustration-
 import { IllustrationNoSearchResults } from "@/components/illustrations/illustration-no-search-results";
 
 interface EmptyStateProps {
-  variant: "no-servers" | "no-results";
+  variant: "no-items" | "no-matching-items";
   title: string;
   description: string;
   actions?: ReactNode;
@@ -18,7 +18,7 @@ export function EmptyState({
   return (
     <div className="flex items-center justify-center py-20">
       <div className="flex flex-col items-center text-center gap-4 max-w-md">
-        {variant === "no-results" ? (
+        {variant === "no-matching-items" ? (
           <IllustrationNoSearchResults className="size-32" />
         ) : (
           <IllustrationEmptyInbox className="size-32" />

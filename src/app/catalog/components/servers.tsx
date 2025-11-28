@@ -52,7 +52,7 @@ export function Servers({
     if (searchQuery) {
       return (
         <EmptyState
-          variant="no-results"
+          variant="no-matching-items"
           title="No results found"
           description={`We couldn't find any servers matching "${searchQuery}". Try adjusting your search.`}
           actions={
@@ -65,7 +65,7 @@ export function Servers({
     }
     return (
       <EmptyState
-        variant="no-servers"
+        variant="no-items"
         title="No servers available"
         description="There are no MCP servers in the catalog yet. Check back later."
       />
