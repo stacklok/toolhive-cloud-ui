@@ -29,17 +29,10 @@ export function mockScenario(
       ): HttpHandler =>
         httpMethod(path, (info) => {
           const headerValue = info.request.headers.get(SCENARIO_HEADER);
-          console.log(
-            `[mockScenario] ${method.toUpperCase()} ${info.request.url}`,
-            `| header "${SCENARIO_HEADER}"="${headerValue}"`,
-            `| expected="${scenario}"`,
-            `| match=${headerValue === scenario}`,
-          );
 
           if (headerValue !== scenario) {
             return;
           }
-          console.log(`[mockScenario] ACTIVATED scenario "${scenario}"`);
           return handler(info);
         });
     },

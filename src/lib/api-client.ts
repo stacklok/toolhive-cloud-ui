@@ -68,15 +68,17 @@ export async function getAuthenticatedClient(accessToken?: string) {
     accessToken = token;
   }
 
-  // Check for mock scenario cookie (development only)
   const requestHeaders: Record<string, string> = {
     Authorization: `Bearer ${accessToken}`,
   };
 
-  const cookieStore = await cookies();
-  const mockScenario = cookieStore.get(MOCK_SCENARIO_COOKIE)?.value;
-  if (mockScenario) {
-    requestHeaders[MOCK_SCENARIO_HEADER] = mockScenario;
+  // Mock scenario header is only used in development for testing different backend states
+  if (process.env.NODE_ENV === "development") {
+    const cookieStore = await cookies();
+    const mockScenario = cookieStore.get(MOCK_SCENARIO_COOKIE)?.value;
+    if (mockScenario) {
+      requestHeaders[MOCK_SCENARIO_HEADER] = mockScenario;
+    }
   }
 
   // Create a new client instance per request to avoid race conditions
