@@ -98,10 +98,43 @@ describe("ServersWrapper", () => {
     await user.type(searchInput, "nonexistent");
 
     await waitFor(() => {
+      expect(screen.getByText("No results found")).toBeVisible();
       expect(
-        screen.getByText('No servers found matching "nonexistent"'),
+        screen.getByText(/couldn't find any servers matching "nonexistent"/),
       ).toBeVisible();
     });
+  });
+
+  it("clears search when clear button in empty state is clicked", async () => {
+    const user = userEvent.setup();
+    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+
+    const searchInput = screen.getByPlaceholderText(
+      "Search",
+    ) as HTMLInputElement;
+    await user.type(searchInput, "nonexistent");
+
+    await waitFor(() => {
+      expect(screen.getByText("No results found")).toBeVisible();
+    });
+
+    // Click the "Clear search" button in the empty state (the one with visible text, not the icon button)
+    const clearButtons = screen.getAllByRole("button", {
+      name: /clear search/i,
+    });
+    // The empty state button has visible text "Clear search", the search input has an icon
+    const emptyStateClearButton = clearButtons.find(
+      (btn) => btn.textContent === "Clear search",
+    );
+    expect(emptyStateClearButton).toBeDefined();
+    await user.click(emptyStateClearButton as HTMLElement);
+
+    await waitFor(() => {
+      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.getByText("google-applications")).toBeVisible();
+    });
+
+    expect(searchInput.value).toBe("");
   });
 
   it("maintains search when switching view modes", async () => {

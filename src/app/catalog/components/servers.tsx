@@ -11,12 +11,18 @@ interface ServersProps {
   servers: V0ServerJson[];
   viewMode: "grid" | "list";
   searchQuery: string;
+  onClearSearch: () => void;
 }
 
 /**
  * Client component that displays filtered servers based on view mode and search query
  */
-export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
+export function Servers({
+  servers,
+  viewMode,
+  searchQuery,
+  onClearSearch,
+}: ServersProps) {
   const router = useRouter();
 
   // this will be replace by nuqs later
@@ -42,12 +48,16 @@ export function Servers({ servers, viewMode, searchQuery }: ServersProps) {
   };
 
   if (filteredServers.length === 0) {
-    return (
-      <EmptyState
-        variant={searchQuery ? "no-results" : "no-servers"}
-        searchQuery={searchQuery}
-      />
-    );
+    if (searchQuery) {
+      return (
+        <EmptyState
+          variant="no-results"
+          searchQuery={searchQuery}
+          onClearSearch={onClearSearch}
+        />
+      );
+    }
+    return <EmptyState variant="no-servers" />;
   }
 
   if (viewMode === "list") {

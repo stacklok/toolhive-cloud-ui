@@ -1,15 +1,21 @@
-import type { ReactNode } from "react";
 import { IllustrationEmptyInbox } from "@/components/illustrations/illustration-empty-inbox";
 import { IllustrationNoSearchResults } from "@/components/illustrations/illustration-no-search-results";
+import { Button } from "@/components/ui/button";
 
-interface EmptyStateProps {
-  variant: "no-servers" | "no-results";
-  searchQuery?: string;
-  actions?: ReactNode;
+interface NoServersEmptyStateProps {
+  variant: "no-servers";
 }
 
-export function EmptyState({ variant, searchQuery, actions }: EmptyStateProps) {
-  const isNoResults = variant === "no-results";
+interface NoResultsEmptyStateProps {
+  variant: "no-results";
+  searchQuery: string;
+  onClearSearch: () => void;
+}
+
+type EmptyStateProps = NoServersEmptyStateProps | NoResultsEmptyStateProps;
+
+export function EmptyState(props: EmptyStateProps) {
+  const isNoResults = props.variant === "no-results";
 
   return (
     <div className="flex items-center justify-center py-20">
@@ -26,12 +32,18 @@ export function EmptyState({ variant, searchQuery, actions }: EmptyStateProps) {
           </h2>
           <p className="text-muted-foreground">
             {isNoResults
-              ? `We couldn't find any servers matching "${searchQuery}". Try adjusting your search.`
+              ? `We couldn't find any servers matching "${props.searchQuery}". Try adjusting your search.`
               : "There are no MCP servers in the catalog yet. Check back later."}
           </p>
         </div>
 
-        {actions && <div className="flex gap-2 mt-2">{actions}</div>}
+        {isNoResults && (
+          <div className="flex gap-2 mt-2">
+            <Button variant="outline" onClick={props.onClearSearch}>
+              Clear search
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
