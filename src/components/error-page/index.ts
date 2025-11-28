@@ -1,2 +1,2 @@
-export { ErrorPage } from "./error-page";
-export { RuntimeError } from "./runtime-error";
+export { ErrorPageLayout } from "./error-page";
+export { ErrorPage } from "./error-page-client";

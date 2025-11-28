@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ErrorPage } from "@/components/error-page";
+import { ErrorPageLayout } from "@/components/error-page";
 import { NavigateBackButton } from "@/components/navigate-back-button";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export default function NotFound() {
         className="w-fit"
       />
 
-      <ErrorPage
+      <ErrorPageLayout
         title="Server Not Found"
         actions={
           <Button asChild variant="default">
@@ -23,7 +23,7 @@ export default function NotFound() {
       >
         The MCP server you're looking for doesn't exist or has been removed from
         the catalog.
-      </ErrorPage>
+      </ErrorPageLayout>
     </div>
   );
 }

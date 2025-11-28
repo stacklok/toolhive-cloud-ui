@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ErrorPage } from "@/components/error-page";
+import { ErrorPageLayout } from "@/components/error-page";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 
@@ -8,7 +8,7 @@ export default async function NotFound() {
     <div className="flex flex-col h-screen">
       <Navbar />
       <main className="flex flex-col flex-1 overflow-hidden px-4 py-5">
-        <ErrorPage
+        <ErrorPageLayout
           title="Page Not Found"
           actions={
             <Button asChild variant="default">
@@ -17,7 +17,7 @@ export default async function NotFound() {
           }
         >
           The page you're looking for doesn't exist or has been moved.
-        </ErrorPage>
+        </ErrorPageLayout>
       </main>
     </div>
   );

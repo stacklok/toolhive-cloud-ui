@@ -1,6 +1,6 @@
 "use client";
 
-import { RuntimeError } from "@/components/error-page";
+import { ErrorPage } from "@/components/error-page";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -8,5 +8,5 @@ interface ErrorProps {
 }
 
 export default function CatalogErrorPage({ error, reset }: ErrorProps) {
-  return <RuntimeError error={error} reset={reset} />;
+  return <ErrorPage error={error} reset={reset} />;
 }

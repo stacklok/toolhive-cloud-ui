@@ -2,20 +2,20 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ErrorPage } from "./error-page";
+import { ErrorPageLayout } from "./error-page";
 
-interface RuntimeErrorProps {
+interface ErrorPageProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export function RuntimeError({ error, reset }: RuntimeErrorProps) {
+export function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
-    <ErrorPage
+    <ErrorPageLayout
       title="Something went wrong"
       actions={
         <Button onClick={reset} variant="default">
@@ -24,6 +24,6 @@ export function RuntimeError({ error, reset }: RuntimeErrorProps) {
       }
     >
       An unexpected error occurred. Please try again.
-    </ErrorPage>
+    </ErrorPageLayout>
   );
 }
