@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { EmptyState } from "./empty-state";
 import { ServerCard } from "./server-card";
@@ -52,12 +53,23 @@ export function Servers({
       return (
         <EmptyState
           variant="no-results"
-          searchQuery={searchQuery}
-          onClearSearch={onClearSearch}
+          title="No results found"
+          description={`We couldn't find any servers matching "${searchQuery}". Try adjusting your search.`}
+          actions={
+            <Button variant="outline" onClick={onClearSearch}>
+              Clear search
+            </Button>
+          }
         />
       );
     }
-    return <EmptyState variant="no-servers" />;
+    return (
+      <EmptyState
+        variant="no-servers"
+        title="No servers available"
+        description="There are no MCP servers in the catalog yet. Check back later."
+      />
+    );
   }
 
   if (viewMode === "list") {
