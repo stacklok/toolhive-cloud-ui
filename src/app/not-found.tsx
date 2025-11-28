@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ErrorPageLayout } from "@/components/error-page";
+import { ErrorPageLayout } from "@/components/error-page/error-page";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 
