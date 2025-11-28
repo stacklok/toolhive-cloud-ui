@@ -9,6 +9,12 @@ const scenarioHandlers = [
   mockScenario("empty-servers").get("*/registry/v0.1/servers", () => {
     return HttpResponse.json({ servers: [], metadata: { count: 0 } });
   }),
+  mockScenario("server-error").get("*/registry/v0.1/servers", () => {
+    return HttpResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }),
 ];
 
 export const handlers: RequestHandler[] = [
