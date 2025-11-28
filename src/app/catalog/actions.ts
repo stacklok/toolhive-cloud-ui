@@ -11,7 +11,7 @@ export async function getServers(): Promise<V0ServerJson[]> {
 
   if (resp.error) {
     console.error("[catalog] Failed to fetch servers:", resp.error);
-    throw new Error("Failed to fetch servers");
+    throw resp.error;
   }
 
   if (!resp.data) {
