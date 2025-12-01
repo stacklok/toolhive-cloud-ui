@@ -47,7 +47,7 @@ export function SignInButton({ providerId }: { providerId: string }) {
       disabled={isLoading}
     >
       {isLoading ? (
-        <Loader2 className="text-muted-foreground size-12 animate-spin" />
+        <Loader2 className="text-muted-foreground size-4 animate-spin" />
       ) : (
         <>
           {isOktaProvider && <OktaIcon className="size-4 shrink-0" />}
