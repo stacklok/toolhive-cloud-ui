@@ -224,7 +224,7 @@ describe("Servers", () => {
         />,
       );
 
-      expect(container.querySelector("svg")).toBeInTheDocument();
+      expect(container.querySelector("svg")).toBeVisible();
     });
 
     it("does not show clear search button when no servers and no search", () => {

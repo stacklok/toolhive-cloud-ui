@@ -1,17 +1,21 @@
 import type { ReactNode } from "react";
-import { IllustrationNoLocation } from "@/components/illustrations/illustration-no-location";
+import { IllustrationError } from "@/components/illustrations/illustration-error";
 
-interface ErrorPageProps {
+interface ErrorPageLayoutProps {
   title: string;
   children: ReactNode;
   actions?: ReactNode;
 }
 
-export function ErrorPage({ title, children, actions }: ErrorPageProps) {
+export function ErrorPageLayout({
+  title,
+  children,
+  actions,
+}: ErrorPageLayoutProps) {
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="flex flex-col items-center text-center gap-4 max-w-md">
-        <IllustrationNoLocation className="size-40" />
+        <IllustrationError className="size-40" />
 
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">{title}</h2>

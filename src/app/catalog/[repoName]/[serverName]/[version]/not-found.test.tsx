@@ -8,7 +8,7 @@ describe("NotFound", () => {
 
     expect(
       screen.getByRole("heading", { name: /server not found/i }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("displays a descriptive message", () => {
@@ -16,7 +16,7 @@ describe("NotFound", () => {
 
     expect(
       screen.getByText(/doesn't exist or has been removed/i),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("has a link to browse the catalog", () => {
@@ -29,13 +29,13 @@ describe("NotFound", () => {
   it("has a back button", () => {
     render(<NotFound />);
 
-    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
   });
 
   it("displays a decorative illustration", () => {
     const { container } = render(<NotFound />);
 
     const svg = container.querySelector("svg[aria-hidden='true']");
-    expect(svg).toBeInTheDocument();
+    expect(svg).toBeVisible();
   });
 });

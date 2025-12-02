@@ -161,7 +161,6 @@ describe("ServersWrapper", () => {
       const awsCanvas = screen.queryByText("aws-nova-canvas");
       const googleApps = screen.queryByText("google-applications");
 
-      expect(awsCanvas).toBeInTheDocument();
       expect(awsCanvas).toBeVisible();
       expect(googleApps).not.toBeInTheDocument();
     });

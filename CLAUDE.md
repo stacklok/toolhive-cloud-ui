@@ -202,6 +202,10 @@ pnpm generate-client:nofetch # Regenerate without fetching
 - Loading states and skeleton screens
 - Accessibility (keyboard navigation, screen readers)
 
+### Testing Best Practices
+
+- **Prefer `toBeVisible()` over `toBeInTheDocument()`** - `toBeVisible()` checks that an element is actually visible to the user (not hidden via CSS, `aria-hidden`, etc.), while `toBeInTheDocument()` only checks DOM presence. Use `toBeVisible()` for positive assertions and `.not.toBeInTheDocument()` for absence checks.
+
 ### Mocking & Testing
 
 - **MSW Auto-Mocker**
@@ -230,13 +234,13 @@ describe("ServerList", () => {
     render(<ServerList />);
 
     await waitFor(() => {
-      expect(screen.getByText("Server 1")).toBeInTheDocument();
+      expect(screen.getByText("Server 1")).toBeVisible();
     });
 
     const copyButton = screen.getByRole("button", { name: /copy url/i });
     await userEvent.click(copyButton);
 
-    expect(screen.getByText(/copied/i)).toBeInTheDocument();
+    expect(screen.getByText(/copied/i)).toBeVisible();
   });
 });
 ```
