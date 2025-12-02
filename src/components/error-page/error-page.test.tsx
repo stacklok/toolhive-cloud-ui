@@ -8,9 +8,7 @@ describe("ErrorPageLayout", () => {
       <ErrorPageLayout title="Test Error">Error description</ErrorPageLayout>,
     );
 
-    expect(
-      screen.getByRole("heading", { name: /test error/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /test error/i })).toBeVisible();
   });
 
   it("displays children as description", () => {
@@ -20,7 +18,7 @@ describe("ErrorPageLayout", () => {
       </ErrorPageLayout>,
     );
 
-    expect(screen.getByText(/this is the error message/i)).toBeInTheDocument();
+    expect(screen.getByText(/this is the error message/i)).toBeVisible();
   });
 
   it("displays action buttons when provided", () => {
@@ -33,9 +31,7 @@ describe("ErrorPageLayout", () => {
       </ErrorPageLayout>,
     );
 
-    expect(
-      screen.getByRole("button", { name: /click me/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /click me/i })).toBeVisible();
   });
 
   it("displays a decorative illustration", () => {
@@ -44,6 +40,6 @@ describe("ErrorPageLayout", () => {
     );
 
     const svg = container.querySelector("svg[aria-hidden='true']");
-    expect(svg).toBeInTheDocument();
+    expect(svg).toBeVisible();
   });
 });
