@@ -352,7 +352,7 @@ describe("Component", () => {
   it("does something", async () => {
     render(<Component />);
     await waitFor(() => {
-      expect(screen.getByText("Expected")).toBeInTheDocument();
+      expect(screen.getByText("Expected")).toBeVisible();
     });
   });
 });

@@ -49,9 +49,9 @@ describe("UserMenu", () => {
       const trigger = screen.getByRole("button", { name: /test user/i });
       await user.click(trigger);
 
-      expect(screen.getByText(/light mode/i)).toBeInTheDocument();
-      expect(screen.getByText(/dark mode/i)).toBeInTheDocument();
-      expect(screen.getByText(/use system settings/i)).toBeInTheDocument();
+      expect(screen.getByText(/light mode/i)).toBeVisible();
+      expect(screen.getByText(/dark mode/i)).toBeVisible();
+      expect(screen.getByText(/use system settings/i)).toBeVisible();
     });
 
     it.each([

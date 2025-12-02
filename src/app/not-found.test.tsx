@@ -12,7 +12,7 @@ describe("NotFound (root)", () => {
 
     expect(
       screen.getByRole("heading", { name: /page not found/i }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("displays a generic error message", async () => {
@@ -20,7 +20,7 @@ describe("NotFound (root)", () => {
 
     expect(
       screen.getByText(/the page you're looking for doesn't exist/i),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("has a link to browse the catalog", async () => {
@@ -42,12 +42,12 @@ describe("NotFound (root)", () => {
     const { container } = render(await NotFound());
 
     const svg = container.querySelector("svg[aria-hidden='true']");
-    expect(svg).toBeInTheDocument();
+    expect(svg).toBeVisible();
   });
 
   it("displays the navbar", async () => {
     render(await NotFound());
 
-    expect(screen.getByTestId("navbar")).toBeInTheDocument();
+    expect(screen.getByTestId("navbar")).toBeVisible();
   });
 });
