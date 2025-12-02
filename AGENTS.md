@@ -366,6 +366,10 @@ describe("Component", () => {
 - Loading states
 - Accessibility
 
+### Testing Best Practices
+
+- **Prefer `toBeVisible()` over `toBeInTheDocument()`** - `toBeVisible()` checks that an element is actually visible to the user (not hidden via CSS, `aria-hidden`, etc.), while `toBeInTheDocument()` only checks DOM presence. Use `toBeVisible()` for positive assertions and `.not.toBeInTheDocument()` for absence checks.
+
 ## Common Mistakes
 
 ### 1. Client Components Everywhere
