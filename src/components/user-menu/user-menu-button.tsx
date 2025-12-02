@@ -17,7 +17,7 @@ export const UserMenuButton = forwardRef<
     <Button
       ref={ref}
       variant="ghost"
-      className="flex items-center gap-2"
+      className="cursor-pointer flex items-center gap-2 h-[46px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
       {...props}
     >
       <UserAvatar userName={userName} />
