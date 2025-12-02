@@ -21,15 +21,13 @@ describe("ErrorPage", () => {
 
     expect(
       screen.getByRole("heading", { name: /something went wrong/i }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("displays error description", () => {
     render(<ErrorPage error={new Error("Test")} reset={vi.fn()} />);
 
-    expect(
-      screen.getByText(/an unexpected error occurred/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/an unexpected error occurred/i)).toBeVisible();
   });
 
   it("calls reset function when Try again button is clicked", async () => {
