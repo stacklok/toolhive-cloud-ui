@@ -15,7 +15,7 @@ export default async function CatalogDetailPage({
   params,
 }: CatalogDetailPageProps) {
   const { repoName, serverName, version } = await params;
-
+  console.log("repoName", params);
   const { data: serverResponse, response } = await getServerDetails(
     `${repoName}/${serverName}`,
     version,
