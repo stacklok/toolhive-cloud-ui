@@ -3,21 +3,22 @@
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
 import type {
+  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
+  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
+  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
   DeleteExtensionV0RegistriesByRegistryNameData,
   DeleteExtensionV0RegistriesByRegistryNameErrors,
-  DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
-  DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors,
-  GetApiV0RegistryInfoData,
-  GetApiV0RegistryInfoErrors,
-  GetApiV0RegistryInfoResponses,
-  GetApiV0RegistryOpenapiYamlData,
-  GetApiV0RegistryOpenapiYamlResponses,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
+  GetExtensionV0RegistriesByRegistryNameResponses,
   GetExtensionV0RegistriesData,
   GetExtensionV0RegistriesErrors,
+  GetExtensionV0RegistriesResponses,
   GetHealthData,
   GetHealthResponses,
+  GetOpenapiJsonData,
+  GetOpenapiJsonErrors,
+  GetOpenapiJsonResponses,
   GetReadinessData,
   GetReadinessErrors,
   GetReadinessResponses,
@@ -41,8 +42,9 @@ import type {
   GetRegistryV01ServersResponses,
   GetVersionData,
   GetVersionResponses,
-  PostRegistryByRegistryNameV01PublishData,
-  PostRegistryByRegistryNameV01PublishErrors,
+  PostByRegistryNameV01PublishData,
+  PostByRegistryNameV01PublishErrors,
+  PostByRegistryNameV01PublishResponses,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
   PutExtensionV0RegistriesByRegistryNameData,
@@ -69,64 +71,19 @@ export type Options<
 };
 
 /**
- * Get registry information
- *
- * Get registry metadata including version, last updated time, and total servers
- *
- * @deprecated
- */
-export const getApiV0RegistryInfo = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiV0RegistryInfoData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetApiV0RegistryInfoResponses,
-    GetApiV0RegistryInfoErrors,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/info",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-};
-
-/**
- * Get OpenAPI specification
- *
- * Returns the OpenAPI specification for the registry API in YAML format
- *
- * @deprecated
- */
-export const getApiV0RegistryOpenapiYaml = <
-  ThrowOnError extends boolean = false,
->(
-  options?: Options<GetApiV0RegistryOpenapiYamlData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetApiV0RegistryOpenapiYamlResponses,
-    unknown,
-    ThrowOnError
-  >({
-    url: "/api/v0/registry/openapi.yaml",
-    ...options,
-  });
-};
-
-/**
  * List registries
  *
  * List all registries
  */
 export const getExtensionV0Registries = <ThrowOnError extends boolean = false>(
   options?: Options<GetExtensionV0RegistriesData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    unknown,
+) =>
+  (options?.client ?? client).get<
+    GetExtensionV0RegistriesResponses,
     GetExtensionV0RegistriesErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/extension/v0/registries",
     ...options,
     headers: {
@@ -134,7 +91,6 @@ export const getExtensionV0Registries = <ThrowOnError extends boolean = false>(
       ...options?.headers,
     },
   });
-};
 
 /**
  * Delete registry
@@ -145,12 +101,13 @@ export const deleteExtensionV0RegistriesByRegistryName = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<DeleteExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) => {
-  return (options.client ?? client).delete<
+) =>
+  (options.client ?? client).delete<
     unknown,
     DeleteExtensionV0RegistriesByRegistryNameErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/extension/v0/registries/{registryName}",
     ...options,
     headers: {
@@ -158,7 +115,6 @@ export const deleteExtensionV0RegistriesByRegistryName = <
       ...options.headers,
     },
   });
-};
 
 /**
  * Get registry
@@ -169,12 +125,13 @@ export const getExtensionV0RegistriesByRegistryName = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<GetExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) => {
-  return (options.client ?? client).get<
-    unknown,
+) =>
+  (options.client ?? client).get<
+    GetExtensionV0RegistriesByRegistryNameResponses,
     GetExtensionV0RegistriesByRegistryNameErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/extension/v0/registries/{registryName}",
     ...options,
     headers: {
@@ -182,7 +139,6 @@ export const getExtensionV0RegistriesByRegistryName = <
       ...options.headers,
     },
   });
-};
 
 /**
  * Create or update registry
@@ -193,12 +149,13 @@ export const putExtensionV0RegistriesByRegistryName = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<PutExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) => {
-  return (options.client ?? client).put<
+) =>
+  (options.client ?? client).put<
     unknown,
     PutExtensionV0RegistriesByRegistryNameErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/extension/v0/registries/{registryName}",
     ...options,
     headers: {
@@ -206,33 +163,6 @@ export const putExtensionV0RegistriesByRegistryName = <
       ...options.headers,
     },
   });
-};
-
-/**
- * Delete server
- *
- * Delete a server from the registry
- */
-export const deleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersion =
-  <ThrowOnError extends boolean = false>(
-    options: Options<
-      DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
-      ThrowOnError
-    >,
-  ) => {
-    return (options.client ?? client).delete<
-      unknown,
-      DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors,
-      ThrowOnError
-    >({
-      url: "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    });
-  };
 
 /**
  * Create or update server
@@ -245,12 +175,13 @@ export const putExtensionV0RegistriesByRegistryNameServersByServerNameVersionsBy
       PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
       ThrowOnError
     >,
-  ) => {
-    return (options.client ?? client).put<
+  ) =>
+    (options.client ?? client).put<
       unknown,
       PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors,
       ThrowOnError
     >({
+      security: [{ name: "Authorization", type: "apiKey" }],
       url: "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}",
       ...options,
       headers: {
@@ -258,61 +189,63 @@ export const putExtensionV0RegistriesByRegistryNameServersByServerNameVersionsBy
         ...options.headers,
       },
     });
-  };
 
 /**
  * Health check
  *
  * Check if the registry API is healthy
- *
- * @deprecated
  */
 export const getHealth = <ThrowOnError extends boolean = false>(
   options?: Options<GetHealthData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetHealthResponses,
-    unknown,
-    ThrowOnError
-  >({
+) =>
+  (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({
     url: "/health",
     ...options,
   });
-};
+
+/**
+ * OpenAPI specification
+ *
+ * Get the OpenAPI 3.1.0 specification for this API
+ */
+export const getOpenapiJson = <ThrowOnError extends boolean = false>(
+  options?: Options<GetOpenapiJsonData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetOpenapiJsonResponses,
+    GetOpenapiJsonErrors,
+    ThrowOnError
+  >({ url: "/openapi.json", ...options });
 
 /**
  * Readiness check
  *
  * Check if the registry API is ready to serve requests
- *
- * @deprecated
  */
 export const getReadiness = <ThrowOnError extends boolean = false>(
   options?: Options<GetReadinessData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
+) =>
+  (options?.client ?? client).get<
     GetReadinessResponses,
     GetReadinessErrors,
     ThrowOnError
-  >({
-    url: "/readiness",
-    ...options,
-  });
-};
+  >({ url: "/readiness", ...options });
 
 /**
  * Publish server
  *
- * Publish a server to the registry
+ * Publish a server to the registry. This server does not support publishing via this endpoint.
+ * Use the registry-specific endpoint /{registryName}/v0.1/publish instead.
  */
 export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
   options?: Options<PostRegistryV01PublishData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).post<
+) =>
+  (options?.client ?? client).post<
     unknown,
     PostRegistryV01PublishErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/v0.1/publish",
     ...options,
     headers: {
@@ -320,7 +253,6 @@ export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
       ...options?.headers,
     },
   });
-};
 
 /**
  * List servers
@@ -329,12 +261,13 @@ export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
  */
 export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
   options?: Options<GetRegistryV01ServersData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
+) =>
+  (options?.client ?? client).get<
     GetRegistryV01ServersResponses,
     GetRegistryV01ServersErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/v0.1/servers",
     ...options,
     headers: {
@@ -342,7 +275,6 @@ export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
       ...options?.headers,
     },
   });
-};
 
 /**
  * List all versions of an MCP server
@@ -353,12 +285,13 @@ export const getRegistryV01ServersByServerNameVersions = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<GetRegistryV01ServersByServerNameVersionsData, ThrowOnError>,
-) => {
-  return (options.client ?? client).get<
+) =>
+  (options.client ?? client).get<
     GetRegistryV01ServersByServerNameVersionsResponses,
     GetRegistryV01ServersByServerNameVersionsErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/v0.1/servers/{serverName}/versions",
     ...options,
     headers: {
@@ -366,7 +299,6 @@ export const getRegistryV01ServersByServerNameVersions = <
       ...options.headers,
     },
   });
-};
 
 /**
  * Get specific MCP server version
@@ -381,12 +313,13 @@ export const getRegistryV01ServersByServerNameVersionsByVersion = <
     GetRegistryV01ServersByServerNameVersionsByVersionData,
     ThrowOnError
   >,
-) => {
-  return (options.client ?? client).get<
+) =>
+  (options.client ?? client).get<
     GetRegistryV01ServersByServerNameVersionsByVersionResponses,
     GetRegistryV01ServersByServerNameVersionsByVersionErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/v0.1/servers/{serverName}/versions/{version}",
     ...options,
     headers: {
@@ -394,31 +327,6 @@ export const getRegistryV01ServersByServerNameVersionsByVersion = <
       ...options.headers,
     },
   });
-};
-
-/**
- * Publish server
- *
- * Publish a server to the registry
- */
-export const postRegistryByRegistryNameV01Publish = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<PostRegistryByRegistryNameV01PublishData, ThrowOnError>,
-) => {
-  return (options.client ?? client).post<
-    unknown,
-    PostRegistryByRegistryNameV01PublishErrors,
-    ThrowOnError
-  >({
-    url: "/registry/{registryName}/v0.1/publish",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-};
 
 /**
  * List servers
@@ -429,12 +337,13 @@ export const getRegistryByRegistryNameV01Servers = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<GetRegistryByRegistryNameV01ServersData, ThrowOnError>,
-) => {
-  return (options.client ?? client).get<
+) =>
+  (options.client ?? client).get<
     GetRegistryByRegistryNameV01ServersResponses,
     GetRegistryByRegistryNameV01ServersErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/{registryName}/v0.1/servers",
     ...options,
     headers: {
@@ -442,7 +351,6 @@ export const getRegistryByRegistryNameV01Servers = <
       ...options.headers,
     },
   });
-};
 
 /**
  * List all versions of an MCP server
@@ -456,12 +364,13 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
     GetRegistryByRegistryNameV01ServersByServerNameVersionsData,
     ThrowOnError
   >,
-) => {
-  return (options.client ?? client).get<
+) =>
+  (options.client ?? client).get<
     GetRegistryByRegistryNameV01ServersByServerNameVersionsResponses,
     GetRegistryByRegistryNameV01ServersByServerNameVersionsErrors,
     ThrowOnError
   >({
+    security: [{ name: "Authorization", type: "apiKey" }],
     url: "/registry/{registryName}/v0.1/servers/{serverName}/versions",
     ...options,
     headers: {
@@ -469,7 +378,6 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
       ...options.headers,
     },
   });
-};
 
 /**
  * Get specific MCP server version
@@ -483,12 +391,13 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
       GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
       ThrowOnError
     >,
-  ) => {
-    return (options.client ?? client).get<
+  ) =>
+    (options.client ?? client).get<
       GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
       GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
       ThrowOnError
     >({
+      security: [{ name: "Authorization", type: "apiKey" }],
       url: "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}",
       ...options,
       headers: {
@@ -496,24 +405,67 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
         ...options.headers,
       },
     });
-  };
 
 /**
  * Version information
  *
  * Get version information about the registry API
- *
- * @deprecated
  */
 export const getVersion = <ThrowOnError extends boolean = false>(
   options?: Options<GetVersionData, ThrowOnError>,
-) => {
-  return (options?.client ?? client).get<
-    GetVersionResponses,
-    unknown,
-    ThrowOnError
-  >({
+) =>
+  (options?.client ?? client).get<GetVersionResponses, unknown, ThrowOnError>({
     url: "/version",
     ...options,
   });
-};
+
+/**
+ * Publish server to specific registry
+ *
+ * Publish a server version to a specific managed registry
+ */
+export const postByRegistryNameV01Publish = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PostByRegistryNameV01PublishData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostByRegistryNameV01PublishResponses,
+    PostByRegistryNameV01PublishErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/{registryName}/v0.1/publish",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Delete server version from specific registry
+ *
+ * Delete a server version from a specific managed registry
+ */
+export const deleteByRegistryNameV01ServersByServerNameVersionsByVersion = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).delete<
+    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
+    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/{registryName}/v0.1/servers/{serverName}/versions/{version}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });

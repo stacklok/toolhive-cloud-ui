@@ -4,16 +4,50 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type InternalApiV0ErrorResponse = {
-  error?: string;
-};
+export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo =
+  {
+    createdAt?: string;
+    name?: string;
+    syncStatus?: GithubComStacklokToolhiveRegistryServerInternalServiceRegistrySyncStatus;
+    /**
+     * MANAGED, FILE, REMOTE
+     */
+    type?: string;
+    updatedAt?: string;
+  };
 
-export type InternalApiV0RegistryInfoResponse = {
-  last_updated?: string;
-  source?: string;
-  total_servers?: number;
-  version?: string;
-};
+export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistryListResponse =
+  {
+    registries?: Array<GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo>;
+  };
+
+export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistrySyncStatus =
+  {
+    /**
+     * Number of sync attempts
+     */
+    attemptCount?: number;
+    /**
+     * Last sync attempt
+     */
+    lastAttempt?: string;
+    /**
+     * Last successful sync
+     */
+    lastSyncTime?: string;
+    /**
+     * Status or error message
+     */
+    message?: string;
+    /**
+     * complete, syncing, failed
+     */
+    phase?: string;
+    /**
+     * Number of servers in registry
+     */
+    serverCount?: number;
+  };
 
 export type ModelArgument = {
   choices?: Array<string>;
@@ -177,61 +211,6 @@ export type V0ServerResponse = {
   server?: V0ServerJson;
 };
 
-export type GetApiV0RegistryInfoData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path?: never;
-  query?: {
-    /**
-     * Response format
-     */
-    format?: "toolhive" | "upstream";
-  };
-  url: "/api/v0/registry/info";
-};
-
-export type GetApiV0RegistryInfoErrors = {
-  /**
-   * Bad Request
-   */
-  400: InternalApiV0ErrorResponse;
-  /**
-   * Not Implemented
-   */
-  501: InternalApiV0ErrorResponse;
-};
-
-export type GetApiV0RegistryInfoError =
-  GetApiV0RegistryInfoErrors[keyof GetApiV0RegistryInfoErrors];
-
-export type GetApiV0RegistryInfoResponses = {
-  /**
-   * OK
-   */
-  200: InternalApiV0RegistryInfoResponse;
-};
-
-export type GetApiV0RegistryInfoResponse =
-  GetApiV0RegistryInfoResponses[keyof GetApiV0RegistryInfoResponses];
-
-export type GetApiV0RegistryOpenapiYamlData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v0/registry/openapi.yaml";
-};
-
-export type GetApiV0RegistryOpenapiYamlResponses = {
-  /**
-   * OpenAPI specification in YAML format
-   */
-  200: string;
-};
-
-export type GetApiV0RegistryOpenapiYamlResponse =
-  GetApiV0RegistryOpenapiYamlResponses[keyof GetApiV0RegistryOpenapiYamlResponses];
-
 export type GetExtensionV0RegistriesData = {
   body?: {
     [key: string]: unknown;
@@ -243,15 +222,31 @@ export type GetExtensionV0RegistriesData = {
 
 export type GetExtensionV0RegistriesErrors = {
   /**
-   * Not implemented
+   * Unauthorized
    */
-  501: {
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
     [key: string]: string;
   };
 };
 
 export type GetExtensionV0RegistriesError =
   GetExtensionV0RegistriesErrors[keyof GetExtensionV0RegistriesErrors];
+
+export type GetExtensionV0RegistriesResponses = {
+  /**
+   * List of registries
+   */
+  200: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryListResponse;
+};
+
+export type GetExtensionV0RegistriesResponse =
+  GetExtensionV0RegistriesResponses[keyof GetExtensionV0RegistriesResponses];
 
 export type DeleteExtensionV0RegistriesByRegistryNameData = {
   body?: {
@@ -272,6 +267,12 @@ export type DeleteExtensionV0RegistriesByRegistryNameErrors = {
    * Bad request
    */
   400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
     [key: string]: string;
   };
   /**
@@ -307,6 +308,24 @@ export type GetExtensionV0RegistriesByRegistryNameErrors = {
     [key: string]: string;
   };
   /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Registry not found
+   */
+  404: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+  /**
    * Not implemented
    */
   501: {
@@ -316,6 +335,16 @@ export type GetExtensionV0RegistriesByRegistryNameErrors = {
 
 export type GetExtensionV0RegistriesByRegistryNameError =
   GetExtensionV0RegistriesByRegistryNameErrors[keyof GetExtensionV0RegistriesByRegistryNameErrors];
+
+export type GetExtensionV0RegistriesByRegistryNameResponses = {
+  /**
+   * Registry details
+   */
+  200: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo;
+};
+
+export type GetExtensionV0RegistriesByRegistryNameResponse =
+  GetExtensionV0RegistriesByRegistryNameResponses[keyof GetExtensionV0RegistriesByRegistryNameResponses];
 
 export type PutExtensionV0RegistriesByRegistryNameData = {
   body?: {
@@ -339,6 +368,12 @@ export type PutExtensionV0RegistriesByRegistryNameErrors = {
     [key: string]: string;
   };
   /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
    * Not implemented
    */
   501: {
@@ -348,48 +383,6 @@ export type PutExtensionV0RegistriesByRegistryNameErrors = {
 
 export type PutExtensionV0RegistriesByRegistryNameError =
   PutExtensionV0RegistriesByRegistryNameErrors[keyof PutExtensionV0RegistriesByRegistryNameErrors];
-
-export type DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData =
-  {
-    body?: {
-      [key: string]: unknown;
-    };
-    path: {
-      /**
-       * Registry Name
-       */
-      registryName: string;
-      /**
-       * URL-encoded server name (e.g., \
-       */
-      serverName: string;
-      /**
-       * URL-encoded version to retrieve (e.g., \
-       */
-      version: string;
-    };
-    query?: never;
-    url: "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}";
-  };
-
-export type DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors =
-  {
-    /**
-     * Bad request
-     */
-    400: {
-      [key: string]: string;
-    };
-    /**
-     * Not implemented
-     */
-    501: {
-      [key: string]: string;
-    };
-  };
-
-export type DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionError =
-  DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors[keyof DeleteExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors];
 
 export type PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData =
   {
@@ -423,6 +416,12 @@ export type PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByV
       [key: string]: string;
     };
     /**
+     * Unauthorized
+     */
+    401: {
+      [key: string]: string;
+    };
+    /**
      * Not implemented
      */
     501: {
@@ -451,6 +450,37 @@ export type GetHealthResponses = {
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
+export type GetOpenapiJsonData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/openapi.json";
+};
+
+export type GetOpenapiJsonErrors = {
+  /**
+   * Internal Server Error
+   */
+  500: {
+    [key: string]: string;
+  };
+};
+
+export type GetOpenapiJsonError =
+  GetOpenapiJsonErrors[keyof GetOpenapiJsonErrors];
+
+export type GetOpenapiJsonResponses = {
+  /**
+   * OpenAPI 3.1.0 specification
+   */
+  200: {
+    [key: string]: unknown;
+  };
+};
+
+export type GetOpenapiJsonResponse =
+  GetOpenapiJsonResponses[keyof GetOpenapiJsonResponses];
+
 export type GetReadinessData = {
   body?: never;
   path?: never;
@@ -462,7 +492,9 @@ export type GetReadinessErrors = {
   /**
    * Service Unavailable
    */
-  503: InternalApiV0ErrorResponse;
+  503: {
+    [key: string]: string;
+  };
 };
 
 export type GetReadinessError = GetReadinessErrors[keyof GetReadinessErrors];
@@ -489,6 +521,12 @@ export type PostRegistryV01PublishData = {
 };
 
 export type PostRegistryV01PublishErrors = {
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
   /**
    * Not implemented
    */
@@ -533,6 +571,12 @@ export type GetRegistryV01ServersErrors = {
   400: {
     [key: string]: string;
   };
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
 };
 
 export type GetRegistryV01ServersError =
@@ -567,6 +611,12 @@ export type GetRegistryV01ServersByServerNameVersionsErrors = {
    * Bad request
    */
   400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
     [key: string]: string;
   };
   /**
@@ -616,6 +666,12 @@ export type GetRegistryV01ServersByServerNameVersionsByVersionErrors = {
     [key: string]: string;
   };
   /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
    * Server or version not found
    */
   404: {
@@ -635,32 +691,6 @@ export type GetRegistryV01ServersByServerNameVersionsByVersionResponses = {
 
 export type GetRegistryV01ServersByServerNameVersionsByVersionResponse =
   GetRegistryV01ServersByServerNameVersionsByVersionResponses[keyof GetRegistryV01ServersByServerNameVersionsByVersionResponses];
-
-export type PostRegistryByRegistryNameV01PublishData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Registry name
-     */
-    registryName: string;
-  };
-  query?: never;
-  url: "/registry/{registryName}/v0.1/publish";
-};
-
-export type PostRegistryByRegistryNameV01PublishErrors = {
-  /**
-   * Not implemented
-   */
-  501: {
-    [key: string]: string;
-  };
-};
-
-export type PostRegistryByRegistryNameV01PublishError =
-  PostRegistryByRegistryNameV01PublishErrors[keyof PostRegistryByRegistryNameV01PublishErrors];
 
 export type GetRegistryByRegistryNameV01ServersData = {
   body?: {
@@ -698,6 +728,12 @@ export type GetRegistryByRegistryNameV01ServersErrors = {
    * Bad request
    */
   400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
     [key: string]: string;
   };
 };
@@ -738,6 +774,12 @@ export type GetRegistryByRegistryNameV01ServersByServerNameVersionsErrors = {
    * Bad request
    */
   400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
     [key: string]: string;
   };
   /**
@@ -793,6 +835,12 @@ export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErro
       [key: string]: string;
     };
     /**
+     * Unauthorized
+     */
+    401: {
+      [key: string]: string;
+    };
+    /**
      * Server or version not found
      */
     404: {
@@ -831,3 +879,140 @@ export type GetVersionResponses = {
 };
 
 export type GetVersionResponse = GetVersionResponses[keyof GetVersionResponses];
+
+export type PostByRegistryNameV01PublishData = {
+  /**
+   * Server data
+   */
+  body: V0ServerJson;
+  path: {
+    /**
+     * Registry name
+     */
+    registryName: string;
+  };
+  query?: never;
+  url: "/{registryName}/v0.1/publish";
+};
+
+export type PostByRegistryNameV01PublishErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Not a managed registry
+   */
+  403: {
+    [key: string]: string;
+  };
+  /**
+   * Registry not found
+   */
+  404: {
+    [key: string]: string;
+  };
+  /**
+   * Version already exists
+   */
+  409: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+};
+
+export type PostByRegistryNameV01PublishError =
+  PostByRegistryNameV01PublishErrors[keyof PostByRegistryNameV01PublishErrors];
+
+export type PostByRegistryNameV01PublishResponses = {
+  /**
+   * Created
+   */
+  201: V0ServerJson;
+};
+
+export type PostByRegistryNameV01PublishResponse =
+  PostByRegistryNameV01PublishResponses[keyof PostByRegistryNameV01PublishResponses];
+
+export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry name
+     */
+    registryName: string;
+    /**
+     * Server name (URL-encoded)
+     */
+    serverName: string;
+    /**
+     * Version (URL-encoded)
+     */
+    version: string;
+  };
+  query?: never;
+  url: "/{registryName}/v0.1/servers/{serverName}/versions/{version}";
+};
+
+export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Unauthorized
+     */
+    401: {
+      [key: string]: string;
+    };
+    /**
+     * Not a managed registry
+     */
+    403: {
+      [key: string]: string;
+    };
+    /**
+     * Server version not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionError =
+  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors[keyof DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors];
+
+export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses =
+  {
+    /**
+     * No content
+     */
+    204: void;
+  };
+
+export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponse =
+  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses[keyof DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses];
