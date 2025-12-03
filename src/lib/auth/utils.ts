@@ -3,8 +3,15 @@
  */
 
 import { createHash } from "node:crypto";
+import type { Account } from "better-auth";
 import * as jose from "jose";
-import { TOKEN_ONE_HOUR_MS } from "./constants";
+import { cookies } from "next/headers";
+import { saveTokenCookie } from "./auth";
+import {
+  BETTER_AUTH_SECRET,
+  OIDC_TOKEN_COOKIE_NAME,
+  TOKEN_ONE_HOUR_MS,
+} from "./constants";
 import type { OidcTokenData } from "./types";
 
 /**
@@ -68,6 +75,7 @@ export async function decrypt(
 /**
  * Type guard to validate OidcTokenData structure at runtime.
  * Used after decrypting token data from cookie to ensure data integrity.
+ * Note: idToken is not validated here as it's optional and not critical for token validation.
  */
 export function isOidcTokenData(data: unknown): data is OidcTokenData {
   if (typeof data !== "object" || data === null) {
@@ -78,7 +86,7 @@ export function isOidcTokenData(data: unknown): data is OidcTokenData {
 
   return (
     typeof obj.accessToken === "string" &&
-    typeof obj.expiresAt === "number" &&
+    typeof obj.accessTokenExpiresAt === "number" &&
     typeof obj.userId === "string" &&
     (obj.refreshToken === undefined || typeof obj.refreshToken === "string") &&
     (obj.refreshTokenExpiresAt === undefined ||
@@ -87,20 +95,48 @@ export function isOidcTokenData(data: unknown): data is OidcTokenData {
 }
 
 /**
+ * Retrieves the OIDC ID token from HTTP-only cookie.
+ * Returns null if token not found or belongs to different user.
+ * Used for OIDC logout (RP-Initiated Logout).
+ */
+export async function getOidcIdToken(userId: string): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
+
+    if (!encryptedCookie?.value) {
+      return null;
+    }
+
+    let tokenData: OidcTokenData;
+    try {
+      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
+    } catch (error) {
+      console.error("[Auth] Token decryption failed:", error);
+      return null;
+    }
+
+    if (tokenData.userId !== userId) {
+      console.error("[Auth] Token userId mismatch");
+      return null;
+    }
+
+    return tokenData.idToken || null;
+  } catch (error) {
+    console.error("[Auth] Unexpected error reading OIDC ID token:", error);
+    return null;
+  }
+}
+
+/**
  * Saves OIDC tokens from account creation or update into HTTP-only cookie.
  * Used by Better Auth database hooks for both initial login and re-login.
  *
  * @param account - Account data from Better Auth containing OIDC tokens
  */
-export async function saveAccountToken(account: {
-  accessToken?: string | null;
-  refreshToken?: string | null;
-  accessTokenExpiresAt?: Date | string | null;
-  refreshTokenExpiresAt?: Date | string | null;
-  userId: string;
-}) {
+export async function saveAccountToken(account: Account) {
   if (account.accessToken && account.userId) {
-    const expiresAt = account.accessTokenExpiresAt
+    const accessTokenExpiresAt = account.accessTokenExpiresAt
       ? new Date(account.accessTokenExpiresAt).getTime()
       : Date.now() + TOKEN_ONE_HOUR_MS;
 
@@ -109,24 +145,25 @@ export async function saveAccountToken(account: {
       : undefined;
 
     const tokenData: OidcTokenData = {
+      ...account,
       accessToken: account.accessToken,
       refreshToken: account.refreshToken || undefined,
-      expiresAt,
+      accessTokenExpiresAt,
       refreshTokenExpiresAt,
       userId: account.userId,
     };
 
+    console.log("[account] Token data to save:", JSON.stringify(account));
+
     console.log("[Save Token] Token data to save:", {
       hasAccessToken: !!tokenData.accessToken,
       hasRefreshToken: !!tokenData.refreshToken,
-      expiresAt: new Date(tokenData.expiresAt).toISOString(),
+      accessTokenExpiresAt: new Date(accessTokenExpiresAt).toISOString(),
       refreshTokenExpiresAt: tokenData.refreshTokenExpiresAt
         ? new Date(tokenData.refreshTokenExpiresAt).toISOString()
         : "none",
     });
 
-    // Dynamic import to avoid circular dependency
-    const { saveTokenCookie } = await import("./auth");
     await saveTokenCookie(tokenData);
 
     console.log("[Save Token] Token cookie saved successfully");
