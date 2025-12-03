@@ -1,7 +1,9 @@
+"use client";
+
 import { genericOAuthClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
-import { clearOidcTokenAction } from "./auth-actions";
+import { clearOidcTokenAction, getOidcSignOutUrl } from "./actions";
 
 export const authClient = createAuthClient({
   // Don't specify baseURL - it will use the same origin as the page
@@ -11,42 +13,30 @@ export const authClient = createAuthClient({
 
 export const { signIn, useSession } = authClient;
 
-export const signOut = async (options?: { redirectTo?: string }) => {
-  const redirectUri = options?.redirectTo || "/signin";
-
+/**
+ * Signs out the user from both the local session and OIDC provider
+ * Performs RP-Initiated Logout to terminate the SSO session at the provider
+ */
+export const signOut = async () => {
   try {
-    // Note: This does NOT logout from Okta SSO session
-    // User will be automatically re-authenticated on next signin (SSO behavior)
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: async () => {
-          // Clear OIDC token cookie after successful sign out
-          try {
-            await clearOidcTokenAction();
-          } catch (error) {
-            console.warn("[Auth] Failed to clear OIDC token:", error);
-            // Continue with redirect even if cookie cleanup fails
-          }
-          window.location.href = redirectUri;
-        },
-        onError: (ctx) => {
-          console.error("[Auth] Better Auth sign out error:", ctx.error);
-          toast.error("Sign out failed", {
-            description:
-              ctx.error.message || "An error occurred during sign out",
-          });
-          // Still redirect even if there's an error
-          window.location.href = redirectUri;
-        },
-      },
-    });
+    // 1. Get logout URL FIRST (while session still exists)
+    const redirectUrl = await getOidcSignOutUrl();
+
+    // 2. Clear OIDC token cookie AFTER BA session is gone
+    await clearOidcTokenAction();
+
+    // 3. Redirect to OIDC provider logout
+    window.location.replace(redirectUrl);
+    // 4. Sign out from Better Auth (invalidates session)
+    await authClient.signOut();
   } catch (error) {
     console.error("[Auth] Sign out error:", error);
     toast.error("Sign out failed", {
       description:
         error instanceof Error ? error.message : "An unexpected error occurred",
     });
-    // Still redirect even if there's an error
-    window.location.href = redirectUri;
+
+    // Fallback redirect on error
+    window.location.replace("/signin");
   }
 };
