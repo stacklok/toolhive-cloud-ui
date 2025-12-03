@@ -1,27 +1,32 @@
-import type { Auth, BetterAuthOptions } from "better-auth";
-import { betterAuth } from "better-auth";
+import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import { cookies } from "next/headers";
 import {
   BASE_URL,
   BETTER_AUTH_SECRET,
-  COOKIE_NAME,
   IS_PRODUCTION,
   OIDC_CLIENT_ID,
   OIDC_CLIENT_SECRET,
-  OIDC_ISSUER_URL,
+  OIDC_DISCOVERY_URL,
   OIDC_PROVIDER_ID,
   OIDC_SCOPES,
+  OIDC_TOKEN_COOKIE_NAME,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import type { OIDCDiscovery, OidcTokenData, TokenResponse } from "./types";
+import type {
+  OidcDiscovery,
+  OidcDiscoveryResponse,
+  OidcTokenData,
+  TokenResponse,
+} from "./types";
 import { decrypt, encrypt, saveAccountToken } from "./utils";
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
  */
 let cachedTokenEndpoint: string | null = null;
+let cachedEndSessionEndpoint: string | null = null;
 
 /**
  * Saves encrypted token data in HTTP-only cookie.
@@ -31,7 +36,7 @@ export async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
   const encrypted = await encrypt(tokenData, BETTER_AUTH_SECRET);
   const cookieStore = await cookies();
 
-  cookieStore.set(COOKIE_NAME, encrypted, {
+  cookieStore.set(OIDC_TOKEN_COOKIE_NAME, encrypted, {
     httpOnly: true,
     secure: IS_PRODUCTION,
     sameSite: "lax",
@@ -41,16 +46,19 @@ export async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
 }
 
 /**
- * Discovers and caches the token endpoint from OIDC provider.
+ * Discovers and caches the token and end_session endpoints from OIDC provider.
+ * Exported for use in server actions and token refresh logic.
  */
-async function getTokenEndpoint(): Promise<string | null> {
+export async function getOidcDiscovery(): Promise<OidcDiscoveryResponse | null> {
   if (cachedTokenEndpoint) {
-    return cachedTokenEndpoint;
+    return {
+      tokenEndpoint: cachedTokenEndpoint,
+      endSessionEndpoint: cachedEndSessionEndpoint,
+    };
   }
 
   try {
-    const discoveryUrl = `${OIDC_ISSUER_URL}/.well-known/openid-configuration`;
-    const response = await fetch(discoveryUrl);
+    const response = await fetch(OIDC_DISCOVERY_URL);
 
     if (!response.ok) {
       console.error(
@@ -60,10 +68,14 @@ async function getTokenEndpoint(): Promise<string | null> {
       return null;
     }
 
-    const discovery = (await response.json()) as OIDCDiscovery;
+    const discovery = (await response.json()) as OidcDiscovery;
     cachedTokenEndpoint = discovery.token_endpoint;
+    cachedEndSessionEndpoint = discovery.end_session_endpoint;
 
-    return cachedTokenEndpoint;
+    return {
+      tokenEndpoint: cachedTokenEndpoint,
+      endSessionEndpoint: cachedEndSessionEndpoint,
+    };
   } catch (error) {
     console.error("[Auth] Error fetching OIDC discovery document:", error);
     return null;
@@ -74,24 +86,34 @@ async function getTokenEndpoint(): Promise<string | null> {
  * Attempts to refresh the access token using the refresh token.
  * Returns new token data if successful, null otherwise.
  */
-export async function refreshAccessToken(
-  refreshToken: string,
-  userId: string,
-  refreshTokenExpiresAt?: number,
-): Promise<OidcTokenData | null> {
-  if (!refreshToken || !userId) {
-    console.error("[Auth] Missing refresh token or userId");
-    return null;
-  }
-
-  // Check if refresh token is expired before attempting to refresh
-  if (refreshTokenExpiresAt && refreshTokenExpiresAt <= Date.now()) {
-    console.error("[Auth] Refresh token expired");
-    return null;
-  }
-
+export async function refreshAccessToken({
+  refreshToken,
+  userId,
+  idToken: initialIdToken,
+  refreshTokenExpiresAt: initialRefreshTokenExpiresAt,
+}: {
+  refreshToken: string;
+  userId: string;
+  refreshTokenExpiresAt?: number | undefined | null;
+  idToken?: string | undefined | null;
+}): Promise<OidcTokenData | null> {
   try {
-    const tokenEndpoint = await getTokenEndpoint();
+    if (
+      initialRefreshTokenExpiresAt &&
+      initialRefreshTokenExpiresAt <= Date.now()
+    ) {
+      console.error("[Auth] Refresh token expired");
+      return null;
+    }
+
+    const discovery = await getOidcDiscovery();
+
+    if (!discovery) {
+      console.error("[Auth] OIDC discovery not available");
+      return null;
+    }
+
+    const { tokenEndpoint } = discovery;
 
     if (!tokenEndpoint) {
       console.error("[Auth] Token endpoint not available");
@@ -122,13 +144,13 @@ export async function refreshAccessToken(
       return null;
     }
 
-    const tokenResponse = (await response.json()) as TokenResponse;
+    const tokenResponse: TokenResponse = await response.json();
 
-    const expiresAt = Date.now() + tokenResponse.expires_in * 1000;
+    const accessTokenExpiresAt = Date.now() + tokenResponse.expires_in * 1000;
     const refreshTokenExpiresAt = tokenResponse.refresh_expires_in
       ? Date.now() + tokenResponse.refresh_expires_in * 1000
       : undefined;
-
+    const idToken = tokenResponse.id_token ?? initialIdToken;
     const newRefreshToken = tokenResponse.refresh_token || refreshToken;
     if (!tokenResponse.refresh_token) {
       console.warn(
@@ -139,9 +161,10 @@ export async function refreshAccessToken(
     const newTokenData: OidcTokenData = {
       accessToken: tokenResponse.access_token,
       refreshToken: newRefreshToken,
-      expiresAt,
+      accessTokenExpiresAt,
       refreshTokenExpiresAt,
       userId,
+      idToken,
     };
 
     // Save the new token data in the cookie
@@ -156,12 +179,18 @@ export async function refreshAccessToken(
 }
 
 export const auth: Auth<BetterAuthOptions> = betterAuth({
+  debug: true,
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
+  account: {
+    storeStateStrategy: "cookie",
+    storeAccountCookie: true,
+  },
   trustedOrigins: TRUSTED_ORIGINS,
   session: {
     cookieCache: {
       enabled: true,
+      strategy: "jwe",
       maxAge: TOKEN_SEVEN_DAYS_SECONDS, // 7 days - match session duration!
     },
     // Session duration should match or exceed refresh token lifetime
@@ -174,7 +203,7 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
       config: [
         {
           providerId: OIDC_PROVIDER_ID,
-          discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
+          discoveryUrl: OIDC_DISCOVERY_URL,
           redirectURI: `${BASE_URL}/api/auth/oauth2/callback/${OIDC_PROVIDER_ID}`,
           clientId: OIDC_CLIENT_ID,
           clientSecret: OIDC_CLIENT_SECRET,
@@ -206,7 +235,7 @@ export async function getOidcProviderAccessToken(
 ): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    const encryptedCookie = cookieStore.get(COOKIE_NAME);
+    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
 
     if (!encryptedCookie?.value) {
       return null;
@@ -227,11 +256,14 @@ export async function getOidcProviderAccessToken(
 
     const now = Date.now();
 
-    if (tokenData.expiresAt <= now) {
+    if (
+      tokenData.accessTokenExpiresAt &&
+      tokenData.accessTokenExpiresAt <= now
+    ) {
       return null;
     }
 
-    return tokenData.accessToken;
+    return tokenData.accessToken || null;
   } catch (error) {
     console.error("[Auth] Unexpected error reading OIDC token:", error);
     return null;
@@ -243,5 +275,5 @@ export async function getOidcProviderAccessToken(
  */
 export async function clearOidcProviderToken(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
 }
