@@ -1,0 +1,51 @@
+name: Renovate Post-Upgrade
+
+on:
+    pull_request:
+        branches: [main]
+        paths:
+            - "scripts/generate-swagger.ts"
+
+permissions:
+    contents: write
+    pull-requests: read
+
+jobs:
+    regenerate-client:
+        name: Regenerate API Client
+        runs-on: ubuntu-latest
+        # Only run for Renovate PRs
+        if: github.actor == 'renovate[bot]'
+        steps:
+            - name: Checkout PR branch
+              uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+              with:
+                  ref: ${{ github.head_ref }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup
+              uses: ./.github/actions/setup
+
+            - name: Generate API Client
+              run: pnpm run generate-client
+
+            - name: Format
+              run: pnpm run format
+
+            - name: Check for changes
+              id: changes
+              run: |
+                  if [[ -n $(git status --porcelain) ]]; then
+                    echo "has_changes=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "has_changes=false" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Commit and push changes
+              if: steps.changes.outputs.has_changes == 'true'
+              run: |
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git add swagger.json src/generated/
+                  git commit -m "chore: regenerate API client for updated registry server version"
+                  git push
