@@ -1,5 +1,18 @@
 ## Note: This is an experimental project that is actively being developed and tested - features may change without notice
 
+<p float="left">
+  <picture>
+    <img src="./docs/images/512.png" alt="ToolHive logo" height="100" align="middle" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/toolhive-wordmark-white.png">
+    <img src="docs/images/toolhive-wordmark-black.png" alt="ToolHive wordmark" width="500" align="middle" hspace="20" />
+  </picture>
+  <picture>
+    <img src="docs/images/toolhive.png" alt="ToolHive mascot" width="125" align="middle"/>
+  </picture>
+</p>
+
 [![License: Apache 2.0][license-img]][license]
 [![Discord][discord-img]][discord]
 
@@ -437,7 +450,7 @@ For detailed information about the project:
 - **Language**: TypeScript (strict mode)
 - **UI**: React 19 + shadcn/ui + Tailwind CSS 4
 - **Auth**: Better Auth (OIDC)
-- **API Client**: hey-api + React Query
+- **API Client**: hey-api
 - **Testing**: Vitest + Testing Library
 - **Linting**: Biome
 
