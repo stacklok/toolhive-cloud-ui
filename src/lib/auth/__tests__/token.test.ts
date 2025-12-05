@@ -79,9 +79,14 @@ describe("token", () => {
     it("should return existing token if still valid", async () => {
       const userId = "user-123";
       const tokenData: OidcTokenData = {
+        id: "valid-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "valid-access-token",
         userId,
-        expiresAt: Date.now() + 3600000, // Valid for 1 hour
+        accessTokenExpiresAt: Date.now() + 3600000, // Valid for 1 hour
       };
 
       const encryptedPayload = await encrypt(
@@ -100,9 +105,14 @@ describe("token", () => {
     it("should refresh token if expired", async () => {
       const userId = "user-123";
       const expiredTokenData: OidcTokenData = {
+        id: "expired-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "expired-access-token",
         userId,
-        expiresAt: Date.now() - 1000, // Expired 1 second ago
+        accessTokenExpiresAt: Date.now() - 1000, // Expired 1 second ago
       };
 
       const encryptedPayload = await encrypt(
@@ -149,9 +159,14 @@ describe("token", () => {
     it("should return null if refresh API returns invalid response", async () => {
       const userId = "user-123";
       const expiredTokenData: OidcTokenData = {
+        id: "expired-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "expired-token",
         userId,
-        expiresAt: Date.now() - 1000,
+        accessTokenExpiresAt: Date.now() - 1000,
       };
 
       const encryptedPayload = await encrypt(
@@ -177,9 +192,14 @@ describe("token", () => {
     it("should handle network errors during refresh", async () => {
       const userId = "user-123";
       const expiredTokenData: OidcTokenData = {
+        id: "expired-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "expired-token",
         userId,
-        expiresAt: Date.now() - 1000,
+        accessTokenExpiresAt: Date.now() - 1000,
       };
 
       const encryptedPayload = await encrypt(
@@ -288,10 +308,15 @@ describe("token", () => {
     it("should handle complete refresh flow end-to-end", async () => {
       const userId = "user-123";
       const expiredTokenData: OidcTokenData = {
+        id: "expired-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "expired-token",
         refreshToken: "valid-refresh-token",
         userId,
-        expiresAt: Date.now() - 1000,
+        accessTokenExpiresAt: Date.now() - 1000,
         refreshTokenExpiresAt: Date.now() + 86400000,
       };
 
