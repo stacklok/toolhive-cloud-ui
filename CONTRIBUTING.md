@@ -85,6 +85,16 @@ PRs to resolve existing issues are greatly appreciated, and issues labeled as ["
 
 - Ensure that CI passes, if it fails, fix the failures.
 
+- **Keep PRs small for efficient reviews**: For better review quality and faster turnaround, keep your PRs under **1000 lines of changes**. Smaller PRs are easier to review, less likely to introduce bugs, and get merged faster. Our [PR Size Labeler](./.github/workflows/pr-size-labeler.yml) automatically labels PRs based on size:
+
+  - `size/XS`: < 100 lines
+  - `size/S`: 100-299 lines
+  - `size/M`: 300-599 lines
+  - `size/L`: 600-999 lines
+  - `size/XL`: ≥ 1000 lines (requires justification)
+
+  If your PR exceeds 1000 lines, you'll be asked to provide a justification explaining why it cannot be split into smaller PRs.
+
 - Every pull request requires a review from the core ToolHive team before merging.
 
 - Once approved, all of your commits will be squashed into a single commit with your PR title.
