@@ -94,6 +94,12 @@ interface AutoAPIMockInstance<T> {
   // Override the full handler (for errors, network failures, invalid data)
   overrideHandler(fn: (data: T, info: ResponseResolverInfo) => Response): this;
 
+  // Define a reusable named scenario
+  scenario(name: string, fn: (instance: AutoAPIMockInstance<T>) => AutoAPIMockInstance<T>): this;
+
+  // Activate a named scenario for the current test
+  useScenario(name: string): this;
+
   // Reset to default behavior (called automatically before each test)
   reset(): this;
 
@@ -185,4 +191,52 @@ mockedGetRegistryV01Servers.overrideHandler((data, info) => {
     return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   return HttpResponse.json(data);
+});
+```
+
+### Reusable Scenarios
+
+Define named scenarios in your fixture for commonly used test states:
+
+```typescript
+// src/mocks/fixtures/registry_v0_1_servers/get.ts
+import type { GetRegistryV01ServersResponse } from "@api/types.gen";
+import { AutoAPIMock } from "@mocks";
+import { HttpResponse } from "msw";
+
+export const mockedGetRegistryV01Servers = AutoAPIMock<GetRegistryV01ServersResponse>({
+  servers: [...],
+  metadata: { count: 15 },
+})
+  .scenario("empty-servers", (self) =>
+    self.override(() => ({
+      servers: [],
+      metadata: { count: 0 },
+    })),
+  )
+  .scenario("server-error", (self) =>
+    self.overrideHandler(() =>
+      HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
+    ),
+  );
+```
+
+Then use them in tests:
+
+```typescript
+import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
+
+describe("getServers", () => {
+  it("returns empty array when API returns no servers", async () => {
+    mockedGetRegistryV01Servers.useScenario("empty-servers");
+
+    const servers = await getServers();
+    expect(servers).toEqual([]);
+  });
+
+  it("throws on 500 server error", async () => {
+    mockedGetRegistryV01Servers.useScenario("server-error");
+
+    await expect(getServers()).rejects.toBeDefined();
+  });
 });

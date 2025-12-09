@@ -29,10 +29,7 @@ describe("getServers", () => {
     });
 
     it("returns empty array when API returns no servers", async () => {
-      mockedGetRegistryV01Servers.override(() => ({
-        servers: [],
-        metadata: { count: 0 },
-      }));
+      mockedGetRegistryV01Servers.useScenario("empty-servers");
 
       const servers = await getServers();
 
@@ -52,11 +49,9 @@ describe("getServers", () => {
   });
 
   describe("error handling", () => {
-    // Using overrideHandler - needed for error status codes
+    // Using scenario - reusable error scenario defined in fixture
     it("throws on 500 server error", async () => {
-      mockedGetRegistryV01Servers.overrideHandler(() =>
-        HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
-      );
+      mockedGetRegistryV01Servers.useScenario("server-error");
 
       await expect(getServers()).rejects.toBeDefined();
     });

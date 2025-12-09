@@ -1,5 +1,6 @@
 import type { GetRegistryV01ServersResponse } from "@api/types.gen";
 import { AutoAPIMock } from "@mocks";
+import { HttpResponse } from "msw";
 
 export const mockedGetRegistryV01Servers =
   AutoAPIMock<GetRegistryV01ServersResponse>({
@@ -486,4 +487,15 @@ export const mockedGetRegistryV01Servers =
       count: 15,
       nextCursor: "next-page",
     },
-  });
+  })
+    .scenario("empty-servers", (self) =>
+      self.override(() => ({
+        servers: [],
+        metadata: { count: 0 },
+      })),
+    )
+    .scenario("server-error", (self) =>
+      self.overrideHandler(() =>
+        HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
+      ),
+    );
