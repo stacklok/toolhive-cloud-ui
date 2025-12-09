@@ -12,24 +12,37 @@ type ScenarioFn<T> = (
   instance: AutoAPIMockInstance<T>,
 ) => AutoAPIMockInstance<T>;
 
-export interface UseScenarioOptions {
+export interface ActivateScenarioOptions {
   /** If true, silently falls back to default when scenario doesn't exist. Default: false (throws) */
   fallbackToDefault?: boolean;
 }
 
 export interface AutoAPIMockInstance<T> {
+  /** Internal MSW handler - don't call directly */
   generatedHandler: HttpResponseResolver;
+
+  /** Override response data with type safety. Preferred for simple data changes. */
   override: (fn: OverrideFn<T>) => AutoAPIMockInstance<T>;
+
+  /** Override the full handler. Use for errors, network failures, or invalid data. */
   overrideHandler: (fn: OverrideHandlerFn<T>) => AutoAPIMockInstance<T>;
+
+  /** Define a reusable named scenario for this mock. */
   scenario: (
     name: MockScenarioName,
     fn: ScenarioFn<T>,
   ) => AutoAPIMockInstance<T>;
-  useScenario: (
+
+  /** Activate a named scenario for the current test. */
+  activateScenario: (
     name: MockScenarioName,
-    options?: UseScenarioOptions,
+    options?: ActivateScenarioOptions,
   ) => AutoAPIMockInstance<T>;
+
+  /** Reset to default behavior. Called automatically before each test. */
   reset: () => AutoAPIMockInstance<T>;
+
+  /** The default fixture data. */
   defaultValue: T;
 }
 
@@ -83,7 +96,10 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
       return instance;
     },
 
-    useScenario(name: MockScenarioName, options?: UseScenarioOptions) {
+    activateScenario(
+      name: MockScenarioName,
+      options?: ActivateScenarioOptions,
+    ) {
       const scenarioFn = scenarios.get(name);
       if (!scenarioFn) {
         if (options?.fallbackToDefault) {
@@ -119,7 +135,6 @@ export function resetAllAutoAPIMocks(): void {
  */
 export function activateMockScenario(name: MockScenarioName): void {
   for (const instance of registry) {
-    // biome-ignore lint/correctness/useHookAtTopLevel: useScenario is not a React hook
-    instance.useScenario(name, { fallbackToDefault: true });
+    instance.activateScenario(name, { fallbackToDefault: true });
   }
 }

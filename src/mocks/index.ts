@@ -1,4 +1,7 @@
-export type { AutoAPIMockInstance, UseScenarioOptions } from "./autoAPIMock";
+export type {
+  ActivateScenarioOptions,
+  AutoAPIMockInstance,
+} from "./autoAPIMock";
 export {
   AutoAPIMock,
   activateMockScenario,

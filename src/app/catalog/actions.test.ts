@@ -26,18 +26,18 @@ describe("getServers", () => {
     expect(servers[0].name).toBe("awslabs/aws-nova-canvas");
   });
 
-  // Demo: using .useScenario() for reusable test scenarios
+  // Demo: using .activateScenario() for reusable test scenarios
   it("returns empty array when using empty-servers scenario", async () => {
-    mockedGetRegistryV01Servers.useScenario("empty-servers");
+    mockedGetRegistryV01Servers.activateScenario("empty-servers");
 
     const servers = await getServers();
 
     expect(servers).toEqual([]);
   });
 
-  // Demo: using .useScenario() for error scenarios
+  // Demo: using .activateScenario() for error scenarios
   it("throws on server error scenario", async () => {
-    mockedGetRegistryV01Servers.useScenario("server-error");
+    mockedGetRegistryV01Servers.activateScenario("server-error");
 
     await expect(getServers()).rejects.toBeDefined();
   });

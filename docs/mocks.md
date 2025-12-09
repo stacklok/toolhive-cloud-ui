@@ -98,7 +98,7 @@ interface AutoAPIMockInstance<T> {
   scenario(name: string, fn: (instance: AutoAPIMockInstance<T>) => AutoAPIMockInstance<T>): this;
 
   // Activate a named scenario for the current test
-  useScenario(name: string): this;
+  activateScenario(name: string): this;
 
   // Reset to default behavior (called automatically before each test)
   reset(): this;
@@ -229,14 +229,14 @@ import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_serve
 
 describe("getServers", () => {
   it("returns empty array when API returns no servers", async () => {
-    mockedGetRegistryV01Servers.useScenario(MockScenarios.EmptyServers);
+    mockedGetRegistryV01Servers.activateScenario(MockScenarios.EmptyServers);
 
     const servers = await getServers();
     expect(servers).toEqual([]);
   });
 
   it("throws on 500 server error", async () => {
-    mockedGetRegistryV01Servers.useScenario(MockScenarios.ServerError);
+    mockedGetRegistryV01Servers.activateScenario(MockScenarios.ServerError);
 
     await expect(getServers()).rejects.toBeDefined();
   });
