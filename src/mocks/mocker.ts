@@ -347,9 +347,10 @@ export function autoGenerateHandlers() {
   const result: RequestHandler[] = [];
 
   // Prefer Vite glob import when available (Vitest/Vite runtime)
+  // Note: We don't use { import: "default" } since fixtures use named exports
   const fixtureImporters: Record<string, () => Promise<unknown>> =
     typeof import.meta.glob === "function"
-      ? import.meta.glob("./fixtures/**", { import: "default" })
+      ? import.meta.glob("./fixtures/**")
       : {};
 
   const specPaths = Object.entries(
