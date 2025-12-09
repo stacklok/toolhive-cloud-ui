@@ -1,5 +1,6 @@
 import type { HttpResponseResolver, JsonBodyType } from "msw";
 import { HttpResponse } from "msw";
+import type { MockScenarioName } from "./scenarioNames";
 
 type ResponseResolverInfo = Parameters<HttpResponseResolver>[0];
 
@@ -13,8 +14,11 @@ export interface AutoAPIMockInstance<T> {
   generatedHandler: HttpResponseResolver;
   override: (fn: OverrideFn<T>) => AutoAPIMockInstance<T>;
   overrideHandler: (fn: OverrideHandlerFn<T>) => AutoAPIMockInstance<T>;
-  scenario: (name: string, fn: ScenarioFn<T>) => AutoAPIMockInstance<T>;
-  useScenario: (name: string) => AutoAPIMockInstance<T>;
+  scenario: (
+    name: MockScenarioName,
+    fn: ScenarioFn<T>,
+  ) => AutoAPIMockInstance<T>;
+  useScenario: (name: MockScenarioName) => AutoAPIMockInstance<T>;
   reset: () => AutoAPIMockInstance<T>;
   defaultValue: T;
 }
@@ -24,7 +28,7 @@ const registry: Set<AutoAPIMockInstance<unknown>> = new Set();
 
 export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
   let overrideHandlerFn: OverrideHandlerFn<T> | null = null;
-  const scenarios = new Map<string, ScenarioFn<T>>();
+  const scenarios = new Map<MockScenarioName, ScenarioFn<T>>();
 
   const instance: AutoAPIMockInstance<T> = {
     defaultValue,
@@ -47,12 +51,12 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
       return instance;
     },
 
-    scenario(name: string, fn: ScenarioFn<T>) {
+    scenario(name: MockScenarioName, fn: ScenarioFn<T>) {
       scenarios.set(name, fn);
       return instance;
     },
 
-    useScenario(name: string) {
+    useScenario(name: MockScenarioName) {
       const scenarioFn = scenarios.get(name);
       if (!scenarioFn) {
         throw new Error(
