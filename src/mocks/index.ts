@@ -5,3 +5,4 @@ export {
   resetAllAutoAPIMocks,
 } from "./autoAPIMock";
 export type { MockScenarioName } from "./scenarioNames";
+export { MockScenarios } from "./scenarioNames";

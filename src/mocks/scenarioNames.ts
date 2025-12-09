@@ -1,19 +1,18 @@
 /**
  * Global scenario names for API mocks.
  *
- * Define scenario names here so they can be reused across different mocks
- * with consistent naming and documentation.
+ * Use `MockScenarios.X` for autocomplete with documentation,
+ * or use the string literals directly.
  */
-
-/** Empty state - API returns no data */
-export type EmptyServers = "empty-servers";
-
-/** API returns 500 Internal Server Error */
-export type ServerError = "server-error";
+export const MockScenarios = {
+  /** Empty state - API returns no data */
+  EmptyServers: "empty-servers",
+  /** API returns 500 Internal Server Error */
+  ServerError: "server-error",
+} as const;
 
 /**
  * Union of all available mock scenario names.
- *
- * Add new scenario types above and include them in this union.
  */
-export type MockScenarioName = EmptyServers | ServerError;
+export type MockScenarioName =
+  (typeof MockScenarios)[keyof typeof MockScenarios];

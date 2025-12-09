@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { activateMockScenario } from "@/mocks";
 import { getServerDetails } from "./actions";
 
 // Mock the auth to bypass authentication
@@ -48,7 +47,6 @@ describe("getServerDetails", () => {
 
   describe("error handling", () => {
     it("returns 404 for non-existent server", async () => {
-      activateMockScenario("empty-servers");
       const result = await getServerDetails("non-existent/server", "1.0.0");
 
       expect(result.response.status).toBe(404);
