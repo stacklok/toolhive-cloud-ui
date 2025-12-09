@@ -10,6 +10,11 @@ type ScenarioFn<T> = (
   instance: AutoAPIMockInstance<T>,
 ) => AutoAPIMockInstance<T>;
 
+export interface UseScenarioOptions {
+  /** If true, silently falls back to default when scenario doesn't exist. Default: false (throws) */
+  fallbackToDefault?: boolean;
+}
+
 export interface AutoAPIMockInstance<T> {
   generatedHandler: HttpResponseResolver;
   override: (fn: OverrideFn<T>) => AutoAPIMockInstance<T>;
@@ -18,7 +23,10 @@ export interface AutoAPIMockInstance<T> {
     name: MockScenarioName,
     fn: ScenarioFn<T>,
   ) => AutoAPIMockInstance<T>;
-  useScenario: (name: MockScenarioName) => AutoAPIMockInstance<T>;
+  useScenario: (
+    name: MockScenarioName,
+    options?: UseScenarioOptions,
+  ) => AutoAPIMockInstance<T>;
   reset: () => AutoAPIMockInstance<T>;
   defaultValue: T;
 }
@@ -56,9 +64,12 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
       return instance;
     },
 
-    useScenario(name: MockScenarioName) {
+    useScenario(name: MockScenarioName, options?: UseScenarioOptions) {
       const scenarioFn = scenarios.get(name);
       if (!scenarioFn) {
+        if (options?.fallbackToDefault) {
+          return instance;
+        }
         throw new Error(
           `Scenario "${name}" not found. Available scenarios: ${[...scenarios.keys()].join(", ") || "(none)"}`,
         );
@@ -80,5 +91,16 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
 export function resetAllAutoAPIMocks(): void {
   for (const instance of registry) {
     instance.reset();
+  }
+}
+
+/**
+ * Activate a scenario globally across all registered mocks.
+ * Mocks that don't have the scenario defined will silently use their default.
+ */
+export function activateMockScenario(name: MockScenarioName): void {
+  for (const instance of registry) {
+    // biome-ignore lint/correctness/useHookAtTopLevel: useScenario is not a React hook
+    instance.useScenario(name, { fallbackToDefault: true });
   }
 }

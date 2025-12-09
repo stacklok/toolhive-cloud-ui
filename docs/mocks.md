@@ -240,3 +240,39 @@ describe("getServers", () => {
     await expect(getServers()).rejects.toBeDefined();
   });
 });
+```
+
+### Global Scenario Activation
+
+Use `activateMockScenario` to activate a scenario across all registered mocks at once. This is useful for setting up a consistent state across multiple endpoints, with the option to further customize individual mocks afterwards.
+
+```typescript
+import { activateMockScenario } from "@mocks";
+import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
+
+describe("error handling", () => {
+  it("shows error page when all APIs fail", async () => {
+    // Activate "server-error" on all mocks that define it
+    // Mocks without this scenario will use their default response
+    activateMockScenario("server-error");
+
+    // Test that the app handles the error state correctly
+    render(<App />);
+    expect(screen.getByText("Something went wrong")).toBeVisible();
+  });
+
+  it("handles partial failures gracefully", async () => {
+    // Start with all APIs returning errors
+    activateMockScenario("server-error");
+
+    // Then customize specific endpoints to succeed
+    mockedGetRegistryV01Servers.override((data) => data);
+
+    // Now only other endpoints return errors, servers endpoint works
+    render(<Dashboard />);
+    expect(screen.getByText("Servers loaded")).toBeVisible();
+  });
+});
+```
+
+Scenario names are defined in `src/mocks/scenarioNames.ts` and provide autocomplete and documentation across all mocks. Global scenarios are automatically reset before each test via `resetAllAutoAPIMocks()` in the test setup.

@@ -1,3 +1,7 @@
-export type { AutoAPIMockInstance } from "./autoAPIMock";
-export { AutoAPIMock, resetAllAutoAPIMocks } from "./autoAPIMock";
+export type { AutoAPIMockInstance, UseScenarioOptions } from "./autoAPIMock";
+export {
+  AutoAPIMock,
+  activateMockScenario,
+  resetAllAutoAPIMocks,
+} from "./autoAPIMock";
 export type { MockScenarioName } from "./scenarioNames";
