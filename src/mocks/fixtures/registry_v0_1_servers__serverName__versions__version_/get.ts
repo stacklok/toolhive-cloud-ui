@@ -1,8 +1,8 @@
 import type { GetRegistryV01ServersByServerNameVersionsByVersionResponse } from "@api/types.gen";
 import { AutoAPIMock } from "@mocks";
 
-export default AutoAPIMock<GetRegistryV01ServersByServerNameVersionsByVersionResponse>(
-  {
+export const mockedGetRegistryV01ServersByServerNameVersionsByVersion =
+  AutoAPIMock<GetRegistryV01ServersByServerNameVersionsByVersionResponse>({
     server: {
       name: "awslabs/aws-nova-canvas",
       title: "AWS Nova Canvas MCP Server",
@@ -54,5 +54,4 @@ export default AutoAPIMock<GetRegistryV01ServersByServerNameVersionsByVersionRes
         status: "active",
       },
     },
-  },
-);
+  });

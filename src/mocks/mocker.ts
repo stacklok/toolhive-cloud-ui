@@ -5,7 +5,7 @@ import { JSONSchemaFaker as jsf } from "json-schema-faker";
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
 import type { AutoAPIMockInstance } from "./autoAPIMock";
-import { buildMockModule } from "./mockTemplate";
+import { buildMockModule, deriveMockName } from "./mockTemplate";
 
 // ===== Config =====
 // Adjust the path of the OpenAPI JSON here if needed.
@@ -469,16 +469,19 @@ export function autoGenerateHandlers() {
 
           let fixture: AutoAPIMockInstance<unknown>;
           const relPath = getFixtureRelPath(safePath, method);
+          const opType = successStatus
+            ? opResponseTypeName(method, rawPath)
+            : undefined;
+          const mockName = opType ? deriveMockName(opType) : "mockedResponse";
+
           try {
             const importer = fixtureImporters?.[relPath];
             if (importer) {
-              const mod = (await importer()) as unknown;
-              fixture = (mod as { default?: unknown })
-                ?.default as AutoAPIMockInstance<unknown>;
+              const mod = (await importer()) as Record<string, unknown>;
+              fixture = mod[mockName] as AutoAPIMockInstance<unknown>;
             } else {
-              const mod = (await import(relPath)) as unknown;
-              fixture = (mod as { default?: unknown })
-                ?.default as AutoAPIMockInstance<unknown>;
+              const mod = (await import(relPath)) as Record<string, unknown>;
+              fixture = mod[mockName] as AutoAPIMockInstance<unknown>;
             }
           } catch (e) {
             return new HttpResponse(
@@ -491,7 +494,7 @@ export function autoGenerateHandlers() {
 
           if (!fixture || typeof fixture.generatedHandler !== "function") {
             return new HttpResponse(
-              `[auto-mocker] Invalid fixture format: ${relPath}. Expected AutoAPIMock wrapper.`,
+              `[auto-mocker] Invalid fixture format: ${relPath}. Expected named export "${mockName}" with AutoAPIMock wrapper.`,
               { status: 500 },
             );
           }

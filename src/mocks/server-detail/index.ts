@@ -1,6 +1,6 @@
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
-import serversListMock from "../fixtures/registry_v0_1_servers/get";
+import { mockedGetRegistryV01Servers } from "../fixtures/registry_v0_1_servers/get";
 
 // Add non-schema, hand-written mocks here.
 // These take precedence over the schema-based mocks.
@@ -18,7 +18,7 @@ export const serverDetailHandlers: RequestHandler[] = [
         version,
       });
 
-      const serversListFixture = serversListMock.defaultValue;
+      const serversListFixture = mockedGetRegistryV01Servers.defaultValue;
 
       // Find matching server from the list
       const serverResponse = serversListFixture.servers?.find((item) => {
