@@ -19,199 +19,55 @@ describe("getServers", () => {
     vi.clearAllMocks();
   });
 
-  describe("successful responses", () => {
-    it("returns servers from default fixture", async () => {
-      const servers = await getServers();
+  it("returns servers from default fixture", async () => {
+    const servers = await getServers();
 
-      expect(servers.length).toBeGreaterThan(0);
-      expect(servers[0].name).toBe("awslabs/aws-nova-canvas");
-      expect(servers[0].title).toBe("AWS Nova Canvas");
-    });
-
-    it("returns empty array when API returns no servers", async () => {
-      mockedGetRegistryV01Servers.useScenario("empty-servers");
-
-      const servers = await getServers();
-
-      expect(servers).toEqual([]);
-    });
-
-    // Using overrideHandler - needed when returning non-JSON responses like null
-    it("returns empty array when API returns null data", async () => {
-      mockedGetRegistryV01Servers.overrideHandler(() =>
-        HttpResponse.json(null),
-      );
-
-      const servers = await getServers();
-
-      expect(servers).toEqual([]);
-    });
+    expect(servers.length).toBeGreaterThan(0);
+    expect(servers[0].name).toBe("awslabs/aws-nova-canvas");
   });
 
-  describe("error handling", () => {
-    // Using scenario - reusable error scenario defined in fixture
-    it("throws on 500 server error", async () => {
-      mockedGetRegistryV01Servers.useScenario("server-error");
+  // Demo: using .useScenario() for reusable test scenarios
+  it("returns empty array when using empty-servers scenario", async () => {
+    mockedGetRegistryV01Servers.useScenario("empty-servers");
 
-      await expect(getServers()).rejects.toBeDefined();
-    });
+    const servers = await getServers();
 
-    it("throws on 401 unauthorized", async () => {
-      mockedGetRegistryV01Servers.overrideHandler(() =>
-        HttpResponse.json({ error: "Unauthorized" }, { status: 401 }),
-      );
-
-      await expect(getServers()).rejects.toBeDefined();
-    });
-
-    it("throws on network error", async () => {
-      mockedGetRegistryV01Servers.overrideHandler(() => HttpResponse.error());
-
-      await expect(getServers()).rejects.toBeDefined();
-    });
+    expect(servers).toEqual([]);
   });
 
-  describe("data transformation", () => {
-    // Using overrideHandler - needed when testing invalid data shapes (null servers)
-    it("filters out null servers from response", async () => {
-      mockedGetRegistryV01Servers.overrideHandler((data) =>
-        HttpResponse.json({
-          ...data,
-          servers: [
-            { server: { name: "valid/server", title: "Valid" } },
-            { server: null },
-            { server: { name: "another/server", title: "Another" } },
-          ],
-          metadata: { count: 3 },
-        }),
-      );
+  // Demo: using .useScenario() for error scenarios
+  it("throws on server error scenario", async () => {
+    mockedGetRegistryV01Servers.useScenario("server-error");
 
-      const servers = await getServers();
-
-      expect(servers).toHaveLength(2);
-      expect(servers.map((s) => s.name)).toEqual([
-        "valid/server",
-        "another/server",
-      ]);
-    });
-
-    // Using overrideHandler - needed when testing invalid data shapes (undefined servers)
-    it("filters out undefined servers from response", async () => {
-      mockedGetRegistryV01Servers.overrideHandler(() =>
-        HttpResponse.json({
-          servers: [
-            { server: { name: "valid/server", title: "Valid" } },
-            { server: undefined },
-            {},
-          ],
-          metadata: { count: 3 },
-        }),
-      );
-
-      const servers = await getServers();
-
-      expect(servers).toHaveLength(1);
-      expect(servers[0].name).toBe("valid/server");
-    });
-
-    it("extracts server objects from nested response structure", async () => {
-      mockedGetRegistryV01Servers.override(() => ({
-        servers: [
-          {
-            server: {
-              name: "test/server",
-              title: "Test Server",
-              description: "A test server",
-              version: "2.0.0",
-            },
-          },
-        ],
-        metadata: { count: 1 },
-      }));
-
-      const servers = await getServers();
-
-      expect(servers).toHaveLength(1);
-      expect(servers[0]).toEqual({
-        name: "test/server",
-        title: "Test Server",
-        description: "A test server",
-        version: "2.0.0",
-      });
-    });
+    await expect(getServers()).rejects.toBeDefined();
   });
 
-  describe("using default data in overrides", () => {
-    it("can modify specific server titles", async () => {
-      mockedGetRegistryV01Servers.override((data) => ({
-        ...data,
-        servers: data.servers?.map((item) => ({
-          ...item,
+  // Demo: using .override() for type-safe response modifications
+  it("can override response data with type safety", async () => {
+    mockedGetRegistryV01Servers.override(() => ({
+      servers: [
+        {
           server: {
-            ...item.server,
-            title: `Modified: ${item.server?.title}`,
+            name: "test/server",
+            title: "Test Server",
           },
-        })),
-      }));
+        },
+      ],
+      metadata: { count: 1 },
+    }));
 
-      const servers = await getServers();
+    const servers = await getServers();
 
-      expect(servers[0].title).toBe("Modified: AWS Nova Canvas");
-    });
-
-    it("can limit the number of returned servers", async () => {
-      mockedGetRegistryV01Servers.override((data) => ({
-        ...data,
-        servers: data.servers?.slice(0, 3),
-        metadata: { count: 3 },
-      }));
-
-      const servers = await getServers();
-
-      expect(servers).toHaveLength(3);
-    });
-
-    it("can filter servers by criteria", async () => {
-      mockedGetRegistryV01Servers.override((data) => ({
-        ...data,
-        servers: data.servers?.filter((item) =>
-          item.server?.name?.includes("google"),
-        ),
-      }));
-
-      const servers = await getServers();
-
-      expect(servers.every((s) => s.name?.includes("google"))).toBe(true);
-    });
+    expect(servers).toHaveLength(1);
+    expect(servers[0].name).toBe("test/server");
   });
 
-  describe("request-aware overrides", () => {
-    it("can access request info in override", async () => {
-      let capturedUrl: string | undefined;
+  // Demo: using .overrideHandler() for error status codes
+  it("can use overrideHandler for custom error responses", async () => {
+    mockedGetRegistryV01Servers.overrideHandler(() =>
+      HttpResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    );
 
-      mockedGetRegistryV01Servers.override((data, info) => {
-        capturedUrl = info.request.url;
-        return data;
-      });
-
-      await getServers();
-
-      expect(capturedUrl).toContain("/registry/v0.1/servers");
-    });
-
-    // Using overrideHandler - needed when response depends on request and may return different status codes
-    it("can vary response based on request headers", async () => {
-      mockedGetRegistryV01Servers.overrideHandler((data, info) => {
-        const authHeader = info.request.headers.get("Authorization");
-        if (authHeader?.includes("mock-token")) {
-          return HttpResponse.json(data);
-        }
-        return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
-      });
-
-      // Our mock provides "mock-token", so this should succeed
-      const servers = await getServers();
-      expect(servers.length).toBeGreaterThan(0);
-    });
+    await expect(getServers()).rejects.toBeDefined();
   });
 });

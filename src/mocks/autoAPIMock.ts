@@ -2,6 +2,8 @@ import type { HttpResponseResolver, JsonBodyType } from "msw";
 import { HttpResponse } from "msw";
 import type { MockScenarioName } from "./scenarioNames";
 
+const SCENARIO_HEADER = "x-mock-scenario";
+
 type ResponseResolverInfo = Parameters<HttpResponseResolver>[0];
 
 type OverrideHandlerFn<T> = (data: T, info: ResponseResolverInfo) => Response;
@@ -42,6 +44,23 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
     defaultValue,
 
     generatedHandler(info: ResponseResolverInfo) {
+      // Check for header-based scenario activation (for browser/dev testing)
+      const headerScenario = info.request.headers.get(SCENARIO_HEADER);
+      if (headerScenario) {
+        const scenarioFn = scenarios.get(headerScenario as MockScenarioName);
+        if (scenarioFn) {
+          // Temporarily apply scenario and get the handler
+          const previousHandler = overrideHandlerFn;
+          scenarioFn(instance);
+          const result = overrideHandlerFn
+            ? overrideHandlerFn(defaultValue, info)
+            : HttpResponse.json(defaultValue as JsonBodyType);
+          // Restore previous state
+          overrideHandlerFn = previousHandler;
+          return result;
+        }
+      }
+
       if (overrideHandlerFn) {
         return overrideHandlerFn(defaultValue, info);
       }
