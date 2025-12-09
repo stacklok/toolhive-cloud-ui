@@ -1,8 +1,11 @@
-export default {
+import type { GetRegistryV01ServersResponse } from "@api/types.gen";
+import { AutoAPIMock } from "@mocks";
+
+export default AutoAPIMock<GetRegistryV01ServersResponse>({
   servers: [
     {
       server: {
-        title: "consequat",
+        title: "AWS Nova Canvas",
         name: "awslabs/aws-nova-canvas",
         version: "1.0.0",
         description:
@@ -13,48 +16,23 @@ export default {
           url: "https://github.com/awslabs/aws-nova-canvas",
         },
         _meta: {
-          ullamco_566: false,
-          "io.modelcontextprotocol.registry/publisher-provided": {
-            est_84: {},
-            sed3: {},
-            voluptate_: {},
-          },
+          "io.modelcontextprotocol.registry/publisher-provided": {},
         },
         icons: [
           {
-            sizes: ["nostrud"],
-            mimeType: "laboris",
-            src: "http://AZUjhw.iemoiU+bM+FdKbi8L+QcXuAdmepZez7WVN,gwb6k.fLABJ",
+            sizes: ["32x32"],
+            mimeType: "image/x-icon",
+            src: "https://www.amazon.com/favicon.ico",
           },
         ],
         packages: [
           {
-            version: "velit occaecat",
+            version: "1.0.0",
             environmentVariables: [
               {
-                name: "nisi labore anim laborum",
-                description: "occaecat nostrud ipsum sit non",
-                choices: ["sunt reprehenderit"],
-                default: "cillum",
-                format: "reprehenderit Ut sit",
-              },
-            ],
-            packageArguments: [
-              {
-                name: "incididunt dolore aute",
-                description: "reprehenderit veniam est labore",
-                choices: ["dolor Lorem"],
-                default: "veniam in elit",
-                format: "aliqua aute",
-              },
-            ],
-            runtimeArguments: [
-              {
-                name: "pariatur laboris",
-                description: "culpa elit do",
-                choices: ["dolore laborum cupidatat velit sint"],
-                default: "aliquip dolore nisi cupidatat",
-                format: "ea",
+                name: "AWS_ACCESS_KEY_ID",
+                description: "AWS Access Key ID",
+                format: "string",
               },
             ],
           },
@@ -70,14 +48,14 @@ export default {
       _meta: {
         "io.modelcontextprotocol.registry/official": {
           isLatest: false,
-          publishedAt: "1928-01-16T07:47:41.0Z",
-          status: "Lorem",
+          publishedAt: "2024-01-16T07:47:41.0Z",
+          status: "active",
         },
       },
     },
     {
       server: {
-        title: "nisi in consectetur ut dolore",
+        title: "AgentQL MCP",
         name: "tinyfish/agentql-mcp",
         version: "1.0.1",
         description: "A powerful MCP server for building AI agents",
@@ -87,51 +65,10 @@ export default {
           url: "https://github.com/tinyfish/agentql-mcp",
         },
         _meta: {
-          id58a: -54358865.657930315,
-          qui2: -45037479,
-          "io.modelcontextprotocol.registry/publisher-provided": {
-            id949: {},
-          },
+          "io.modelcontextprotocol.registry/publisher-provided": {},
         },
-        icons: [
-          {
-            sizes: ["irure"],
-            mimeType: "nostrud",
-            src: "http://qpklHhfRUakxqQziHQlJvkYBCQ.schO4z0B",
-          },
-        ],
-        packages: [
-          {
-            version: "anim aute",
-            environmentVariables: [
-              {
-                name: "veniam",
-                description: "dolore aliqua",
-                choices: ["velit ex in et magna"],
-                default: "Lorem quis cillum sit dolore",
-                format: "sint sed",
-              },
-            ],
-            packageArguments: [
-              {
-                name: "id nostrud cupidatat exercitation",
-                description: "ullamco tempor Excepteur fugiat et",
-                choices: ["fugiat eu mollit"],
-                default: "sint nostrud",
-                format: "proident occaecat pariatur",
-              },
-            ],
-            runtimeArguments: [
-              {
-                name: "eiusmod",
-                description: "anim Lorem",
-                choices: ["culpa exercitation minim"],
-                default: "labore cupidatat ea qui voluptate",
-                format: "minim exercitation dolor",
-              },
-            ],
-          },
-        ],
+        icons: [],
+        packages: [],
         remotes: [
           {
             type: "http",
@@ -141,18 +78,16 @@ export default {
         ],
       },
       _meta: {
-        dolor_3e9: 35203589,
-        consequat_a: 71612484,
         "io.modelcontextprotocol.registry/official": {
           isLatest: true,
-          publishedAt: "1906-02-09T18:53:24.0Z",
-          status: "aute",
+          publishedAt: "2024-02-09T18:53:24.0Z",
+          status: "active",
         },
       },
     },
     {
       server: {
-        title: "id",
+        title: "Astra DB MCP",
         name: "datastax/astra-db-mcp",
         version: "1.0.2",
         description: "Integrate AI assistants with Astra DB",
@@ -162,52 +97,10 @@ export default {
           url: "https://github.com/datastax/astra-db-mcp",
         },
         _meta: {
-          laborum_c_4: 59098891.74366808,
-          "io.modelcontextprotocol.registry/publisher-provided": {
-            culpabcc: {},
-            dolor0: {},
-            consectetur_5: {},
-          },
+          "io.modelcontextprotocol.registry/publisher-provided": {},
         },
-        icons: [
-          {
-            sizes: ["sint est dolor exercitation"],
-            mimeType: "deserunt in ea",
-            src: "https://tN.xun..YtDqhkkWdXBxzPIXssrZHM.O5d",
-          },
-        ],
-        packages: [
-          {
-            version: "exercitation culpa mollit",
-            environmentVariables: [
-              {
-                name: "nostrud sint",
-                description: "qui eiusmod",
-                choices: ["in in ad elit anim"],
-                default: "culpa sed fugiat laboris",
-                format: "quis eiusmod",
-              },
-            ],
-            packageArguments: [
-              {
-                name: "ullamco in officia esse",
-                description: "magna in qui eu adipisicing",
-                choices: ["do quis"],
-                default: "reprehenderit",
-                format: "voluptate sint consequat cupidatat irure",
-              },
-            ],
-            runtimeArguments: [
-              {
-                name: "in exercitation",
-                description: "occaecat",
-                choices: ["enim"],
-                default: "officia eu qui elit sed",
-                format: "voluptate ipsum dolore ullamco",
-              },
-            ],
-          },
-        ],
+        icons: [],
+        packages: [],
         remotes: [
           {
             type: "http",
@@ -219,14 +112,14 @@ export default {
       _meta: {
         "io.modelcontextprotocol.registry/official": {
           isLatest: true,
-          publishedAt: "1941-06-16T06:09:48.0Z",
-          status: "magna aliqua consequat deserunt",
+          publishedAt: "2024-06-16T06:09:48.0Z",
+          status: "active",
         },
       },
     },
     {
       server: {
-        title: "microsoft azure",
+        title: "Microsoft Azure",
         name: "microsoft/azure-mcp",
         version: "1.0.0",
         description: "Connect AI assistants to Azure services",
@@ -256,7 +149,7 @@ export default {
     },
     {
       server: {
-        title: "google workspace",
+        title: "Google Workspace",
         name: "google/mcp-google-apps",
         version: "1.0.0",
         description:
@@ -287,7 +180,7 @@ export default {
     },
     {
       server: {
-        title: "figma desktop",
+        title: "Figma Desktop",
         name: "figma/mcp-desktop",
         version: "1.0.0",
         description:
@@ -318,7 +211,7 @@ export default {
     },
     {
       server: {
-        title: "slack workspace",
+        title: "Slack Workspace",
         name: "slack/mcp-slack",
         version: "1.0.0",
         description:
@@ -349,7 +242,7 @@ export default {
     },
     {
       server: {
-        title: "github api",
+        title: "GitHub API",
         name: "github/mcp-github",
         version: "1.0.0",
         description:
@@ -380,7 +273,7 @@ export default {
     },
     {
       server: {
-        title: "stripe payments",
+        title: "Stripe Payments",
         name: "stripe/mcp-stripe",
         version: "1.0.0",
         description: "Manage Stripe payments, subscriptions, and customer data",
@@ -410,7 +303,7 @@ export default {
     },
     {
       server: {
-        title: "notion workspace",
+        title: "Notion Workspace",
         name: "notion/mcp-notion",
         version: "1.0.0",
         description: "Access and manage Notion pages, databases, and content",
@@ -440,7 +333,7 @@ export default {
     },
     {
       server: {
-        title: "salesforce crm",
+        title: "Salesforce CRM",
         name: "salesforce/mcp-salesforce",
         version: "1.0.0",
         description:
@@ -471,7 +364,7 @@ export default {
     },
     {
       server: {
-        title: "hubspot marketing",
+        title: "HubSpot Marketing",
         name: "hubspot/mcp-hubspot",
         version: "1.0.0",
         description: "Integrate with HubSpot for marketing automation and CRM",
@@ -501,7 +394,7 @@ export default {
     },
     {
       server: {
-        title: "linear project",
+        title: "Linear Project",
         name: "linear/mcp-linear",
         version: "1.0.0",
         description: "Manage Linear issues, projects, and team workflows",
@@ -531,7 +424,7 @@ export default {
     },
     {
       server: {
-        title: "trello boards",
+        title: "Trello Boards",
         name: "trello/mcp-trello",
         version: "1.0.0",
         description: "Access and manage Trello boards, cards, and lists",
@@ -561,7 +454,7 @@ export default {
     },
     {
       server: {
-        title: "jira management",
+        title: "Jira Management",
         name: "atlassian/mcp-jira",
         version: "1.0.0",
         description:
@@ -590,4 +483,4 @@ export default {
     count: 15,
     nextCursor: "next-page",
   },
-};
+});

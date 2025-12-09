@@ -1,12 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AnySchema } from "ajv";
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
 import { JSONSchemaFaker as jsf } from "json-schema-faker";
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
+import type { AutoAPIMockInstance } from "./autoAPIMock";
 import { buildMockModule } from "./mockTemplate";
 
 // ===== Config =====
@@ -25,13 +23,6 @@ const FIXTURE_EXT = "ts";
 
 // Load OpenAPI JSON (resolveJsonModule is enabled in tsconfig)
 import openapi from "../../swagger.json";
-
-// Ajv configuration
-const ajv = new Ajv({ strict: true });
-addFormats(ajv);
-// Allow vendor/annotation keywords present in OpenAPI-derived schemas
-ajv.addKeyword("x-enum-varnames");
-ajv.addKeyword("example");
 
 // json-schema-faker options
 jsf.option({ alwaysFakeOptionals: true });
@@ -338,19 +329,6 @@ function enrichServersFixture(payload: unknown): unknown {
   return obj;
 }
 
-function asJson(
-  value: unknown,
-): string | number | boolean | null | Record<string, unknown> | unknown[] {
-  if (value === null) return null;
-  const t = typeof value;
-  if (t === "string" || t === "number" || t === "boolean") {
-    return value as string | number | boolean;
-  }
-  if (Array.isArray(value)) return value as unknown[];
-  if (t === "object") return value as Record<string, unknown>;
-  return String(value);
-}
-
 function getJsonSchemaFromOperation(
   operation: unknown,
   status: string,
@@ -399,7 +377,7 @@ export function autoGenerateHandlers() {
         .replace(/\{([^}]+)\}/g, ":$1")}`;
 
       result.push(
-        handlersByMethod[method](mswPath, async () => {
+        handlersByMethod[method](mswPath, async (info) => {
           const responsesObj =
             (operation as { responses?: Record<string, unknown> }).responses ??
             {};
@@ -489,16 +467,18 @@ export function autoGenerateHandlers() {
             return new HttpResponse(null, { status: 204 });
           }
 
-          let data: unknown;
+          let fixture: AutoAPIMockInstance<unknown>;
           const relPath = getFixtureRelPath(safePath, method);
           try {
             const importer = fixtureImporters?.[relPath];
             if (importer) {
               const mod = (await importer()) as unknown;
-              data = (mod as { default?: unknown })?.default ?? mod;
+              fixture = (mod as { default?: unknown })
+                ?.default as AutoAPIMockInstance<unknown>;
             } else {
               const mod = (await import(relPath)) as unknown;
-              data = (mod as { default?: unknown })?.default ?? mod;
+              fixture = (mod as { default?: unknown })
+                ?.default as AutoAPIMockInstance<unknown>;
             }
           } catch (e) {
             return new HttpResponse(
@@ -509,74 +489,18 @@ export function autoGenerateHandlers() {
             );
           }
 
-          const validateSchema = getJsonSchemaFromOperation(
-            operation,
-            successStatus ?? "200",
-          );
-          if (validateSchema) {
-            // Fully dereference before validation to avoid local $ref to components
-            let resolved = derefSchema(validateSchema);
-            let guard = 0;
-            while (hasRef(resolved) && guard++ < 5) {
-              resolved = derefSchema(resolved);
-            }
-            let isValid = ajv.validate(resolved as AnySchema, data as unknown);
-            // Treat empty object as invalid when schema exposes properties.
-            if (
-              isValid &&
-              data &&
-              typeof data === "object" &&
-              !Array.isArray(data) &&
-              Object.keys(data as Record<string, unknown>).length === 0 &&
-              (resolved as { properties?: Record<string, unknown> })
-                ?.properties &&
-              Object.keys(
-                (resolved as { properties?: Record<string, unknown> })
-                  .properties ?? {},
-              ).length > 0
-            ) {
-              isValid = false;
-            }
-            if (!isValid) {
-              const message = `fixture validation failed for ${method.toUpperCase()} ${rawPath} -> ${fixtureFileName}`;
-              console.error("[auto-mocker]", message, ajv.errors || []);
-              return new HttpResponse(`[auto-mocker] ${message}`, {
-                status: 500,
-              });
-            }
-          } else {
-            // No JSON schema to validate against: explicit failure
-            const message = `no JSON schema for ${method.toUpperCase()} ${rawPath} status ${
-              successStatus ?? "200"
-            }`;
-            console.error("[auto-mocker]", message);
-            return new HttpResponse(`[auto-mocker] ${message}`, {
-              status: 500,
-            });
+          if (!fixture || typeof fixture.generatedHandler !== "function") {
+            return new HttpResponse(
+              `[auto-mocker] Invalid fixture format: ${relPath}. Expected AutoAPIMock wrapper.`,
+              { status: 500 },
+            );
           }
 
-          const jsonValue = asJson(data);
-          try {
-            let serversLen: number | undefined;
-            if (
-              jsonValue &&
-              typeof jsonValue === "object" &&
-              Object.hasOwn(jsonValue, "servers")
-            ) {
-              const s = (jsonValue as Record<string, unknown>).servers;
-              if (Array.isArray(s)) serversLen = s.length;
-            }
-            console.log(
-              `[auto-mocker] respond ${method.toUpperCase()} ${rawPath} -> ${
-                successStatus ? Number(successStatus) : 200
-              } ${
-                serversLen !== undefined ? `servers=${serversLen}` : ""
-              } (${fixtureFileName})`,
-            );
-          } catch {}
-          return HttpResponse.json(jsonValue, {
-            status: successStatus ? Number(successStatus) : 200,
-          });
+          console.log(
+            `[auto-mocker] respond ${method.toUpperCase()} ${rawPath} (${fixtureFileName})`,
+          );
+
+          return fixture.generatedHandler(info);
         }),
       );
     }
