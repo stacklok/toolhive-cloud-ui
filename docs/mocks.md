@@ -103,7 +103,7 @@ interface AutoAPIMockInstance<T> {
   // Reset to default behavior (called automatically before each test)
   reset(): this;
 
-  // Internal handler used by MSW (don't call directly)
+  // MSW handler to use in handler registration. Respects overrides and scenarios.
   generatedHandler: HttpResponseResolver;
 }
 ```

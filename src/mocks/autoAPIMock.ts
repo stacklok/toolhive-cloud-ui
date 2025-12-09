@@ -18,7 +18,7 @@ export interface ActivateScenarioOptions {
 }
 
 export interface AutoAPIMockInstance<T> {
-  /** Internal MSW handler - don't call directly */
+  /** MSW handler to use in handler registration. Respects overrides and scenarios. */
   generatedHandler: HttpResponseResolver;
 
   /** Override response data with type safety. Preferred for simple data changes. */
