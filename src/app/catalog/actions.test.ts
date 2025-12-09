@@ -28,9 +28,8 @@ describe("getServers", () => {
       expect(servers[0].title).toBe("AWS Nova Canvas");
     });
 
-    // Using overrideResponse - simpler API when you just want to change the data
     it("returns empty array when API returns no servers", async () => {
-      mockedGetRegistryV01Servers.overrideResponse(() => ({
+      mockedGetRegistryV01Servers.override(() => ({
         servers: [],
         metadata: { count: 0 },
       }));
@@ -40,9 +39,11 @@ describe("getServers", () => {
       expect(servers).toEqual([]);
     });
 
-    // Using override - needed when returning non-JSON responses like null
+    // Using overrideHandler - needed when returning non-JSON responses like null
     it("returns empty array when API returns null data", async () => {
-      mockedGetRegistryV01Servers.override(() => HttpResponse.json(null));
+      mockedGetRegistryV01Servers.overrideHandler(() =>
+        HttpResponse.json(null),
+      );
 
       const servers = await getServers();
 
@@ -51,9 +52,9 @@ describe("getServers", () => {
   });
 
   describe("error handling", () => {
-    // Using override - needed for error status codes
+    // Using overrideHandler - needed for error status codes
     it("throws on 500 server error", async () => {
-      mockedGetRegistryV01Servers.override(() =>
+      mockedGetRegistryV01Servers.overrideHandler(() =>
         HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
       );
 
@@ -61,7 +62,7 @@ describe("getServers", () => {
     });
 
     it("throws on 401 unauthorized", async () => {
-      mockedGetRegistryV01Servers.override(() =>
+      mockedGetRegistryV01Servers.overrideHandler(() =>
         HttpResponse.json({ error: "Unauthorized" }, { status: 401 }),
       );
 
@@ -69,16 +70,16 @@ describe("getServers", () => {
     });
 
     it("throws on network error", async () => {
-      mockedGetRegistryV01Servers.override(() => HttpResponse.error());
+      mockedGetRegistryV01Servers.overrideHandler(() => HttpResponse.error());
 
       await expect(getServers()).rejects.toBeDefined();
     });
   });
 
   describe("data transformation", () => {
-    // Using override - needed when testing invalid data shapes (null servers)
+    // Using overrideHandler - needed when testing invalid data shapes (null servers)
     it("filters out null servers from response", async () => {
-      mockedGetRegistryV01Servers.override((data) =>
+      mockedGetRegistryV01Servers.overrideHandler((data) =>
         HttpResponse.json({
           ...data,
           servers: [
@@ -99,9 +100,9 @@ describe("getServers", () => {
       ]);
     });
 
-    // Using override - needed when testing invalid data shapes (undefined servers)
+    // Using overrideHandler - needed when testing invalid data shapes (undefined servers)
     it("filters out undefined servers from response", async () => {
-      mockedGetRegistryV01Servers.override(() =>
+      mockedGetRegistryV01Servers.overrideHandler(() =>
         HttpResponse.json({
           servers: [
             { server: { name: "valid/server", title: "Valid" } },
@@ -118,9 +119,8 @@ describe("getServers", () => {
       expect(servers[0].name).toBe("valid/server");
     });
 
-    // Using overrideResponse - valid response structure
     it("extracts server objects from nested response structure", async () => {
-      mockedGetRegistryV01Servers.overrideResponse(() => ({
+      mockedGetRegistryV01Servers.override(() => ({
         servers: [
           {
             server: {
@@ -147,9 +147,8 @@ describe("getServers", () => {
   });
 
   describe("using default data in overrides", () => {
-    // Using overrideResponse - cleaner syntax for data modifications
     it("can modify specific server titles", async () => {
-      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+      mockedGetRegistryV01Servers.override((data) => ({
         ...data,
         servers: data.servers?.map((item) => ({
           ...item,
@@ -166,7 +165,7 @@ describe("getServers", () => {
     });
 
     it("can limit the number of returned servers", async () => {
-      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+      mockedGetRegistryV01Servers.override((data) => ({
         ...data,
         servers: data.servers?.slice(0, 3),
         metadata: { count: 3 },
@@ -178,7 +177,7 @@ describe("getServers", () => {
     });
 
     it("can filter servers by criteria", async () => {
-      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+      mockedGetRegistryV01Servers.override((data) => ({
         ...data,
         servers: data.servers?.filter((item) =>
           item.server?.name?.includes("google"),
@@ -192,11 +191,10 @@ describe("getServers", () => {
   });
 
   describe("request-aware overrides", () => {
-    // Using overrideResponse with request info
-    it("can access request info in overrideResponse", async () => {
+    it("can access request info in override", async () => {
       let capturedUrl: string | undefined;
 
-      mockedGetRegistryV01Servers.overrideResponse((data, info) => {
+      mockedGetRegistryV01Servers.override((data, info) => {
         capturedUrl = info.request.url;
         return data;
       });
@@ -206,9 +204,9 @@ describe("getServers", () => {
       expect(capturedUrl).toContain("/registry/v0.1/servers");
     });
 
-    // Using override - needed when response depends on request and may return different status codes
+    // Using overrideHandler - needed when response depends on request and may return different status codes
     it("can vary response based on request headers", async () => {
-      mockedGetRegistryV01Servers.override((data, info) => {
+      mockedGetRegistryV01Servers.overrideHandler((data, info) => {
         const authHeader = info.request.headers.get("Authorization");
         if (authHeader?.includes("mock-token")) {
           return HttpResponse.json(data);

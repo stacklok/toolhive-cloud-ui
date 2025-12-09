@@ -3,13 +3,13 @@ import { HttpResponse } from "msw";
 
 type ResponseResolverInfo = Parameters<HttpResponseResolver>[0];
 
-type OverrideFn<T> = (data: T, info: ResponseResolverInfo) => Response;
-type OverrideResponseFn<T> = (data: T, info: ResponseResolverInfo) => T;
+type OverrideHandlerFn<T> = (data: T, info: ResponseResolverInfo) => Response;
+type OverrideFn<T> = (data: T, info: ResponseResolverInfo) => T;
 
 export interface AutoAPIMockInstance<T> {
   generatedHandler: HttpResponseResolver;
   override: (fn: OverrideFn<T>) => AutoAPIMockInstance<T>;
-  overrideResponse: (fn: OverrideResponseFn<T>) => AutoAPIMockInstance<T>;
+  overrideHandler: (fn: OverrideHandlerFn<T>) => AutoAPIMockInstance<T>;
   reset: () => AutoAPIMockInstance<T>;
   defaultValue: T;
 }
@@ -18,31 +18,31 @@ export interface AutoAPIMockInstance<T> {
 const registry: Set<AutoAPIMockInstance<unknown>> = new Set();
 
 export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
-  let overrideFn: OverrideFn<T> | null = null;
+  let overrideHandlerFn: OverrideHandlerFn<T> | null = null;
 
   const instance: AutoAPIMockInstance<T> = {
     defaultValue,
 
     generatedHandler(info: ResponseResolverInfo) {
-      if (overrideFn) {
-        return overrideFn(defaultValue, info);
+      if (overrideHandlerFn) {
+        return overrideHandlerFn(defaultValue, info);
       }
       return HttpResponse.json(defaultValue as JsonBodyType);
     },
 
     override(fn: OverrideFn<T>) {
-      overrideFn = fn;
-      return instance;
-    },
-
-    overrideResponse(fn: OverrideResponseFn<T>) {
-      return instance.override((data, info) =>
+      return instance.overrideHandler((data, info) =>
         HttpResponse.json(fn(data, info) as JsonBodyType),
       );
     },
 
+    overrideHandler(fn: OverrideHandlerFn<T>) {
+      overrideHandlerFn = fn;
+      return instance;
+    },
+
     reset() {
-      overrideFn = null;
+      overrideHandlerFn = null;
       return instance;
     },
   };
