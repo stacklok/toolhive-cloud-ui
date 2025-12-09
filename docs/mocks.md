@@ -45,154 +45,34 @@ export const mockedGetRegistryV01Servers = AutoAPIMock<GetRegistryV01ServersResp
 
 ### Overriding in Tests
 
-Use `.override()` to customize responses for specific tests:
+Use `.override()` for type-safe response modifications, or `.overrideHandler()` for full control (errors, network failures):
 
 ```typescript
 import { HttpResponse } from "msw";
 import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
 
-describe("ServerList", () => {
-  it("shows empty state when no servers", async () => {
-    // Override to return empty list for this test only (type-safe)
-    mockedGetRegistryV01Servers.override(() => ({
-      servers: [],
-      metadata: { count: 0 },
-    }));
-
-    render(<ServerList />);
-    expect(screen.getByText("No servers available")).toBeVisible();
-  });
-
-  it("shows error state on API failure", async () => {
-    // Use overrideHandler for error responses
-    mockedGetRegistryV01Servers.overrideHandler(() =>
-      HttpResponse.json({ error: "Server error" }, { status: 500 })
-    );
-
-    render(<ServerList />);
-    expect(screen.getByText("Failed to load servers")).toBeVisible();
-  });
-
-  it("shows servers from default fixture", async () => {
-    // No override - uses default fixture data
-    render(<ServerList />);
-    expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
-  });
-});
-```
-
-### API Reference
-
-```typescript
-interface AutoAPIMockInstance<T> {
-  // The default fixture data
-  defaultValue: T;
-
-  // Override the response data (type-safe, preferred)
-  override(fn: (data: T, info: ResponseResolverInfo) => T): this;
-
-  // Override the full handler (for errors, network failures, invalid data)
-  overrideHandler(fn: (data: T, info: ResponseResolverInfo) => Response): this;
-
-  // Define a reusable named scenario
-  scenario(name: string, fn: (instance: AutoAPIMockInstance<T>) => AutoAPIMockInstance<T>): this;
-
-  // Activate a named scenario for the current test
-  activateScenario(name: string): this;
-
-  // Reset to default behavior (called automatically before each test)
-  reset(): this;
-
-  // MSW handler to use in handler registration. Respects overrides and scenarios.
-  generatedHandler: HttpResponseResolver;
-}
-```
-
-### Choosing Between `override` and `overrideHandler`
-
-Use **`override`** (type-safe, preferred) when you just want to change the response data:
-
-```typescript
-// Simple - just return the data you want
+// Type-safe data override
 mockedGetRegistryV01Servers.override(() => ({
   servers: [],
   metadata: { count: 0 },
 }));
 
-// With default data modifications
+// Modify default data
 mockedGetRegistryV01Servers.override((data) => ({
   ...data,
   servers: data.servers?.slice(0, 3),
 }));
-```
 
-Use **`overrideHandler`** (full control) when you need:
-- Custom HTTP status codes (errors)
-- Non-JSON responses
-- Network errors
-- Invalid/malformed data for edge case testing
-
-```typescript
-// Return error status
+// Error responses (use overrideHandler)
 mockedGetRegistryV01Servers.overrideHandler(() =>
   HttpResponse.json({ error: "Server error" }, { status: 500 })
 );
 
 // Network error
 mockedGetRegistryV01Servers.overrideHandler(() => HttpResponse.error());
-
-// Testing invalid data shapes
-mockedGetRegistryV01Servers.overrideHandler(() =>
-  HttpResponse.json({ servers: [{ server: null }] })
-);
 ```
 
-### Automatic Reset
-
-Overrides are automatically reset before each test via `beforeEach()` in `src/mocks/test.setup.ts`. You don't need to manually reset mocks between tests.
-
-### Using Default Data in Overrides
-
-Access the default fixture data to make partial modifications:
-
-```typescript
-// With override (type-safe, preferred)
-mockedGetRegistryV01Servers.override((data) => ({
-  ...data,
-  servers: data.servers?.slice(0, 1),
-}));
-
-// With overrideHandler (when you need the Response wrapper)
-mockedGetRegistryV01Servers.overrideHandler((data) =>
-  HttpResponse.json({
-    ...data,
-    servers: data.servers?.slice(0, 1),
-  })
-);
-```
-
-### Accessing Request Info
-
-Both methods receive request info as the second parameter:
-
-```typescript
-// With override (type-safe)
-mockedGetRegistryV01Servers.override((data, info) => {
-  const cursor = new URL(info.request.url).searchParams.get("cursor");
-  return cursor === "page2"
-    ? { servers: [], metadata: { count: 0 } }
-    : data;
-});
-
-// With overrideHandler (when you need different status codes based on request)
-mockedGetRegistryV01Servers.overrideHandler((data, info) => {
-  const authHeader = info.request.headers.get("Authorization");
-  if (!authHeader) {
-    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return HttpResponse.json(data);
-});
-```
+Overrides are automatically reset before each test via `beforeEach()` in `src/mocks/test.setup.ts`.
 
 ### Reusable Scenarios
 
