@@ -87,8 +87,11 @@ interface AutoAPIMockInstance<T> {
   // The default fixture data
   defaultValue: T;
 
-  // Override the response for the current test
+  // Override the response for the current test (full control)
   override(fn: (data: T, info: ResponseResolverInfo) => Response): this;
+
+  // Override just the response data (simpler API)
+  overrideResponse(fn: (data: T, info: ResponseResolverInfo) => T): this;
 
   // Reset to default behavior (called automatically before each test)
   reset(): this;
@@ -98,13 +101,44 @@ interface AutoAPIMockInstance<T> {
 }
 ```
 
-### Override Function
+### Choosing Between `override` and `overrideResponse`
 
-The override function receives:
-1. `data: T` - The default fixture data (useful for partial modifications)
-2. `info: ResponseResolverInfo` - MSW request info (request, params, cookies)
+Use **`overrideResponse`** (simpler) when you just want to change the response data:
 
-Return a `Response` object (use `HttpResponse.json()` from MSW).
+```typescript
+// Simple - just return the data you want
+mockedGetRegistryV01Servers.overrideResponse(() => ({
+  servers: [],
+  metadata: { count: 0 },
+}));
+
+// With default data modifications
+mockedGetRegistryV01Servers.overrideResponse((data) => ({
+  ...data,
+  servers: data.servers?.slice(0, 3),
+}));
+```
+
+Use **`override`** (full control) when you need:
+- Custom HTTP status codes (errors)
+- Non-JSON responses
+- Network errors
+- Invalid/malformed data for edge case testing
+
+```typescript
+// Return error status
+mockedGetRegistryV01Servers.override(() =>
+  HttpResponse.json({ error: "Server error" }, { status: 500 })
+);
+
+// Network error
+mockedGetRegistryV01Servers.override(() => HttpResponse.error());
+
+// Testing invalid data shapes
+mockedGetRegistryV01Servers.override(() =>
+  HttpResponse.json({ servers: [{ server: null }] })
+);
+```
 
 ### Automatic Reset
 
@@ -115,23 +149,39 @@ Overrides are automatically reset before each test via `beforeEach()` in `src/mo
 Access the default fixture data to make partial modifications:
 
 ```typescript
+// With overrideResponse (cleaner)
+mockedGetRegistryV01Servers.overrideResponse((data) => ({
+  ...data,
+  servers: data.servers?.slice(0, 1),
+}));
+
+// With override (when you need the Response wrapper)
 mockedGetRegistryV01Servers.override((data) =>
   HttpResponse.json({
     ...data,
-    servers: data.servers?.slice(0, 1), // Keep only first server
+    servers: data.servers?.slice(0, 1),
   })
 );
 ```
 
 ### Accessing Request Info
 
-Use the `info` parameter to vary responses based on request:
+Both methods receive request info as the second parameter:
 
 ```typescript
-mockedGetRegistryV01Servers.override((data, info) => {
+// With overrideResponse
+mockedGetRegistryV01Servers.overrideResponse((data, info) => {
   const cursor = new URL(info.request.url).searchParams.get("cursor");
-  if (cursor === "page2") {
-    return HttpResponse.json({ servers: [], metadata: { count: 0 } });
+  return cursor === "page2"
+    ? { servers: [], metadata: { count: 0 } }
+    : data;
+});
+
+// With override (when you need different status codes based on request)
+mockedGetRegistryV01Servers.override((data, info) => {
+  const authHeader = info.request.headers.get("Authorization");
+  if (!authHeader) {
+    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   return HttpResponse.json(data);
 });

@@ -28,16 +28,19 @@ describe("getServers", () => {
       expect(servers[0].title).toBe("AWS Nova Canvas");
     });
 
+    // Using overrideResponse - simpler API when you just want to change the data
     it("returns empty array when API returns no servers", async () => {
-      mockedGetRegistryV01Servers.override(() =>
-        HttpResponse.json({ servers: [], metadata: { count: 0 } }),
-      );
+      mockedGetRegistryV01Servers.overrideResponse(() => ({
+        servers: [],
+        metadata: { count: 0 },
+      }));
 
       const servers = await getServers();
 
       expect(servers).toEqual([]);
     });
 
+    // Using override - needed when returning non-JSON responses like null
     it("returns empty array when API returns null data", async () => {
       mockedGetRegistryV01Servers.override(() => HttpResponse.json(null));
 
@@ -48,6 +51,7 @@ describe("getServers", () => {
   });
 
   describe("error handling", () => {
+    // Using override - needed for error status codes
     it("throws on 500 server error", async () => {
       mockedGetRegistryV01Servers.override(() =>
         HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
@@ -72,6 +76,7 @@ describe("getServers", () => {
   });
 
   describe("data transformation", () => {
+    // Using override - needed when testing invalid data shapes (null servers)
     it("filters out null servers from response", async () => {
       mockedGetRegistryV01Servers.override((data) =>
         HttpResponse.json({
@@ -94,6 +99,7 @@ describe("getServers", () => {
       ]);
     });
 
+    // Using override - needed when testing invalid data shapes (undefined servers)
     it("filters out undefined servers from response", async () => {
       mockedGetRegistryV01Servers.override(() =>
         HttpResponse.json({
@@ -112,23 +118,21 @@ describe("getServers", () => {
       expect(servers[0].name).toBe("valid/server");
     });
 
+    // Using overrideResponse - valid response structure
     it("extracts server objects from nested response structure", async () => {
-      mockedGetRegistryV01Servers.override(() =>
-        HttpResponse.json({
-          servers: [
-            {
-              server: {
-                name: "test/server",
-                title: "Test Server",
-                description: "A test server",
-                version: "2.0.0",
-              },
-              _meta: { "some/key": { status: "active" } },
+      mockedGetRegistryV01Servers.overrideResponse(() => ({
+        servers: [
+          {
+            server: {
+              name: "test/server",
+              title: "Test Server",
+              description: "A test server",
+              version: "2.0.0",
             },
-          ],
-          metadata: { count: 1 },
-        }),
-      );
+          },
+        ],
+        metadata: { count: 1 },
+      }));
 
       const servers = await getServers();
 
@@ -143,19 +147,18 @@ describe("getServers", () => {
   });
 
   describe("using default data in overrides", () => {
+    // Using overrideResponse - cleaner syntax for data modifications
     it("can modify specific server titles", async () => {
-      mockedGetRegistryV01Servers.override((data) =>
-        HttpResponse.json({
-          ...data,
-          servers: data.servers?.map((item) => ({
-            ...item,
-            server: {
-              ...item.server,
-              title: `Modified: ${item.server?.title}`,
-            },
-          })),
-        }),
-      );
+      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+        ...data,
+        servers: data.servers?.map((item) => ({
+          ...item,
+          server: {
+            ...item.server,
+            title: `Modified: ${item.server?.title}`,
+          },
+        })),
+      }));
 
       const servers = await getServers();
 
@@ -163,13 +166,11 @@ describe("getServers", () => {
     });
 
     it("can limit the number of returned servers", async () => {
-      mockedGetRegistryV01Servers.override((data) =>
-        HttpResponse.json({
-          ...data,
-          servers: data.servers?.slice(0, 3),
-          metadata: { count: 3 },
-        }),
-      );
+      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+        ...data,
+        servers: data.servers?.slice(0, 3),
+        metadata: { count: 3 },
+      }));
 
       const servers = await getServers();
 
@@ -177,14 +178,12 @@ describe("getServers", () => {
     });
 
     it("can filter servers by criteria", async () => {
-      mockedGetRegistryV01Servers.override((data) =>
-        HttpResponse.json({
-          ...data,
-          servers: data.servers?.filter((item) =>
-            item.server?.name?.includes("google"),
-          ),
-        }),
-      );
+      mockedGetRegistryV01Servers.overrideResponse((data) => ({
+        ...data,
+        servers: data.servers?.filter((item) =>
+          item.server?.name?.includes("google"),
+        ),
+      }));
 
       const servers = await getServers();
 
@@ -193,12 +192,13 @@ describe("getServers", () => {
   });
 
   describe("request-aware overrides", () => {
-    it("can access request info in override", async () => {
+    // Using overrideResponse with request info
+    it("can access request info in overrideResponse", async () => {
       let capturedUrl: string | undefined;
 
-      mockedGetRegistryV01Servers.override((data, info) => {
+      mockedGetRegistryV01Servers.overrideResponse((data, info) => {
         capturedUrl = info.request.url;
-        return HttpResponse.json(data);
+        return data;
       });
 
       await getServers();
@@ -206,6 +206,7 @@ describe("getServers", () => {
       expect(capturedUrl).toContain("/registry/v0.1/servers");
     });
 
+    // Using override - needed when response depends on request and may return different status codes
     it("can vary response based on request headers", async () => {
       mockedGetRegistryV01Servers.override((data, info) => {
         const authHeader = info.request.headers.get("Authorization");

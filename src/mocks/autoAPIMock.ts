@@ -4,10 +4,12 @@ import { HttpResponse } from "msw";
 type ResponseResolverInfo = Parameters<HttpResponseResolver>[0];
 
 type OverrideFn<T> = (data: T, info: ResponseResolverInfo) => Response;
+type OverrideResponseFn<T> = (data: T, info: ResponseResolverInfo) => T;
 
 export interface AutoAPIMockInstance<T> {
   generatedHandler: HttpResponseResolver;
   override: (fn: OverrideFn<T>) => AutoAPIMockInstance<T>;
+  overrideResponse: (fn: OverrideResponseFn<T>) => AutoAPIMockInstance<T>;
   reset: () => AutoAPIMockInstance<T>;
   defaultValue: T;
 }
@@ -31,6 +33,12 @@ export function AutoAPIMock<T>(defaultValue: T): AutoAPIMockInstance<T> {
     override(fn: OverrideFn<T>) {
       overrideFn = fn;
       return instance;
+    },
+
+    overrideResponse(fn: OverrideResponseFn<T>) {
+      return instance.override((data, info) =>
+        HttpResponse.json(fn(data, info) as JsonBodyType),
+      );
     },
 
     reset() {
