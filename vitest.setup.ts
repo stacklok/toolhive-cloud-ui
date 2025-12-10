@@ -41,7 +41,11 @@ vi.mock("@/lib/auth/auth", async (importOriginal) => {
         ...actual.auth.api,
         getSession: vi.fn(() =>
           Promise.resolve({
-            user: { email: "test@example.com", name: "Test User" },
+            user: {
+              id: "mock-user-id",
+              email: "test@example.com",
+              name: "Test User",
+            },
           }),
         ),
       },
@@ -71,6 +75,12 @@ vi.mock("next-themes", () => ({
     setTheme: mockSetTheme,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+// Mock OIDC token retrieval to return a test token by default
+// This allows server action tests to bypass the full auth flow
+vi.mock("@/lib/auth/token", () => ({
+  getValidOidcToken: vi.fn(() => Promise.resolve("mock-test-token")),
 }));
 
 // Auth client baseline mock; individual tests can customize return values
