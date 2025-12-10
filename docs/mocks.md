@@ -21,7 +21,7 @@ Failure behavior (always strict)
 - Invalid fixtures (including empty `{}` when the schema defines properties) respond 500.
 
 Types
-- Fixtures default to strict types. Generated modules import response types from `@api/types.gen` and use a `satisfies` clause to ensure compatibility.
+- Fixtures use strict types via the `AutoAPIMock` wrapper. Generated modules import response types from `@api/types.gen` and pass them as generic parameters to `AutoAPIMock<T>` for type safety.
 - Make sure `tsconfig.json` includes: `"paths": { "@api/*": ["./src/generated/*"] }`.
 
 ## Test-Scoped Overrides with AutoAPIMock
@@ -146,8 +146,8 @@ describe("error handling", () => {
     // Start with all APIs returning errors
     activateMockScenario(MockScenarios.ServerError);
 
-    // Then customize specific endpoints to succeed
-    mockedGetRegistryV01Servers.override((data) => data);
+    // Then reset specific endpoints to use their default response
+    mockedGetRegistryV01Servers.reset();
 
     // Now only other endpoints return errors, servers endpoint works
     render(<Dashboard />);

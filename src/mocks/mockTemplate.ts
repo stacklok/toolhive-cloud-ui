@@ -18,8 +18,8 @@ export function deriveMockName(responseTypeName: string): string {
 /**
  * Renders a TypeScript module for a generated mock fixture.
  * When a response type name is provided, includes a type import
- * from '@api/types.gen' and a `satisfies` clause for type safety.
- * The fixture is wrapped in AutoAPIMock for test-scoped overrides.
+ * from '@api/types.gen' and wraps the fixture in `AutoAPIMock<T>`
+ * for type-safe test overrides.
  */
 export function buildMockModule(payload: unknown, opType?: string): string {
   const typeName = opType?.trim();
