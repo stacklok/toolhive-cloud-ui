@@ -1,24 +1,13 @@
 import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
 import { HttpResponse } from "msw";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getServers } from "./actions";
 
-// Mock the auth to bypass authentication
-vi.mock("@/lib/api-client", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@/lib/api-client")>();
-  return {
-    ...original,
-    getAuthenticatedClient: vi.fn(() =>
-      original.getAuthenticatedClient("mock-token"),
-    ),
-  };
-});
+// Authentication is mocked globally in vitest.setup.ts:
+// - auth.api.getSession returns a mock session
+// - getValidOidcToken returns "mock-test-token"
 
 describe("getServers", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("returns servers from default fixture", async () => {
     const servers = await getServers();
 
