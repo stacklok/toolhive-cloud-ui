@@ -289,11 +289,12 @@ Uses Vitest + Testing Library + MSW.
 
 ```bash
 pnpm exec playwright install   # One-time browser install
-pnpm dev                       # Start dev stack
-pnpm run test:e2e              # Run tests (headless)
-pnpm run test:e2e:ui           # Playwright UI mode
-pnpm run test:e2e:debug        # With Playwright Inspector
+pnpm test:e2e                  # Run tests (auto-starts dev server if needed)
+pnpm test:e2e:ui               # Playwright UI mode
+pnpm test:e2e:debug            # With Playwright Inspector
 ```
+
+Tests automatically start the dev stack if it's not already running. If you prefer to start it manually first, run `pnpm dev` before the tests.
 
 ### Mock Server
 
@@ -469,29 +470,6 @@ For detailed information about the project:
 - [shadcn/ui Components](https://ui.shadcn.com)
 - [MCP Registry Official](https://github.com/modelcontextprotocol/registry)
 
-## Testing
-
-### Unit/Component
-
-```bash
-pnpm test            # Vitest
-pnpm type-check      # TypeScript
-pnpm lint            # Biome
-```
-
-### E2E Tests (Playwright)
-
-Run the app and E2E tests locally:
-
-```bash
-pnpm exec playwright install   # one-time browser install
-pnpm dev                       # start Next (3000) + OIDC (4000) + Mock API (9090)
-pnpm run test:e2e              # run Playwright tests (headless)
-pnpm run test:e2e:ui           # Playwright UI mode for debugging
-pnpm run test:e2e:debug        # with Playwright Inspector
-```
-
-CI runs the E2E suite via `.github/workflows/bdd.yml`.
 
 ## Deploy on Vercel
 
