@@ -42,7 +42,7 @@ export function SignInButton({ providerId }: { providerId: string }) {
   return (
     <Button
       onClick={handleOIDCSignIn}
-      className="w-full h-9 gap-2"
+      className="w-full h-9 gap-2 cursor-pointer"
       size="default"
       disabled={isLoading}
     >
