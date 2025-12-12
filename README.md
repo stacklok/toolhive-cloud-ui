@@ -51,6 +51,8 @@ pnpm dev
 # Application will be available at http://localhost:3000
 ```
 
+Authentication: the dev stack also starts a local OIDC provider (on :4000) and MSW mock API (on :9090). The `/signin` page initiates the OIDC flow and redirects back to `/catalog` on success.
+
 ### Available Commands
 
 #### Development Commands (pnpm)
@@ -273,25 +275,26 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ### Testing
 
+#### Unit/Component Tests
+
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test --watch
-
-# Run tests with coverage
-pnpm test --coverage
-
-# Run specific test file
-pnpm test src/components/navbar.test.tsx
+pnpm test              # Run all tests
+pnpm test --watch      # Watch mode
+pnpm test --coverage   # With coverage
 ```
 
-Tests use:
+Uses Vitest + Testing Library + MSW.
 
-- **Vitest** - Test runner
-- **Testing Library** - React component testing
-- **MSW** - API mocking
+#### E2E Tests (Playwright)
+
+```bash
+pnpm exec playwright install   # One-time browser install
+pnpm test:e2e                  # Run tests (auto-starts dev server if needed)
+pnpm test:e2e:ui               # Playwright UI mode
+pnpm test:e2e:debug            # With Playwright Inspector
+```
+
+Tests automatically start the dev stack if it's not already running. If you prefer to start it manually first, run `pnpm dev` before the tests.
 
 ### Mock Server
 
@@ -466,6 +469,7 @@ For detailed information about the project:
 - [hey-api Documentation](https://heyapi.vercel.app)
 - [shadcn/ui Components](https://ui.shadcn.com)
 - [MCP Registry Official](https://github.com/modelcontextprotocol/registry)
+
 
 ## Deploy on Vercel
 
