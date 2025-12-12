@@ -49,6 +49,22 @@ export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistrySyncSt
     serverCount?: number;
   };
 
+export type InternalApiHealthResponse = {
+  status?: string;
+};
+
+export type InternalApiReadinessResponse = {
+  status?: string;
+};
+
+export type InternalApiVersionResponse = {
+  build_date?: string;
+  commit?: string;
+  go_version?: string;
+  platform?: string;
+  version?: string;
+};
+
 export type ModelArgument = {
   choices?: Array<string>;
   default?: string;
@@ -248,44 +264,6 @@ export type GetExtensionV0RegistriesResponses = {
 export type GetExtensionV0RegistriesResponse =
   GetExtensionV0RegistriesResponses[keyof GetExtensionV0RegistriesResponses];
 
-export type DeleteExtensionV0RegistriesByRegistryNameData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Registry Name
-     */
-    registryName: string;
-  };
-  query?: never;
-  url: "/extension/v0/registries/{registryName}";
-};
-
-export type DeleteExtensionV0RegistriesByRegistryNameErrors = {
-  /**
-   * Bad request
-   */
-  400: {
-    [key: string]: string;
-  };
-  /**
-   * Unauthorized
-   */
-  401: {
-    [key: string]: string;
-  };
-  /**
-   * Not implemented
-   */
-  501: {
-    [key: string]: string;
-  };
-};
-
-export type DeleteExtensionV0RegistriesByRegistryNameError =
-  DeleteExtensionV0RegistriesByRegistryNameErrors[keyof DeleteExtensionV0RegistriesByRegistryNameErrors];
-
 export type GetExtensionV0RegistriesByRegistryNameData = {
   body?: {
     [key: string]: unknown;
@@ -346,92 +324,6 @@ export type GetExtensionV0RegistriesByRegistryNameResponses = {
 export type GetExtensionV0RegistriesByRegistryNameResponse =
   GetExtensionV0RegistriesByRegistryNameResponses[keyof GetExtensionV0RegistriesByRegistryNameResponses];
 
-export type PutExtensionV0RegistriesByRegistryNameData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Registry Name
-     */
-    registryName: string;
-  };
-  query?: never;
-  url: "/extension/v0/registries/{registryName}";
-};
-
-export type PutExtensionV0RegistriesByRegistryNameErrors = {
-  /**
-   * Bad request
-   */
-  400: {
-    [key: string]: string;
-  };
-  /**
-   * Unauthorized
-   */
-  401: {
-    [key: string]: string;
-  };
-  /**
-   * Not implemented
-   */
-  501: {
-    [key: string]: string;
-  };
-};
-
-export type PutExtensionV0RegistriesByRegistryNameError =
-  PutExtensionV0RegistriesByRegistryNameErrors[keyof PutExtensionV0RegistriesByRegistryNameErrors];
-
-export type PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData =
-  {
-    body?: {
-      [key: string]: unknown;
-    };
-    path: {
-      /**
-       * Registry Name
-       */
-      registryName: string;
-      /**
-       * URL-encoded server name (e.g., \
-       */
-      serverName: string;
-      /**
-       * URL-encoded version to retrieve (e.g., \
-       */
-      version: string;
-    };
-    query?: never;
-    url: "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}";
-  };
-
-export type PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors =
-  {
-    /**
-     * Bad request
-     */
-    400: {
-      [key: string]: string;
-    };
-    /**
-     * Unauthorized
-     */
-    401: {
-      [key: string]: string;
-    };
-    /**
-     * Not implemented
-     */
-    501: {
-      [key: string]: string;
-    };
-  };
-
-export type PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionError =
-  PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors[keyof PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors];
-
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -443,9 +335,7 @@ export type GetHealthResponses = {
   /**
    * OK
    */
-  200: {
-    [key: string]: string;
-  };
+  200: InternalApiHealthResponse;
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
@@ -503,9 +393,7 @@ export type GetReadinessResponses = {
   /**
    * OK
    */
-  200: {
-    [key: string]: string;
-  };
+  200: InternalApiReadinessResponse;
 };
 
 export type GetReadinessResponse =
@@ -873,9 +761,7 @@ export type GetVersionResponses = {
   /**
    * OK
    */
-  200: {
-    [key: string]: string;
-  };
+  200: InternalApiVersionResponse;
 };
 
 export type GetVersionResponse = GetVersionResponses[keyof GetVersionResponses];
