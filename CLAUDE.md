@@ -222,18 +222,18 @@ pnpm generate-client:nofetch # Regenerate without fetching
 - **Testing Library** - Component testing
 - **jsdom** - DOM simulation
 
-### BDD E2E (Cucumber + Playwright)
+### E2E Tests (Playwright)
 
-- End-to-end scenarios live under `tests/bdd` and run against a live dev stack.
+- End-to-end tests live under `tests/e2e` and run against a live dev stack.
 - Commands:
   - `pnpm dev` – starts Next.js (3000), mock OIDC (4000), and MSW mock API (9090)
-  - `pnpm run test:bdd` – runs Cucumber scenarios with Playwright (headless)
-  - `pnpm run test:bdd:debug` – runs with Playwright Inspector (headed, pauses on start)
-  - `pnpm run test:bdd:trace` – runs with Playwright tracing, artifacts in `test-results/traces/*.zip`
-- CI runs BDD tests via `.github/workflows/bdd.yml` and installs Playwright browsers.
+  - `pnpm run test:e2e` – runs Playwright tests (headless)
+  - `pnpm run test:e2e:ui` – opens Playwright UI mode for interactive debugging
+  - `pnpm run test:e2e:debug` – runs with Playwright Inspector
+- CI runs E2E tests via `.github/workflows/bdd.yml` and installs Playwright browsers.
 - Install browsers locally once: `pnpm exec playwright install`
 
-Scaffolded global steps include navigation, clicking buttons by accessible name, URL assertions, and text/heading checks. Prefer reusing global steps; add domain-specific ones only when needed for clarity.
+Tests use custom fixtures for authentication. The `authenticatedPage` fixture handles login automatically.
 
 ### Example Test
 

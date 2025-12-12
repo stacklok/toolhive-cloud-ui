@@ -285,14 +285,14 @@ pnpm test --coverage   # With coverage
 
 Uses Vitest + Testing Library + MSW.
 
-#### BDD E2E Tests (Cucumber + Playwright)
+#### E2E Tests (Playwright)
 
 ```bash
 pnpm exec playwright install   # One-time browser install
 pnpm dev                       # Start dev stack
-pnpm run test:bdd              # Run scenarios (headless)
-pnpm run test:bdd:debug        # With Playwright Inspector
-pnpm run test:bdd:trace        # Capture traces
+pnpm run test:e2e              # Run tests (headless)
+pnpm run test:e2e:ui           # Playwright UI mode
+pnpm run test:e2e:debug        # With Playwright Inspector
 ```
 
 ### Mock Server
@@ -479,16 +479,16 @@ pnpm type-check      # TypeScript
 pnpm lint            # Biome
 ```
 
-### BDD E2E (Cucumber + Playwright)
+### E2E Tests (Playwright)
 
 Run the app and E2E tests locally:
 
 ```bash
 pnpm exec playwright install   # one-time browser install
 pnpm dev                       # start Next (3000) + OIDC (4000) + Mock API (9090)
-pnpm run test:bdd              # run Cucumber scenarios (headless)
-pnpm run test:bdd:debug        # headed with Playwright Inspector (PWDEBUG=1)
-pnpm run test:bdd:trace        # capture Playwright traces (PWTRACE=1)
+pnpm run test:e2e              # run Playwright tests (headless)
+pnpm run test:e2e:ui           # Playwright UI mode for debugging
+pnpm run test:e2e:debug        # with Playwright Inspector
 ```
 
 CI runs the E2E suite via `.github/workflows/bdd.yml`.
