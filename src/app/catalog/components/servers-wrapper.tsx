@@ -35,6 +35,10 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
     setFilters((prev) => ({ ...prev, search: newSearch }));
   };
 
+  const handleClearSearch = () => {
+    setFilters((prev) => ({ ...prev, search: "" }));
+  };
+
   return (
     <div className="flex flex-col h-full">
       <PageHeader title="MCP Server Catalog">
@@ -47,7 +51,12 @@ export function ServersWrapper({ servers }: ServersWrapperProps) {
       </PageHeader>
 
       <div className="flex-1 overflow-auto">
-        <Servers servers={servers} viewMode={viewMode} searchQuery={search} />
+        <Servers
+          servers={servers}
+          viewMode={viewMode}
+          searchQuery={search}
+          onClearSearch={handleClearSearch}
+        />
       </div>
     </div>
   );

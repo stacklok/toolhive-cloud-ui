@@ -330,7 +330,7 @@ pnpm generate-client  # Fetch swagger.json and regenerate
   - `OIDC_ISSUER_URL` - OIDC provider URL
   - `OIDC_CLIENT_ID` - OAuth2 client ID
   - `OIDC_CLIENT_SECRET` - OAuth2 client secret
-  - `NEXT_PUBLIC_OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - **Required**, must use `NEXT_PUBLIC_` prefix. Not sensitive data - it's just an identifier.
+  - `OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - **Required**, server-side only.
   - `BETTER_AUTH_URL` - Application base URL
   - `BETTER_AUTH_SECRET` - Secret for token encryption
 
@@ -352,7 +352,7 @@ describe("Component", () => {
   it("does something", async () => {
     render(<Component />);
     await waitFor(() => {
-      expect(screen.getByText("Expected")).toBeInTheDocument();
+      expect(screen.getByText("Expected")).toBeVisible();
     });
   });
 });
@@ -365,6 +365,10 @@ describe("Component", () => {
 - Error scenarios
 - Loading states
 - Accessibility
+
+### Testing Best Practices
+
+- **Prefer `toBeVisible()` over `toBeInTheDocument()`** - `toBeVisible()` checks that an element is actually visible to the user (not hidden via CSS, `aria-hidden`, etc.), while `toBeInTheDocument()` only checks DOM presence. Use `toBeVisible()` for positive assertions and `.not.toBeInTheDocument()` for absence checks.
 
 ## Common Mistakes
 

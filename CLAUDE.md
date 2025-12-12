@@ -202,6 +202,10 @@ pnpm generate-client:nofetch # Regenerate without fetching
 - Loading states and skeleton screens
 - Accessibility (keyboard navigation, screen readers)
 
+### Testing Best Practices
+
+- **Prefer `toBeVisible()` over `toBeInTheDocument()`** - `toBeVisible()` checks that an element is actually visible to the user (not hidden via CSS, `aria-hidden`, etc.), while `toBeInTheDocument()` only checks DOM presence. Use `toBeVisible()` for positive assertions and `.not.toBeInTheDocument()` for absence checks.
+
 ### Mocking & Testing
 
 - **MSW Auto-Mocker**
@@ -243,13 +247,13 @@ describe("ServerList", () => {
     render(<ServerList />);
 
     await waitFor(() => {
-      expect(screen.getByText("Server 1")).toBeInTheDocument();
+      expect(screen.getByText("Server 1")).toBeVisible();
     });
 
     const copyButton = screen.getByRole("button", { name: /copy url/i });
     await userEvent.click(copyButton);
 
-    expect(screen.getByText(/copied/i)).toBeInTheDocument();
+    expect(screen.getByText(/copied/i)).toBeVisible();
   });
 });
 ```
@@ -295,7 +299,7 @@ git push origin v0.x.x
   - `OIDC_ISSUER_URL` - OIDC provider URL
   - `OIDC_CLIENT_ID` - OAuth2 client ID
   - `OIDC_CLIENT_SECRET` - OAuth2 client secret
-  - `NEXT_PUBLIC_OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - Required, must use `NEXT_PUBLIC_` prefix. Not sensitive data - it's just an identifier.
+  - `OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - Required, server-side only.
   - `BETTER_AUTH_URL` - Application base URL
   - `BETTER_AUTH_SECRET` - Secret for token encryption
 

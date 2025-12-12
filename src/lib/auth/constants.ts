@@ -5,12 +5,9 @@
 // Environment configuration
 /**
  * OIDC Provider ID (e.g., "oidc", "okta")
- * Must use NEXT_PUBLIC_ prefix as it's needed both server-side (auth.ts) and client-side (signin page).
- * Note: This exposes the provider name to the client, which is generally acceptable
- * but does reveal infrastructure details.
+ * Server-side only - not exposed to the client.
  */
-export const OIDC_PROVIDER_ID =
-  process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID || "oidc";
+export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
 export const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
@@ -18,6 +15,12 @@ export const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 export const BETTER_AUTH_SECRET =
   process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret";
+export const OIDC_SCOPES = process.env.OIDC_SCOPES?.split(",") ?? [
+  "openid",
+  "email",
+  "profile",
+  "offline_access",
+];
 
 // Token expiration constants (in milliseconds and seconds)
 export const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // 3,600,000 ms (1 hour)

@@ -1,16 +1,56 @@
 {
   "components": {
     "schemas": {
-      "internal_api_v0.ErrorResponse": {
-        "properties": { "error": { "type": "string" } },
+      "github_com_stacklok_toolhive-registry-server_internal_service.RegistryInfo": {
+        "properties": {
+          "createdAt": { "type": "string" },
+          "name": { "type": "string" },
+          "syncStatus": {
+            "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistrySyncStatus"
+          },
+          "type": { "description": "MANAGED, FILE, REMOTE", "type": "string" },
+          "updatedAt": { "type": "string" }
+        },
         "type": "object"
       },
-      "internal_api_v0.RegistryInfoResponse": {
+      "github_com_stacklok_toolhive-registry-server_internal_service.RegistryListResponse": {
         "properties": {
-          "last_updated": { "type": "string" },
-          "source": { "type": "string" },
-          "total_servers": { "type": "integer" },
-          "version": { "type": "string" }
+          "registries": {
+            "items": {
+              "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistryInfo"
+            },
+            "type": "array",
+            "uniqueItems": false
+          }
+        },
+        "type": "object"
+      },
+      "github_com_stacklok_toolhive-registry-server_internal_service.RegistrySyncStatus": {
+        "properties": {
+          "attemptCount": {
+            "description": "Number of sync attempts",
+            "type": "integer"
+          },
+          "lastAttempt": {
+            "description": "Last sync attempt",
+            "type": "string"
+          },
+          "lastSyncTime": {
+            "description": "Last successful sync",
+            "type": "string"
+          },
+          "message": {
+            "description": "Status or error message",
+            "type": "string"
+          },
+          "phase": {
+            "description": "complete, syncing, failed",
+            "type": "string"
+          },
+          "serverCount": {
+            "description": "Number of servers in registry",
+            "type": "integer"
+          }
         },
         "type": "object"
       },
@@ -310,11 +350,19 @@
         },
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "description": "OAuth 2.0 Bearer token authentication. Format: \"Bearer {token}\"",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
     }
   },
   "info": {
     "contact": { "url": "https://github.com/stacklok/toolhive" },
-    "description": "API for accessing MCP server registry data and deployed server information\nThis API provides endpoints to query the MCP (Model Context Protocol) server registry,\nget information about available servers, and check the status of deployed servers.",
+    "description": "API for accessing MCP server registry data and deployed server information\nThis API provides endpoints to query the MCP (Model Context Protocol) server registry,\nget information about available servers, and check the status of deployed servers.\n\nAuthentication is required by default. Use Bearer token authentication with a valid\nOAuth/OIDC access token. The /.well-known/oauth-protected-resource endpoint provides\nOAuth discovery metadata (RFC 9728).",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -324,78 +372,6 @@
   },
   "externalDocs": { "description": "", "url": "" },
   "paths": {
-    "/api/v0/registry/info": {
-      "get": {
-        "deprecated": true,
-        "description": "Get registry metadata including version, last updated time, and total servers",
-        "parameters": [
-          {
-            "description": "Response format",
-            "in": "query",
-            "name": "format",
-            "schema": {
-              "default": "toolhive",
-              "enum": ["toolhive", "upstream"],
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/internal_api_v0.RegistryInfoResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/internal_api_v0.ErrorResponse"
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/internal_api_v0.ErrorResponse"
-                }
-              }
-            },
-            "description": "Not Implemented"
-          }
-        },
-        "summary": "Get registry information",
-        "tags": ["registry"]
-      }
-    },
-    "/api/v0/registry/openapi.yaml": {
-      "get": {
-        "deprecated": true,
-        "description": "Returns the OpenAPI specification for the registry API in YAML format",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": { "schema": { "type": "string" } },
-              "application/x-yaml": { "schema": { "type": "string" } }
-            },
-            "description": "OpenAPI specification in YAML format"
-          }
-        },
-        "summary": "Get OpenAPI specification",
-        "tags": ["system"]
-      }
-    },
     "/extension/v0/registries": {
       "get": {
         "description": "List all registries",
@@ -403,7 +379,17 @@
           "content": { "application/json": { "schema": { "type": "object" } } }
         },
         "responses": {
-          "501": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistryListResponse"
+                }
+              }
+            },
+            "description": "List of registries"
+          },
+          "401": {
             "content": {
               "application/json": {
                 "schema": {
@@ -412,9 +398,21 @@
                 }
               }
             },
-            "description": "Not implemented"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "List registries",
         "tags": ["extension"]
       }
@@ -446,6 +444,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "501": {
             "content": {
               "application/json": {
@@ -458,6 +467,7 @@
             "description": "Not implemented"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Delete registry",
         "tags": ["extension"]
       },
@@ -476,6 +486,16 @@
           "content": { "application/json": { "schema": { "type": "object" } } }
         },
         "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistryInfo"
+                }
+              }
+            },
+            "description": "Registry details"
+          },
           "400": {
             "content": {
               "application/json": {
@@ -486,6 +506,39 @@
               }
             },
             "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Registry not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
           },
           "501": {
             "content": {
@@ -499,6 +552,7 @@
             "description": "Not implemented"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Get registry",
         "tags": ["extension"]
       },
@@ -528,6 +582,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "501": {
             "content": {
               "application/json": {
@@ -540,66 +605,12 @@
             "description": "Not implemented"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Create or update registry",
         "tags": ["extension"]
       }
     },
     "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}": {
-      "delete": {
-        "description": "Delete a server from the registry",
-        "parameters": [
-          {
-            "description": "Registry Name",
-            "in": "path",
-            "name": "registryName",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "description": "URL-encoded server name (e.g., \\",
-            "in": "path",
-            "name": "serverName",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "description": "URL-encoded version to retrieve (e.g., \\",
-            "in": "path",
-            "name": "version",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
-        },
-        "responses": {
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Bad request"
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Not implemented"
-          }
-        },
-        "summary": "Delete server",
-        "tags": ["extension"]
-      },
       "put": {
         "description": "Create or update a server in the registry",
         "parameters": [
@@ -640,6 +651,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "501": {
             "content": {
               "application/json": {
@@ -652,13 +674,13 @@
             "description": "Not implemented"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Create or update server",
         "tags": ["extension"]
       }
     },
     "/health": {
       "get": {
-        "deprecated": true,
         "description": "Check if the registry API is healthy",
         "responses": {
           "200": {
@@ -677,9 +699,34 @@
         "tags": ["system"]
       }
     },
+    "/openapi.json": {
+      "get": {
+        "description": "Get the OpenAPI 3.1.0 specification for this API",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": { "schema": { "type": "object" } }
+            },
+            "description": "OpenAPI 3.1.0 specification"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "OpenAPI specification",
+        "tags": ["system"]
+      }
+    },
     "/readiness": {
       "get": {
-        "deprecated": true,
         "description": "Check if the registry API is ready to serve requests",
         "responses": {
           "200": {
@@ -697,7 +744,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/internal_api_v0.ErrorResponse"
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
                 }
               }
             },
@@ -710,11 +758,22 @@
     },
     "/registry/v0.1/publish": {
       "post": {
-        "description": "Publish a server to the registry",
+        "description": "Publish a server to the registry. This server does not support publishing via this endpoint.\nUse the registry-specific endpoint /{registryName}/v0.1/publish instead.",
         "requestBody": {
           "content": { "application/json": { "schema": { "type": "object" } } }
         },
         "responses": {
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "501": {
             "content": {
               "application/json": {
@@ -727,6 +786,7 @@
             "description": "Not implemented"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Publish server",
         "tags": ["registry", "official"]
       }
@@ -784,8 +844,20 @@
               }
             },
             "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "List servers",
         "tags": ["registry", "official"]
       }
@@ -827,6 +899,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "404": {
             "content": {
               "application/json": {
@@ -839,6 +922,7 @@
             "description": "Server not found"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "List all versions of an MCP server",
         "tags": ["registry", "official"]
       }
@@ -885,6 +969,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "404": {
             "content": {
               "application/json": {
@@ -897,39 +992,8 @@
             "description": "Server or version not found"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Get specific MCP server version",
-        "tags": ["registry", "official"]
-      }
-    },
-    "/registry/{registryName}/v0.1/publish": {
-      "post": {
-        "description": "Publish a server to the registry",
-        "parameters": [
-          {
-            "description": "Registry name",
-            "in": "path",
-            "name": "registryName",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
-        },
-        "responses": {
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Not implemented"
-          }
-        },
-        "summary": "Publish server",
         "tags": ["registry", "official"]
       }
     },
@@ -993,8 +1057,20 @@
               }
             },
             "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "List servers",
         "tags": ["registry", "official"]
       }
@@ -1043,6 +1119,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "404": {
             "content": {
               "application/json": {
@@ -1055,6 +1142,7 @@
             "description": "Server not found"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "List all versions of an MCP server",
         "tags": ["registry", "official"]
       }
@@ -1108,6 +1196,17 @@
             },
             "description": "Bad request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "404": {
             "content": {
               "application/json": {
@@ -1120,13 +1219,13 @@
             "description": "Server or version not found"
           }
         },
+        "security": [{ "BearerAuth": [] }],
         "summary": "Get specific MCP server version",
         "tags": ["registry", "official"]
       }
     },
     "/version": {
       "get": {
-        "deprecated": true,
         "description": "Get version information about the registry API",
         "responses": {
           "200": {
@@ -1144,16 +1243,201 @@
         "summary": "Version information",
         "tags": ["system"]
       }
+    },
+    "/{registryName}/v0.1/publish": {
+      "post": {
+        "description": "Publish a server version to a specific managed registry",
+        "parameters": [
+          {
+            "description": "Registry name",
+            "in": "path",
+            "name": "registryName",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/v0.ServerJSON" }
+            }
+          },
+          "description": "Server data",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/v0.ServerJSON" }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not a managed registry"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Registry not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Version already exists"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [{ "BearerAuth": [] }],
+        "summary": "Publish server to specific registry",
+        "tags": ["registry", "official"]
+      }
+    },
+    "/{registryName}/v0.1/servers/{serverName}/versions/{version}": {
+      "delete": {
+        "description": "Delete a server version from a specific managed registry",
+        "parameters": [
+          {
+            "description": "Registry name",
+            "in": "path",
+            "name": "registryName",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "description": "Server name (URL-encoded)",
+            "in": "path",
+            "name": "serverName",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "description": "Version (URL-encoded)",
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "204": { "description": "No content" },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not a managed registry"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Server version not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": { "type": "string" },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [{ "BearerAuth": [] }],
+        "summary": "Delete server version from specific registry",
+        "tags": ["registry", "official"]
+      }
     }
   },
-  "openapi": "3.1.0",
-  "tags": [
-    { "description": "Registry metadata and information", "name": "registry" },
-    { "description": "Server discovery and metadata", "name": "servers" },
-    {
-      "description": "Deployed server status and information",
-      "name": "deployed-servers"
-    },
-    { "description": "System health and version information", "name": "system" }
-  ]
+  "openapi": "3.1.0"
 }

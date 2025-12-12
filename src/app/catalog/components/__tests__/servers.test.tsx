@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { Servers } from "../servers";
+
+const mockOnClearSearch = vi.fn();
 
 const mockServers: V0ServerJson[] = [
   {
@@ -27,7 +30,14 @@ const mockServers: V0ServerJson[] = [
 describe("Servers", () => {
   describe("grid mode", () => {
     it("displays servers in grid layout", () => {
-      render(<Servers servers={mockServers} viewMode="grid" searchQuery="" />);
+      render(
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -36,7 +46,12 @@ describe("Servers", () => {
 
     it("displays grid container", () => {
       const { container } = render(
-        <Servers servers={mockServers} viewMode="grid" searchQuery="" />,
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
       );
 
       const grid = container.querySelector(".grid");
@@ -46,7 +61,14 @@ describe("Servers", () => {
 
   describe("list mode", () => {
     it("displays servers in table layout", () => {
-      render(<Servers servers={mockServers} viewMode="list" searchQuery="" />);
+      render(
+        <Servers
+          servers={mockServers}
+          viewMode="list"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -54,7 +76,14 @@ describe("Servers", () => {
     });
 
     it("displays table headers", () => {
-      render(<Servers servers={mockServers} viewMode="list" searchQuery="" />);
+      render(
+        <Servers
+          servers={mockServers}
+          viewMode="list"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
 
       expect(screen.getByText("Server")).toBeVisible();
       expect(screen.getByText("About")).toBeVisible();
@@ -64,7 +93,12 @@ describe("Servers", () => {
   describe("search functionality", () => {
     it("filters servers by name", () => {
       render(
-        <Servers servers={mockServers} viewMode="grid" searchQuery="aws" />,
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery="aws"
+          onClearSearch={mockOnClearSearch}
+        />,
       );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
@@ -74,7 +108,12 @@ describe("Servers", () => {
 
     it("filters servers by title", () => {
       render(
-        <Servers servers={mockServers} viewMode="grid" searchQuery="google" />,
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery="google"
+          onClearSearch={mockOnClearSearch}
+        />,
       );
 
       expect(screen.getByText("google-applications")).toBeVisible();
@@ -87,6 +126,7 @@ describe("Servers", () => {
           servers={mockServers}
           viewMode="grid"
           searchQuery="workspace"
+          onClearSearch={mockOnClearSearch}
         />,
       );
 
@@ -96,7 +136,12 @@ describe("Servers", () => {
 
     it("is case insensitive", () => {
       render(
-        <Servers servers={mockServers} viewMode="grid" searchQuery="AWS" />,
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery="AWS"
+          onClearSearch={mockOnClearSearch}
+        />,
       );
 
       expect(screen.getByText("aws-nova-canvas")).toBeVisible();
@@ -108,26 +153,93 @@ describe("Servers", () => {
           servers={mockServers}
           viewMode="grid"
           searchQuery="nonexistent"
+          onClearSearch={mockOnClearSearch}
         />,
       );
 
+      expect(screen.getByText("No results found")).toBeVisible();
       expect(
-        screen.getByText('No servers found matching "nonexistent"'),
+        screen.getByText(/couldn't find any servers matching "nonexistent"/),
       ).toBeVisible();
+    });
+
+    it("shows clear search button when search has no matches", async () => {
+      const user = userEvent.setup();
+      const onClearSearch = vi.fn();
+
+      render(
+        <Servers
+          servers={mockServers}
+          viewMode="grid"
+          searchQuery="nonexistent"
+          onClearSearch={onClearSearch}
+        />,
+      );
+
+      const clearButton = screen.getByRole("button", { name: /clear search/i });
+      expect(clearButton).toBeVisible();
+
+      await user.click(clearButton);
+      expect(onClearSearch).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("empty state", () => {
     it("shows no servers message when list is empty", () => {
-      render(<Servers servers={[]} viewMode="grid" searchQuery="" />);
+      render(
+        <Servers
+          servers={[]}
+          viewMode="grid"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
+
+      expect(screen.getByText("No servers available")).toBeVisible();
+      expect(
+        screen.getByText(/no MCP servers in the catalog yet/i),
+      ).toBeVisible();
+    });
+
+    it("shows no servers message in list mode", () => {
+      render(
+        <Servers
+          servers={[]}
+          viewMode="list"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
 
       expect(screen.getByText("No servers available")).toBeVisible();
     });
 
-    it("shows no servers message in list mode", () => {
-      render(<Servers servers={[]} viewMode="list" searchQuery="" />);
+    it("displays illustration in empty state", () => {
+      const { container } = render(
+        <Servers
+          servers={[]}
+          viewMode="grid"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
 
-      expect(screen.getByText("No servers available")).toBeVisible();
+      expect(container.querySelector("svg")).toBeVisible();
+    });
+
+    it("does not show clear search button when no servers and no search", () => {
+      render(
+        <Servers
+          servers={[]}
+          viewMode="grid"
+          searchQuery=""
+          onClearSearch={mockOnClearSearch}
+        />,
+      );
+
+      expect(
+        screen.queryByRole("button", { name: /clear search/i }),
+      ).not.toBeInTheDocument();
     });
   });
 });

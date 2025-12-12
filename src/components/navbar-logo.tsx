@@ -1,16 +1,11 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ToolHiveIcon } from "@/components/icons";
 
 export function NavbarLogo() {
   return (
-    <div className="flex items-center gap-2">
-      <Image
-        src="/toolhive-icon.svg"
-        alt="Toolhive"
-        width={17}
-        height={19}
-        className="shrink-0"
-      />
-      <span className="text-2xl font-bold tracking-tight">Toolhive</span>
-    </div>
+    <Link href="/catalog" className="flex items-center gap-2">
+      <ToolHiveIcon className="size-5 shrink-0" />
+      <span className="text-2xl font-bold tracking-tight">ToolHive</span>
+    </Link>
   );
 }

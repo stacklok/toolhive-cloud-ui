@@ -1,9 +1,14 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { server } from "@/mocks/node";
-import { getValidOidcToken } from "../token";
 import type { OidcTokenData } from "../types";
 import { encrypt } from "../utils";
+
+// Unmock @/lib/auth/token to test the real implementation
+// (overrides the global mock from vitest.setup.ts)
+vi.unmock("@/lib/auth/token");
+// Import after unmocking to get the real function
+const { getValidOidcToken } = await import("../token");
 
 const REFRESH_API_URL = "http://localhost:3000/api/auth/refresh-token";
 

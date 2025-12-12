@@ -55,17 +55,17 @@ function RepositoryLink({ repositoryUrl }: { repositoryUrl?: string }) {
   );
 }
 
-interface ServerAboutTabProps {
+interface ServerDetailProps {
   description?: string;
   serverUrl?: string;
   repositoryUrl?: string;
 }
 
-export function ServerAboutTab({
+export function ServerDetail({
   description = "No description available",
   serverUrl,
   repositoryUrl,
-}: ServerAboutTabProps) {
+}: ServerDetailProps) {
   return (
     <div className="space-y-6">
       <ServerDescription description={description} />

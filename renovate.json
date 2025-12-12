@@ -4,5 +4,20 @@
   "labels": ["dependencies"],
   "prConcurrentLimit": 3,
   "timezone": "Europe/London",
-  "schedule": ["after 01:00 and before 07:00 every weekday"]
+  "schedule": ["after 01:00 and before 07:00 every weekday"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^scripts/generate-swagger\\.ts$"],
+      "matchStrings": [
+        "renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s*\\n\\s*\\*/\\s*\\n.*?=\\s*[\"'](?<currentValue>v[\\d.]+)[\"']"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Auto-regenerate API client via GitHub Actions workflow",
+      "matchDepNames": ["stacklok/toolhive-registry-server"]
+    }
+  ]
 }

@@ -4,10 +4,12 @@ import { Copy } from "lucide-react";
 import type { ComponentPropsWithoutRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface CopyUrlButtonProps
   extends Omit<ComponentPropsWithoutRef<typeof Button>, "onClick"> {
   url: string;
+  labelClassName?: string;
 }
 
 /**
@@ -17,6 +19,7 @@ export function CopyUrlButton({
   url,
   variant = "secondary",
   size = "sm",
+  labelClassName,
   ...props
 }: CopyUrlButtonProps) {
   const handleCopyUrl = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,7 +43,7 @@ export function CopyUrlButton({
       {...props}
     >
       <Copy className="size-4" />
-      Copy URL
+      <span className={cn(labelClassName)}>Copy URL</span>
     </Button>
   );
 }
