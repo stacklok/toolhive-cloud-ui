@@ -6,8 +6,6 @@ import type {
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
-  DeleteExtensionV0RegistriesByRegistryNameData,
-  DeleteExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameResponses,
@@ -47,10 +45,6 @@ import type {
   PostByRegistryNameV01PublishResponses,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
-  PutExtensionV0RegistriesByRegistryNameData,
-  PutExtensionV0RegistriesByRegistryNameErrors,
-  PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
-  PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors,
 } from "./types.gen";
 
 export type Options<
@@ -93,30 +87,6 @@ export const getExtensionV0Registries = <ThrowOnError extends boolean = false>(
   });
 
 /**
- * Delete registry
- *
- * Delete a registry
- */
-export const deleteExtensionV0RegistriesByRegistryName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<DeleteExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) =>
-  (options.client ?? client).delete<
-    unknown,
-    DeleteExtensionV0RegistriesByRegistryNameErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries/{registryName}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
  * Get registry
  *
  * Get a registry by name
@@ -139,56 +109,6 @@ export const getExtensionV0RegistriesByRegistryName = <
       ...options.headers,
     },
   });
-
-/**
- * Create or update registry
- *
- * Create or update a registry
- */
-export const putExtensionV0RegistriesByRegistryName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<PutExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) =>
-  (options.client ?? client).put<
-    unknown,
-    PutExtensionV0RegistriesByRegistryNameErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries/{registryName}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Create or update server
- *
- * Create or update a server in the registry
- */
-export const putExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersion =
-  <ThrowOnError extends boolean = false>(
-    options: Options<
-      PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionData,
-      ThrowOnError
-    >,
-  ) =>
-    (options.client ?? client).put<
-      unknown,
-      PutExtensionV0RegistriesByRegistryNameServersByServerNameVersionsByVersionErrors,
-      ThrowOnError
-    >({
-      security: [{ name: "Authorization", type: "apiKey" }],
-      url: "/extension/v0/registries/{registryName}/servers/{serverName}/versions/{version}",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    });
 
 /**
  * Health check
@@ -232,7 +152,7 @@ export const getReadiness = <ThrowOnError extends boolean = false>(
   >({ url: "/readiness", ...options });
 
 /**
- * Publish server
+ * Publish server (not supported)
  *
  * Publish a server to the registry. This server does not support publishing via this endpoint.
  * Use the registry-specific endpoint /{registryName}/v0.1/publish instead.
@@ -255,9 +175,9 @@ export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
   });
 
 /**
- * List servers
+ * List servers (aggregated)
  *
- * Get a list of available servers in the registry
+ * Get a list of available servers from all registries (aggregated view)
  */
 export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
   options?: Options<GetRegistryV01ServersData, ThrowOnError>,
@@ -277,9 +197,9 @@ export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
   });
 
 /**
- * List all versions of an MCP server
+ * List all versions of an MCP server (aggregated)
  *
- * Returns all available versions for a specific MCP server, ordered by publication date (newest first)
+ * Returns all available versions for a specific MCP server from all registries (aggregated view)
  */
 export const getRegistryV01ServersByServerNameVersions = <
   ThrowOnError extends boolean = false,
@@ -301,9 +221,9 @@ export const getRegistryV01ServersByServerNameVersions = <
   });
 
 /**
- * Get specific MCP server version
+ * Get specific MCP server version (aggregated)
  *
- * Returns detailed information about a specific version of an MCP server.
+ * Returns detailed information about a specific version of an MCP server from all registries.
  * Use the special version `latest` to get the latest version.
  */
 export const getRegistryV01ServersByServerNameVersionsByVersion = <
@@ -329,9 +249,9 @@ export const getRegistryV01ServersByServerNameVersionsByVersion = <
   });
 
 /**
- * List servers
+ * List servers in specific registry
  *
- * Get a list of available servers in the registry
+ * Get a list of available servers from a specific registry
  */
 export const getRegistryByRegistryNameV01Servers = <
   ThrowOnError extends boolean = false,
@@ -353,9 +273,9 @@ export const getRegistryByRegistryNameV01Servers = <
   });
 
 /**
- * List all versions of an MCP server
+ * List all versions of an MCP server in specific registry
  *
- * Returns all available versions for a specific MCP server, ordered by publication date (newest first)
+ * Returns all available versions for a specific MCP server from a specific registry
  */
 export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
   ThrowOnError extends boolean = false,
@@ -380,9 +300,9 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
   });
 
 /**
- * Get specific MCP server version
+ * Get specific MCP server version in specific registry
  *
- * Returns detailed information about a specific version of an MCP server.
+ * Returns detailed information about a specific version of an MCP server from a specific registry.
  * Use the special version `latest` to get the latest version.
  */
 export const getRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
