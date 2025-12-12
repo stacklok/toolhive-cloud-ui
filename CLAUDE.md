@@ -155,7 +155,7 @@ pnpm generate-client:nofetch # Regenerate without fetching
 
 ### Backend API
 
-- **Base URL**: Configured via `NEXT_PUBLIC_API_URL`
+- **Base URL**: Configured via `API_BASE_URL` (server-side only)
 - **Format**: Official MCP Registry API (upstream compatible)
 - **Endpoints**:
   - `GET /api/v0/servers` - List all MCP servers
@@ -178,7 +178,7 @@ pnpm generate-client:nofetch # Regenerate without fetching
 ### Production
 
 1. User accesses protected route
-2. Redirected to `/sign-in`
+2. Redirected to `/signin`
 3. Better Auth initiates OIDC flow with configured provider
 4. Provider redirects back with authorization code
 5. Better Auth exchanges code for tokens
@@ -221,6 +221,19 @@ pnpm generate-client:nofetch # Regenerate without fetching
 - **Vitest** - Test runner (faster than Jest)
 - **Testing Library** - Component testing
 - **jsdom** - DOM simulation
+
+### BDD E2E (Cucumber + Playwright)
+
+- End-to-end scenarios live under `tests/bdd` and run against a live dev stack.
+- Commands:
+  - `pnpm dev` – starts Next.js (3000), mock OIDC (4000), and MSW mock API (9090)
+  - `pnpm run test:bdd` – runs Cucumber scenarios with Playwright (headless)
+  - `pnpm run test:bdd:debug` – runs with Playwright Inspector (headed, pauses on start)
+  - `pnpm run test:bdd:trace` – runs with Playwright tracing, artifacts in `test-results/traces/*.zip`
+- CI runs BDD tests via `.github/workflows/bdd.yml` and installs Playwright browsers.
+- Install browsers locally once: `pnpm exec playwright install`
+
+Scaffolded global steps include navigation, clicking buttons by accessible name, URL assertions, and text/heading checks. Prefer reusing global steps; add domain-specific ones only when needed for clarity.
 
 ### Example Test
 
@@ -278,7 +291,10 @@ git push origin v0.x.x
 
 ### Authentication Not Working
 
-- **Development**: Ensure OIDC mock is running (`pnpm oidc`)
+- **Development**:
+  - Ensure OIDC mock is running (`pnpm oidc`) or start the full stack with `pnpm dev`
+  - Dev provider issues refresh tokens unconditionally and uses a short AccessToken TTL (15s) to exercise the refresh flow
+  - If you see origin errors (403), ensure `BETTER_AUTH_URL` matches the port you use (default `http://localhost:3000`) or include it in `TRUSTED_ORIGINS`
 - **Production**: Check environment variables:
   - `OIDC_ISSUER_URL` - OIDC provider URL
   - `OIDC_CLIENT_ID` - OAuth2 client ID
@@ -289,7 +305,7 @@ git push origin v0.x.x
 
 ### API Calls Failing
 
-- Check `NEXT_PUBLIC_API_URL` environment variable
+- Check `API_BASE_URL` environment variable
 - Verify backend API is running
 - Check browser console for CORS errors
 

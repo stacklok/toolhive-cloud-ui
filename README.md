@@ -51,6 +51,8 @@ pnpm dev
 # Application will be available at http://localhost:3000
 ```
 
+Authentication: the dev stack also starts a local OIDC provider (on :4000) and MSW mock API (on :9090). The `/signin` page initiates the OIDC flow and redirects back to `/catalog` on success.
+
 ### Available Commands
 
 #### Development Commands (pnpm)
@@ -273,25 +275,25 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ### Testing
 
+#### Unit/Component Tests
+
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test --watch
-
-# Run tests with coverage
-pnpm test --coverage
-
-# Run specific test file
-pnpm test src/components/navbar.test.tsx
+pnpm test              # Run all tests
+pnpm test --watch      # Watch mode
+pnpm test --coverage   # With coverage
 ```
 
-Tests use:
+Uses Vitest + Testing Library + MSW.
 
-- **Vitest** - Test runner
-- **Testing Library** - React component testing
-- **MSW** - API mocking
+#### BDD E2E Tests (Cucumber + Playwright)
+
+```bash
+pnpm exec playwright install   # One-time browser install
+pnpm dev                       # Start dev stack
+pnpm run test:bdd              # Run scenarios (headless)
+pnpm run test:bdd:debug        # With Playwright Inspector
+pnpm run test:bdd:trace        # Capture traces
+```
 
 ### Mock Server
 
@@ -466,6 +468,30 @@ For detailed information about the project:
 - [hey-api Documentation](https://heyapi.vercel.app)
 - [shadcn/ui Components](https://ui.shadcn.com)
 - [MCP Registry Official](https://github.com/modelcontextprotocol/registry)
+
+## Testing
+
+### Unit/Component
+
+```bash
+pnpm test            # Vitest
+pnpm type-check      # TypeScript
+pnpm lint            # Biome
+```
+
+### BDD E2E (Cucumber + Playwright)
+
+Run the app and E2E tests locally:
+
+```bash
+pnpm exec playwright install   # one-time browser install
+pnpm dev                       # start Next (3000) + OIDC (4000) + Mock API (9090)
+pnpm run test:bdd              # run Cucumber scenarios (headless)
+pnpm run test:bdd:debug        # headed with Playwright Inspector (PWDEBUG=1)
+pnpm run test:bdd:trace        # capture Playwright traces (PWTRACE=1)
+```
+
+CI runs the E2E suite via `.github/workflows/bdd.yml`.
 
 ## Deploy on Vercel
 
