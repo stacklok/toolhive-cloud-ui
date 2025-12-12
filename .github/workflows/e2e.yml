@@ -14,9 +14,17 @@ jobs:
     name: Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      API_BASE_URL: http://localhost:9090
+      OIDC_ISSUER_URL: http://localhost:4000
+      OIDC_CLIENT_ID: better-auth-dev
+      OIDC_CLIENT_SECRET: dev-secret-change-in-production
+      NEXT_PUBLIC_OIDC_PROVIDER_ID: okta
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: ci-test-secret-at-least-32-chars-long
     steps:
       - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -24,40 +32,8 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Start dev stack (Next + OIDC + Mock)
-        env:
-          API_BASE_URL: http://localhost:9090
-          OIDC_ISSUER_URL: http://localhost:4000
-          OIDC_CLIENT_ID: better-auth-dev
-          OIDC_CLIENT_SECRET: dev-secret-change-in-production
-          NEXT_PUBLIC_OIDC_PROVIDER_ID: okta
-          BETTER_AUTH_URL: http://localhost:3000
-          BETTER_AUTH_SECRET: ci-test-secret-not-for-production
-        run: |
-          pnpm dev &
-          echo $! > dev.pid
-          # Wait for Next (3000), OIDC (4000 - use discovery endpoint), and Mock API (9090 - use health endpoint)
-          for url in http://localhost:3000 http://localhost:4000/.well-known/openid-configuration http://localhost:9090/health; do
-            echo "Waiting for $url..."
-            up=false
-            for i in {1..30}; do
-              if curl -sf "$url" >/dev/null; then
-                echo "$url is up"
-                up=true
-                break
-              fi
-              sleep 2
-            done
-            if [ "$up" = false ]; then
-              echo "ERROR: $url failed to start"
-              exit 1
-            fi
-          done
-
       - name: Run Playwright tests
-        env:
-          BASE_URL: http://localhost:3000
-        run: pnpm run test:e2e
+        run: pnpm test:e2e
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
@@ -68,8 +44,3 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 7
-
-      - name: Cleanup dev
-        if: always()
-        run: |
-          if [ -f dev.pid ]; then kill $(cat dev.pid) || true; fi
