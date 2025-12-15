@@ -15,6 +15,7 @@
 
 [![License: Apache 2.0][license-img]][license]
 [![Discord][discord-img]][discord]
+[![Coverage Status][coveralls-img]][coveralls]
 
 # ToolHive Cloud UI
 
@@ -491,3 +492,5 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](./LICEN
 [license]: https://opensource.org/licenses/Apache-2.0
 [discord-img]: https://img.shields.io/discord/1184987096302239844?style=flat&logo=discord&logoColor=white&label=Discord
 [discord]: https://discord.gg/stacklok
+[coveralls-img]: https://coveralls.io/repos/github/stacklok/toolhive-cloud-ui/badge.svg?branch=main
+[coveralls]: https://coveralls.io/github/stacklok/toolhive-cloud-ui?branch=main
