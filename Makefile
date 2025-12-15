@@ -1,4 +1,4 @@
-.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc
+.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc compose-up compose-up-mock compose-down compose-logs compose-build
 
 # Variables
 IMAGE_NAME := toolhive-cloud-ui
@@ -23,7 +23,14 @@ help:
 	@echo "  make type-check     - TypeScript type checking"
 	@echo "  make generate-client - Generate API client from backend"
 	@echo ""
-	@echo "Docker (Production):"
+	@echo "Docker Compose (Full Stack):"
+	@echo "  make compose-up     - Start full stack with Okta (set OIDC env vars first)"
+	@echo "  make compose-up-mock - Start full stack with mock OIDC"
+	@echo "  make compose-down   - Stop all services"
+	@echo "  make compose-logs   - View all service logs"
+	@echo "  make compose-build  - Rebuild all images"
+	@echo ""
+	@echo "Docker (UI Only):"
 	@echo "  make build          - Build production Docker image"
 	@echo "  make start          - Start Docker container"
 	@echo "  make stop           - Stop Docker container"
@@ -174,4 +181,39 @@ kind-port-forward:
 ## Full setup: create cluster and deploy
 kind-setup: kind-create kind-deploy
 	@echo "Setup complete!"
+
+# ============================================================================
+# Docker Compose (Full Stack with Registry Server)
+# ============================================================================
+
+## Start full stack with Okta (requires OIDC env vars or .env file)
+## Create a .env file with:
+##   OIDC_ISSUER_URL=https://your-org.okta.com
+##   OIDC_CLIENT_ID=your-client-id
+##   OIDC_CLIENT_SECRET=your-client-secret
+##   OIDC_PROVIDER_ID=okta
+##   BETTER_AUTH_SECRET=your-secret
+compose-up:
+	@echo "Starting full stack (UI + Registry Server)..."
+	@echo "Using OIDC config from environment or .env file"
+	@docker compose up --build
+
+## Start full stack with mock OIDC provider
+compose-up-mock:
+	@echo "Starting full stack with mock OIDC..."
+	@docker compose --profile mock up --build
+
+## Stop all docker compose services
+compose-down:
+	@echo "Stopping all services..."
+	@docker compose --profile mock down
+
+## View docker compose logs
+compose-logs:
+	@docker compose logs -f
+
+## Rebuild all docker compose images
+compose-build:
+	@echo "Rebuilding all images..."
+	@docker compose --profile mock build
 
