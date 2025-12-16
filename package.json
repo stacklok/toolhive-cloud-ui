@@ -65,6 +65,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.8",
     "babel-plugin-react-compiler": "1.0.0",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.3",
@@ -77,8 +78,8 @@
     "typescript": "^5",
     "vite": "^7.2.2",
     "vite-tsconfig-paths": "^5.1.4",
-    "@vitest/coverage-v8": "^4.0.8",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "vitest-fail-on-console": "^0.10.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css}": [

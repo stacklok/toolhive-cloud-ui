@@ -1,19 +1,23 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ErrorPage } from "./error-page-client";
 
 describe("ErrorPage", () => {
+  beforeEach(() => {
+    // Suppress console.error in all tests to keep output clean
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
   it("logs errors to console on mount", () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
     const error = new Error("Test error");
 
     render(<ErrorPage error={error} reset={vi.fn()} />);
 
-    expect(consoleError).toHaveBeenCalledWith(error);
-    consoleError.mockRestore();
+    expect(console.error).toHaveBeenCalledWith(error);
   });
 
   it("displays 'Something went wrong' title", () => {
