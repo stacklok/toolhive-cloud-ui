@@ -18,7 +18,7 @@ export interface OidcTokenData
     | "updatedAt"
     | "id"
   > {
-  accessTokenExpiresAt?: number;
+  accessTokenExpiresAt: number;
   refreshTokenExpiresAt?: number;
   providerId?: string;
   accountId?: string;

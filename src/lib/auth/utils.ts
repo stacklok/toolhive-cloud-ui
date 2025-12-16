@@ -1,98 +1,20 @@
 /**
- * Utility functions for authentication, token validation, and encryption.
+ * Utility functions for authentication and token management.
  */
 
-import { createHash } from "node:crypto";
 import type { Account } from "better-auth";
-import * as jose from "jose";
 import { cookies } from "next/headers";
-import { saveTokenCookie } from "./auth";
 import {
   BETTER_AUTH_SECRET,
   OIDC_TOKEN_COOKIE_NAME,
   TOKEN_ONE_HOUR_MS,
 } from "./constants";
+import { saveTokenCookie } from "./cookie";
+import { decrypt } from "./crypto";
 import type { OidcTokenData } from "./types";
 
-/**
- * Derives encryption key from secret.
- * Uses SHA-256 to derive exactly 32 bytes (256 bits) from the provided secret,
- * ensuring compatibility with AES-256-GCM regardless of secret length.
- */
-function getSecret(secret: string): Uint8Array {
-  // Hash the secret to get exactly 32 bytes for AES-256-GCM
-  return new Uint8Array(createHash("sha256").update(secret).digest());
-}
-
-/**
- * Encrypts token data using JWE (JSON Web Encryption).
- * Uses AES-256-GCM with direct key agreement (alg: 'dir').
- * Exported for testing purposes.
- */
-export async function encrypt(
-  data: OidcTokenData,
-  secret: string,
-): Promise<string> {
-  const key = getSecret(secret);
-  const plaintext = new TextEncoder().encode(JSON.stringify(data));
-  return await new jose.CompactEncrypt(plaintext)
-    .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
-    .encrypt(key);
-}
-
-/**
- * Decrypts JWE token and returns parsed token data.
- * Validates data structure after decryption.
- * Exported for testing purposes.
- */
-export async function decrypt(
-  jwe: string,
-  secret: string,
-): Promise<OidcTokenData> {
-  try {
-    const key = getSecret(secret);
-    const { plaintext } = await jose.compactDecrypt(jwe, key);
-    const data = JSON.parse(new TextDecoder().decode(plaintext));
-
-    if (!isOidcTokenData(data)) {
-      throw new Error("Invalid token data structure");
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof jose.errors.JWEDecryptionFailed) {
-      throw new Error("Token decryption failed - possible tampering");
-    }
-    if (error instanceof jose.errors.JWEInvalid) {
-      throw new Error("Invalid JWE format");
-    }
-    // Wrap unexpected errors to avoid exposing internal details
-    const message = error instanceof Error ? error.message : "Unknown error";
-    throw new Error(`Token decryption error: ${message}`);
-  }
-}
-
-/**
- * Type guard to validate OidcTokenData structure at runtime.
- * Used after decrypting token data from cookie to ensure data integrity.
- * Note: idToken is not validated here as it's optional and not critical for token validation.
- */
-export function isOidcTokenData(data: unknown): data is OidcTokenData {
-  if (typeof data !== "object" || data === null) {
-    return false;
-  }
-
-  const obj = data as Record<string, unknown>;
-
-  return (
-    typeof obj.accessToken === "string" &&
-    typeof obj.accessTokenExpiresAt === "number" &&
-    typeof obj.userId === "string" &&
-    (obj.refreshToken === undefined || typeof obj.refreshToken === "string") &&
-    (obj.refreshTokenExpiresAt === undefined ||
-      typeof obj.refreshTokenExpiresAt === "number")
-  );
-}
+// Re-export crypto functions for backwards compatibility
+export { decrypt, encrypt, isOidcTokenData } from "./crypto";
 
 /**
  * Retrieves the OIDC ID token from HTTP-only cookie.
@@ -152,17 +74,6 @@ export async function saveAccountToken(account: Account) {
       refreshTokenExpiresAt,
       userId: account.userId,
     };
-
-    console.log("[account] Token data to save:", JSON.stringify(account));
-
-    console.log("[Save Token] Token data to save:", {
-      hasAccessToken: !!tokenData.accessToken,
-      hasRefreshToken: !!tokenData.refreshToken,
-      accessTokenExpiresAt: new Date(accessTokenExpiresAt).toISOString(),
-      refreshTokenExpiresAt: tokenData.refreshTokenExpiresAt
-        ? new Date(tokenData.refreshTokenExpiresAt).toISOString()
-        : "none",
-    });
 
     await saveTokenCookie(tokenData);
 

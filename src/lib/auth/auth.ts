@@ -14,36 +14,23 @@ import {
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
+import { saveTokenCookie } from "./cookie";
 import type {
   OidcDiscovery,
   OidcDiscoveryResponse,
   OidcTokenData,
   TokenResponse,
 } from "./types";
-import { decrypt, encrypt, saveAccountToken } from "./utils";
+import { decrypt, saveAccountToken } from "./utils";
+
+// Re-export saveTokenCookie for backwards compatibility
+export { saveTokenCookie } from "./cookie";
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
  */
 let cachedTokenEndpoint: string | null = null;
 let cachedEndSessionEndpoint: string | null = null;
-
-/**
- * Saves encrypted token data in HTTP-only cookie.
- * Exported for use by saveAccountToken in utils.
- */
-export async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
-  const encrypted = await encrypt(tokenData, BETTER_AUTH_SECRET);
-  const cookieStore = await cookies();
-
-  cookieStore.set(OIDC_TOKEN_COOKIE_NAME, encrypted, {
-    httpOnly: true,
-    secure: IS_PRODUCTION,
-    sameSite: "lax",
-    maxAge: TOKEN_SEVEN_DAYS_SECONDS,
-    path: "/",
-  });
-}
 
 /**
  * Discovers and caches the token and end_session endpoints from OIDC provider.
@@ -179,7 +166,7 @@ export async function refreshAccessToken({
 }
 
 export const auth: Auth<BetterAuthOptions> = betterAuth({
-  debug: true,
+  debug: !IS_PRODUCTION,
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
   account: {
