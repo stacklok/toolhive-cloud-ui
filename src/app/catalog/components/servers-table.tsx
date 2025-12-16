@@ -30,7 +30,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {servers.map((server) => {
+          {servers.map((server, index) => {
             const url = server.remotes?.[0]?.url || "";
             const serverName = server.name || "Unknown";
             const description =
@@ -38,7 +38,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
 
             return (
               <TableRow
-                key={server.name}
+                key={server.name || `server-${index}`}
                 onClick={() => onServerClick?.(server)}
                 className={onServerClick ? "cursor-pointer" : undefined}
               >
