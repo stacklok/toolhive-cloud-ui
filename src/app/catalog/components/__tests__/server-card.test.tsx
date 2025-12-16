@@ -44,4 +44,32 @@ describe("ServerCard", () => {
     const copyButton = screen.getByRole("button", { name: /copy url/i });
     expect(copyButton).toBeTruthy();
   });
+
+  it("displays Virtual MCP badge for Virtual MCP servers", () => {
+    const virtualMCPServer: V0ServerJson = {
+      name: "com.toolhive.k8s.production/my-vmcp-server",
+      description: "Virtual MCP server",
+      _meta: {
+        "io.modelcontextprotocol.registry/publisher-provided": {
+          "io.github.stacklok": {
+            "https://mcp.example.com/servers/my-vmcp-server": {
+              metadata: {
+                kubernetes_kind: "VirtualMCPServer",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    render(<ServerCard server={virtualMCPServer} />);
+
+    expect(screen.getByText("Virtual MCP")).toBeVisible();
+  });
+
+  it("does not display Virtual MCP badge for regular servers", () => {
+    render(<ServerCard server={mockServer} />);
+
+    expect(screen.queryByText("Virtual MCP")).not.toBeInTheDocument();
+  });
 });
