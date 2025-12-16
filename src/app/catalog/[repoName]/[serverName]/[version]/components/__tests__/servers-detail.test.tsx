@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import type { V0ServerJson } from "@/generated/types.gen";
 import { ServerDetail } from "../server-detail";
+import { ServerDetailTitle } from "../server-detail-title";
 
 describe("ServerDetail", () => {
   const mockProps = {
@@ -128,6 +130,58 @@ describe("ServerDetail", () => {
       expect(
         screen.queryByRole("link", { name: /view repository/i }),
       ).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("ServerDetailTitle", () => {
+  const mockServer: V0ServerJson = {
+    name: "test-org/test-server",
+    description: "Test server description",
+    repository: {
+      id: "test-org",
+      source: "github",
+      url: "https://github.com/test-org/test-server",
+    },
+    remotes: [
+      {
+        type: "streamable-http",
+        url: "https://test-server.example.com",
+      },
+    ],
+  };
+
+  const virtualMCPServer: V0ServerJson = {
+    ...mockServer,
+    _meta: {
+      "io.modelcontextprotocol.registry/publisher-provided": {
+        "io.github.stacklok": {
+          "https://mcp.example.com/servers/my-vmcp-server": {
+            metadata: {
+              kubernetes_kind: "VirtualMCPServer",
+              kubernetes_namespace: "production",
+              kubernetes_name: "my-vmcp-server",
+            },
+          },
+        },
+      },
+    },
+  };
+
+  describe("badges", () => {
+    it("displays all badges for a Virtual MCP server with version and type", () => {
+      render(<ServerDetailTitle server={virtualMCPServer} version="1.0.0" />);
+
+      expect(screen.getByText("Virtual MCP Server")).toBeVisible();
+      expect(screen.getByText("streamable-http")).toBeVisible();
+      expect(screen.getByText("v1.0.0")).toBeVisible();
+    });
+
+    it("does not display badges for regular server without version", () => {
+      render(<ServerDetailTitle server={mockServer} version="" />);
+
+      expect(screen.queryByText("Virtual MCP Server")).not.toBeInTheDocument();
+      expect(screen.queryByText(/^v1.0.0/)).not.toBeInTheDocument();
     });
   });
 });
