@@ -2,6 +2,7 @@ import { TextDecoder, TextEncoder } from "node:util";
 import * as testingLibraryMatchers from "@testing-library/jest-dom/matchers";
 import { expect, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
+import failOnConsole from "vitest-fail-on-console";
 
 expect.extend(testingLibraryMatchers);
 
@@ -10,6 +11,15 @@ expect.extend(testingLibraryMatchers);
 global.TextEncoder = TextEncoder;
 // @ts-expect-error - TextDecoder types are compatible
 global.TextDecoder = TextDecoder;
+
+// Fail tests that log errors or warnings to console
+failOnConsole({
+  shouldFailOnDebug: false,
+  shouldFailOnError: true,
+  shouldFailOnInfo: false,
+  shouldFailOnLog: false,
+  shouldFailOnWarn: true,
+});
 
 // Global mocks used across test files
 vi.mock("next/headers", () => ({
