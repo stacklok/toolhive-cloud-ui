@@ -43,6 +43,13 @@ const configuration = {
         "http://localhost:3003/api/auth/oauth2/callback/oidc",
         "http://localhost:3000/api/auth/oauth2/callback/okta",
       ],
+      // Post-logout redirect URIs for RP-Initiated Logout
+      post_logout_redirect_uris: [
+        "http://localhost:3000/signin",
+        "http://localhost:3001/signin",
+        "http://localhost:3002/signin",
+        "http://localhost:3003/signin",
+      ],
       response_types: ["code"],
       grant_types: ["authorization_code", "refresh_token"],
       token_endpoint_auth_method: "client_secret_post",
@@ -77,6 +84,19 @@ const configuration = {
     // Disable built-in dev interactions in favor of our custom auto-login
     // and auto-consent middleware used for local testing.
     devInteractions: { enabled: false },
+    // Enable RP-Initiated Logout for sign-out flow
+    rpInitiatedLogout: {
+      enabled: true,
+      // Auto-confirm logout for dev (skip confirmation page)
+      logoutSource: async (ctx, form) => {
+        ctx.body = `<!DOCTYPE html>
+          <html><head><title>Logging out...</title></head>
+          <body>
+            ${form}
+            <script>document.forms[0].submit();</script>
+          </body></html>`;
+      },
+    },
   },
   // Explicitly declare supported scopes, including offline_access for refresh tokens
   // Scopes supported by the dev provider (app requests offline_access in dev and prod)
