@@ -181,7 +181,8 @@ describe("ServerDetailTitle", () => {
       render(<ServerDetailTitle server={mockServer} version="" />);
 
       expect(screen.queryByText("Virtual MCP Server")).not.toBeInTheDocument();
-      expect(screen.queryByText(/^v1.0.0/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^v1\.0\.0/)).not.toBeInTheDocument();
+      expect(screen.getByText("streamable-http")).toBeVisible();
     });
   });
 });
