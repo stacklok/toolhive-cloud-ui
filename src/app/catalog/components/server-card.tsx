@@ -1,6 +1,7 @@
 "use client";
 
 import { CopyUrlButton } from "@/components/copy-url-button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { isVirtualMCPServer } from "@/lib/utils";
 
 interface ServerCardProps {
   server: V0ServerJson;
@@ -23,6 +25,7 @@ interface ServerCardProps {
 export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
   const { name, description, repository } = server;
   const author = repository?.id;
+  const isVirtualMCP = isVirtualMCPServer(server);
 
   return (
     <Card
@@ -35,6 +38,14 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
         </CardTitle>
         <CardDescription className="flex items-center gap-1.5 text-xs leading-5">
           {author && <span>{author}</span>}
+          {isVirtualMCP && (
+            <Badge
+              variant="secondary"
+              className="text-xs font-semibold leading-4"
+            >
+              Virtual MCP
+            </Badge>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">

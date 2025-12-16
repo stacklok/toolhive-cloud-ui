@@ -1,17 +1,19 @@
 import { NavigateBackButton } from "@/components/navigate-back-button";
 import { Badge } from "@/components/ui/badge";
+import type { V0ServerJson } from "@/generated";
+import { isVirtualMCPServer } from "@/lib/utils";
 
 interface ServerDetailTitleProps {
-  publisher?: string;
-  serverName: string;
+  server: V0ServerJson;
   version: string;
 }
 
-export function ServerDetailTitle({
-  publisher,
-  serverName,
-  version,
-}: ServerDetailTitleProps) {
+export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
+  const { name, repository } = server;
+  const serverName = name || "Unknown server";
+  const publisher = repository?.source;
+  const type = server.remotes?.[0]?.type;
+
   return (
     <div className="flex flex-col gap-5">
       <NavigateBackButton
@@ -22,14 +24,23 @@ export function ServerDetailTitle({
       />
 
       <div className="flex flex-col gap-2">
-        <div className="flex items-start gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">{serverName}</h1>
-          <Badge
-            variant="secondary"
-            className="text-xs text-muted-foreground mt-2"
-          >
-            v{version}
-          </Badge>
+        <h1 className="text-3xl font-bold tracking-tight">{serverName}</h1>
+        <div className="flex items-center gap-2">
+          {isVirtualMCPServer(server) && (
+            <Badge variant="secondary" className="text-xs font-semibold">
+              Virtual MCP Server
+            </Badge>
+          )}
+          {type && (
+            <Badge variant="secondary" className="text-xs">
+              {type}
+            </Badge>
+          )}
+          {version && (
+            <Badge variant="secondary" className="text-xs">
+              v{version}
+            </Badge>
+          )}
         </div>
         <div className="flex items-center">
           {publisher && (

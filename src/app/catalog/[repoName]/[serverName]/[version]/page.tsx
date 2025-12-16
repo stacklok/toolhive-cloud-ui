@@ -30,11 +30,7 @@ export default async function CatalogDetailPage({
 
   return (
     <div className="flex flex-col gap-2 pb-8 px-4">
-      <ServerDetailTitle
-        publisher={server.repository?.source}
-        serverName={server.name || "Unknown server"}
-        version={version}
-      />
+      <ServerDetailTitle server={server} version={version} />
 
       <ServerDetail
         description={server.description}
