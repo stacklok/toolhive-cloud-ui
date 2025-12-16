@@ -390,6 +390,58 @@ make rebuild
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
+## Docker Compose (Full Stack)
+
+Run the complete stack (UI + Registry Server + PostgreSQL) with Docker Compose.
+
+### Prerequisites
+
+Clone the registry-server repo in the same parent directory:
+
+```bash
+git clone https://github.com/stacklok/toolhive-registry-server.git ../toolhive-registry-server
+```
+
+### With Okta Authentication
+
+1. Create a `.env` file with your Okta credentials:
+
+```bash
+OIDC_ISSUER_URL=https://your-org.okta.com
+OIDC_CLIENT_ID=your-client-id
+OIDC_CLIENT_SECRET=your-client-secret
+```
+
+2. Start the stack:
+
+```bash
+make compose-up
+```
+
+### With Mock OIDC (Development)
+
+No `.env` file needed:
+
+```bash
+make compose-up-mock
+```
+
+### Access
+
+- **UI**: http://localhost:3000
+- **API**: http://localhost:8080
+- **OIDC Mock** (if using mock): http://localhost:4000
+
+### Commands
+
+```bash
+make compose-up       # Start with Okta (requires .env)
+make compose-up-mock  # Start with mock OIDC
+make compose-down     # Stop all services
+make compose-logs     # View logs
+make compose-build    # Rebuild images
+```
+
 ## Kubernetes / Kind Deployment
 
 This project includes a complete Helm chart for deploying to Kubernetes (optimized for Kind).
@@ -470,7 +522,6 @@ For detailed information about the project:
 - [hey-api Documentation](https://heyapi.vercel.app)
 - [shadcn/ui Components](https://ui.shadcn.com)
 - [MCP Registry Official](https://github.com/modelcontextprotocol/registry)
-
 
 ## Deploy on Vercel
 
