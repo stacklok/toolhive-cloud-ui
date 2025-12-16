@@ -1,6 +1,7 @@
 "use client";
 
 import { CopyUrlButton } from "@/components/copy-url-button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { isVirtualMCPServer } from "@/lib/utils";
 
 interface ServersTableProps {
   servers: V0ServerJson[];
@@ -43,12 +45,22 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                 className={onServerClick ? "cursor-pointer" : undefined}
               >
                 <TableCell
-                  className="pl-4 align-middle sm:w-1/5"
+                  className="pl-4 align-middle sm:w-1/5 max-w-0"
                   title={serverName}
                 >
-                  <p className="text-base font-medium sm:text-sm">
-                    {serverName}
-                  </p>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <p className="text-base font-medium sm:text-sm truncate min-w-0">
+                      {serverName}
+                    </p>
+                    {isVirtualMCPServer(server) && (
+                      <Badge
+                        variant="secondary"
+                        className="text-xs font-semibold leading-4 shrink-0 sm:hidden"
+                      >
+                        Virtual MCP
+                      </Badge>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell
                   className="hidden pr-4 text-muted-foreground whitespace-normal wrap-break-word sm:table-cell sm:w-7/10"
