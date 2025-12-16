@@ -12,6 +12,15 @@
       "matchStrings": [
         "renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s*\\n\\s*\\*/\\s*\\n.*?=\\s*[\"'](?<currentValue>v[\\d.]+)[\"']"
       ]
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^biome\\.json$"],
+      "matchStrings": [
+        "\"\\$schema\":\\s*\"https://biomejs\\.dev/schemas/(?<currentValue>[\\d.]+)/schema\\.json\""
+      ],
+      "depNameTemplate": "@biomejs/biome",
+      "datasourceTemplate": "npm"
     }
   ],
   "packageRules": [
