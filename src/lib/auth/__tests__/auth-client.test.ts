@@ -100,6 +100,10 @@ describe("signOut", () => {
   });
 
   it("redirects to /signin on error", async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
     vi.spyOn(actions, "getOidcSignOutUrl").mockRejectedValue(
       new Error("Network error"),
     );
@@ -109,6 +113,10 @@ describe("signOut", () => {
     await signOut();
 
     expect(mockLocationReplace).toHaveBeenCalledWith("/signin");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "[Auth] Sign out error:",
+      expect.any(Error),
+    );
   });
 
   it("uses /signin as fallback when no OIDC URL", async () => {
