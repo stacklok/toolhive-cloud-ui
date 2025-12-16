@@ -57,6 +57,44 @@ export const mockedGetRegistryV01Servers =
       },
       {
         server: {
+          name: "com.toolhive.k8s.production/my-vmcp-server",
+          title: "Virtual MCP Server",
+          version: "1.0.0",
+          description: "Virtual MCP server for code analysis",
+          remotes: [
+            {
+              type: "streamable-http",
+              url: "https://mcp.example.com/servers/my-vmcp-server",
+            },
+          ],
+          _meta: {
+            "io.modelcontextprotocol.registry/publisher-provided": {
+              "io.github.stacklok": {
+                "https://mcp.example.com/servers/my-vmcp-server": {
+                  metadata: {
+                    kubernetes_kind: "VirtualMCPServer",
+                    kubernetes_namespace: "production",
+                    kubernetes_name: "my-vmcp-server",
+                    kubernetes_uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                  },
+                },
+              },
+            },
+          },
+          icons: [],
+          packages: [],
+        },
+        _meta: {
+          "io.modelcontextprotocol.registry/official": {
+            status: "active",
+            isLatest: true,
+            publishedAt: "2025-12-15T10:30:00Z",
+            updatedAt: "2025-12-15T10:30:00Z",
+          },
+        },
+      },
+      {
+        server: {
           title: "AgentQL MCP",
           name: "tinyfish/agentql-mcp",
           version: "1.0.1",
@@ -484,7 +522,7 @@ export const mockedGetRegistryV01Servers =
       },
     ],
     metadata: {
-      count: 15,
+      count: 16,
       nextCursor: "next-page",
     },
   })
