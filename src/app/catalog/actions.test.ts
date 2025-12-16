@@ -1,6 +1,6 @@
 import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
 import { HttpResponse } from "msw";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getServers } from "./actions";
 
 // Authentication is mocked globally in vitest.setup.ts:
@@ -11,6 +11,10 @@ describe("getServers", () => {
   beforeEach(() => {
     // Suppress console.error in error scenario tests to keep output clean
     vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
   it("returns servers from default fixture", async () => {
     const servers = await getServers();

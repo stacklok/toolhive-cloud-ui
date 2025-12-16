@@ -1,12 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ErrorPage } from "./error-page-client";
 
 describe("ErrorPage", () => {
   beforeEach(() => {
     // Suppress console.error in all tests to keep output clean
     vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
   it("logs errors to console on mount", () => {
     const error = new Error("Test error");
