@@ -7,7 +7,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { Button } from "@/components/ui/button";
 
-export default function PlaygroundPage() {
+export default function AssistantPage() {
   const transport = useMemo(
     () => new TextStreamChatTransport({ api: "/api/chat" }),
     [],
@@ -37,9 +37,9 @@ export default function PlaygroundPage() {
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       <div className="border-b p-4">
-        <h1 className="text-2xl font-bold">Playground</h1>
+        <h1 className="text-2xl font-bold">Assistant</h1>
         <p className="text-muted-foreground text-sm">
-          Test MCP servers with AI
+          Chat with AI using MCP servers
         </p>
       </div>
 
