@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { TextStreamChatTransport } from "ai";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ChatInterface } from "@/components/chat/chat-interface";
 
 export default function AssistantPage() {
@@ -11,17 +11,17 @@ export default function AssistantPage() {
     [],
   );
 
-  const { messages, sendMessage, status, stop, error, setMessages } = useChat({
+  const {
+    messages,
+    sendMessage,
+    status,
+    clearError,
+    stop,
+    error,
+    setMessages,
+  } = useChat({
     transport,
   });
-
-  const [input, setInput] = useState("");
-
-  const handleSubmit = () => {
-    if (!input.trim()) return;
-    sendMessage({ text: input });
-    setInput("");
-  };
 
   const handleClearMessages = () => {
     setMessages([]);
@@ -33,10 +33,10 @@ export default function AssistantPage() {
         messages={messages}
         status={status}
         error={error}
-        input={input}
-        onInputChange={setInput}
-        onSubmit={handleSubmit}
-        onStop={stop}
+        cancelRequest={async () => {
+          await stop();
+          clearError();
+        }}
         onClearMessages={handleClearMessages}
         sendMessage={sendMessage}
       />
