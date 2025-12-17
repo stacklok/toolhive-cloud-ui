@@ -149,17 +149,6 @@ function FileAttachment({
   const isImage = file.mediaType?.startsWith("image/");
   const displayName = file.filename || "Attachment";
 
-  const handleDownload = () => {
-    if (file.url) {
-      const link = document.createElement("a");
-      link.href = file.url;
-      link.download = file.filename || "attachment";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
   return (
     <div
       className={`rounded-lg border p-2 ${
@@ -171,6 +160,7 @@ function FileAttachment({
       <div className="flex items-center gap-2">
         {isImage && file.url ? (
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded">
+            {/* unoptimized is required for blob URLs and data URLs which cannot be optimized by Next.js */}
             <Image
               alt={displayName}
               className="size-full object-cover"
@@ -202,18 +192,20 @@ function FileAttachment({
             {displayName}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleDownload}
-          className={`shrink-0 transition-colors ${
-            isUserMessage
-              ? "text-primary-foreground/70 hover:text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-          aria-label={`Download ${displayName}`}
-        >
-          <Download className="h-4 w-4" />
-        </button>
+        {file.url && (
+          <a
+            href={file.url}
+            download={file.filename || "attachment"}
+            className={`shrink-0 transition-colors ${
+              isUserMessage
+                ? "text-primary-foreground/70 hover:text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            aria-label={`Download ${displayName}`}
+          >
+            <Download className="h-4 w-4" />
+          </a>
+        )}
       </div>
     </div>
   );
