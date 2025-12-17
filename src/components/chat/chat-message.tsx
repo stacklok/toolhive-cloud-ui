@@ -235,15 +235,15 @@ export function ChatMessage({ message, status }: ChatMessageProps) {
           <div className="space-y-2">
             <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-3 shadow-sm">
               {textContent && (
-                <div className="prose prose-sm prose-invert max-w-none break-words">
+                <div className="prose prose-sm prose-invert max-w-none wrap-break-word">
                   <Markdown remarkPlugins={[remarkGfm]}>{textContent}</Markdown>
                 </div>
               )}
               {fileParts.length > 0 && (
                 <div className={`${textContent ? "mt-2" : ""} space-y-2`}>
-                  {fileParts.map((file) => (
+                  {fileParts.map((file, index) => (
                     <FileAttachment
-                      key={file.filename || file.url || Math.random()}
+                      key={file.filename || file.url || index}
                       file={file}
                       isUserMessage={true}
                     />
@@ -270,7 +270,7 @@ export function ChatMessage({ message, status }: ChatMessageProps) {
       </div>
 
       <div className="min-w-0 flex-1 space-y-2 pr-2">
-        <div className="break-words">
+        <div className="wrap-break-word">
           {message.parts.map((part, index) => {
             if (part.type.startsWith("tool-")) {
               return (
@@ -287,9 +287,9 @@ export function ChatMessage({ message, status }: ChatMessageProps) {
             <div className="bg-muted/50 rounded-lg border p-3">
               {fileParts.length > 0 && (
                 <div className="mb-2 space-y-2">
-                  {fileParts.map((file) => (
+                  {fileParts.map((file, fileIndex) => (
                     <FileAttachment
-                      key={file.filename || file.url || Math.random()}
+                      key={file.filename || file.url || fileIndex}
                       file={file}
                     />
                   ))}
