@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { TextStreamChatTransport } from "ai";
+import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useState } from "react";
 import { ChatInterface } from "@/components/chat/chat-interface";
 import type { V0ServerJson } from "@/generated/types.gen";
@@ -15,7 +15,7 @@ export default function AssistantPage() {
   }, []);
 
   const transport = useMemo(
-    () => new TextStreamChatTransport({ api: "/api/chat" }),
+    () => new DefaultChatTransport({ api: "/api/chat" }),
     [],
   );
 

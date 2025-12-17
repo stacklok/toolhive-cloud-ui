@@ -7,7 +7,7 @@ import { getServers } from "@/app/catalog/actions";
 
 export const maxDuration = 60;
 
-const MODEL = "anthropic/claude-sonnet-4";
+const MODEL = "anthropic/claude-sonnet-4.5";
 
 async function getMcpTools(): Promise<{
   tools: ToolSet;
@@ -77,6 +77,7 @@ export async function POST(req: Request) {
     model,
     messages: convertToModelMessages(messages),
     tools,
+    toolChoice: "auto",
     system: `You are a helpful assistant with access to MCP (Model Context Protocol) servers from ToolHive.
 
     You have access to various specialized tools from enabled MCP servers. Each tool is prefixed with the server name (e.g., github-stats-mcp_get_repository_info).
@@ -153,5 +154,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toTextStreamResponse();
+  return result.toUIMessageStreamResponse();
 }
