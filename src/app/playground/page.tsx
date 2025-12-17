@@ -2,18 +2,10 @@
 
 import { useChat } from "@ai-sdk/react";
 import { TextStreamChatTransport } from "ai";
-import { Send, Square } from "lucide-react";
+import { Bot, Send, Square } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChatMessage } from "@/components/chat/chat-message";
 import { Button } from "@/components/ui/button";
-
-function getMessageText(
-  message: ReturnType<typeof useChat>["messages"][number],
-): string {
-  return message.parts
-    .filter((part) => part.type === "text")
-    .map((part) => part.text)
-    .join("");
-}
 
 export default function PlaygroundPage() {
   const transport = useMemo(
@@ -59,33 +51,24 @@ export default function PlaygroundPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">
-                    {getMessageText(message)}
-                  </p>
-                </div>
-              </div>
+              <ChatMessage key={message.id} message={message} status={status} />
             ))}
             {isLoading && messages[messages.length - 1]?.role === "user" && (
-              <div className="flex justify-start">
-                <div className="bg-muted rounded-lg px-4 py-2">
+              <div className="flex items-start gap-4">
+                <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                  <Bot className="h-4 w-4" />
+                </div>
+                <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
                     <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
                     <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
                     <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full" />
                   </div>
+                  <span className="text-muted-foreground text-sm">
+                    Thinking...
+                  </span>
                 </div>
               </div>
             )}

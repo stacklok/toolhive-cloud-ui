@@ -1,0 +1,182 @@
+"use client";
+
+import type { ChatStatus, UIMessage } from "ai";
+import { formatDistanceToNow } from "date-fns";
+import {
+  AlertCircle,
+  Bot,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  User,
+  Wrench,
+} from "lucide-react";
+import { useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+type MessagePart = UIMessage["parts"][number];
+
+interface ChatMessageProps {
+  message: UIMessage;
+  status: ChatStatus;
+}
+
+function ToolCallComponent({ part }: { part: MessagePart }) {
+  const [isInputOpen, setIsInputOpen] = useState(false);
+  const [isOutputOpen, setIsOutputOpen] = useState(false);
+
+  if (!part.type.startsWith("tool-")) return null;
+
+  const toolName = part.type.replace("tool-", "");
+  const hasState = "state" in part;
+  const state = hasState ? (part as { state?: string }).state : null;
+
+  return (
+    <div className="bg-card mb-3 rounded-lg border p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <Wrench className="h-4 w-4 text-blue-500" />
+        <span className="text-foreground text-sm font-medium">
+          Tool: {toolName}
+        </span>
+        {state === "output-available" && (
+          <CheckCircle className="h-4 w-4 text-green-500" />
+        )}
+        {state === "output-error" && (
+          <AlertCircle className="h-4 w-4 text-red-500" />
+        )}
+      </div>
+
+      {"input" in part && part.input !== undefined && (
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => setIsInputOpen(!isInputOpen)}
+            className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+          >
+            {isInputOpen ? (
+              <ChevronDown className="h-3 w-3" />
+            ) : (
+              <ChevronRight className="h-3 w-3" />
+            )}
+            <span>Input Parameters</span>
+          </button>
+          {isInputOpen && (
+            <div className="mt-2">
+              <pre className="bg-background overflow-x-auto rounded border p-2 text-xs">
+                {JSON.stringify(part.input, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+
+      {"output" in part && part.output !== undefined && (
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => setIsOutputOpen(!isOutputOpen)}
+            className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+          >
+            {isOutputOpen ? (
+              <ChevronDown className="h-3 w-3" />
+            ) : (
+              <ChevronRight className="h-3 w-3" />
+            )}
+            <span>Tool Result</span>
+            <CheckCircle className="h-3 w-3 text-green-500" />
+          </button>
+          {isOutputOpen && (
+            <div className="mt-2">
+              <pre className="bg-background max-h-60 overflow-x-auto rounded border p-2 text-xs">
+                {JSON.stringify(part.output, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function getTextContent(message: UIMessage): string {
+  return message.parts
+    .filter(
+      (p): p is Extract<MessagePart, { type: "text" }> => p.type === "text",
+    )
+    .map((p) => p.text)
+    .join("");
+}
+
+export function ChatMessage({ message, status }: ChatMessageProps) {
+  const isUser = message.role === "user";
+  const textContent = getTextContent(message);
+  const metadata = message.metadata as { createdAt?: number } | undefined;
+  const createdAt = metadata?.createdAt
+    ? new Date(metadata.createdAt)
+    : new Date();
+
+  if (isUser) {
+    return (
+      <div className="flex justify-end">
+        <div className="flex max-w-[80%] items-start gap-3">
+          <div className="space-y-2">
+            <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-3 shadow-sm">
+              <div className="prose prose-sm prose-invert max-w-none break-words">
+                <Markdown remarkPlugins={[remarkGfm]}>{textContent}</Markdown>
+              </div>
+            </div>
+            <div className="text-muted-foreground text-right text-xs">
+              {formatDistanceToNow(createdAt, { addSuffix: true })}
+            </div>
+          </div>
+          <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+            <User className="text-primary-foreground h-4 w-4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-start gap-4">
+      <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+        <Bot className="h-4 w-4" />
+      </div>
+
+      <div className="min-w-0 flex-1 space-y-2 pr-2">
+        <div className="break-words">
+          {message.parts.map((part, index) => {
+            if (part.type.startsWith("tool-")) {
+              return (
+                <ToolCallComponent
+                  key={`tool-${index}-${part.type}`}
+                  part={part}
+                />
+              );
+            }
+            return null;
+          })}
+
+          {textContent && (
+            <div className="prose prose-sm text-foreground/80 max-w-none [&_a]:text-primary [&_a:hover]:underline [&_code]:bg-muted [&_code]:rounded [&_code]:px-1 [&_code]:text-xs [&_pre]:bg-muted [&_pre]:rounded [&_pre]:p-3 [&_pre]:text-xs [&_table]:border [&_td]:border [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:bg-muted [&_th]:px-2 [&_th]:py-1">
+              <Markdown remarkPlugins={[remarkGfm]}>{textContent}</Markdown>
+            </div>
+          )}
+
+          {!textContent &&
+            status !== "streaming" &&
+            message.parts.length === 0 && (
+              <div className="text-muted-foreground text-sm italic">
+                No response content
+              </div>
+            )}
+        </div>
+
+        <div className="text-muted-foreground text-xs">
+          {formatDistanceToNow(createdAt, { addSuffix: true })}
+        </div>
+      </div>
+    </div>
+  );
+}
