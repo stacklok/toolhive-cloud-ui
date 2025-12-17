@@ -2,7 +2,12 @@ import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { convertToModelMessages, streamText, type ToolSet } from "ai";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  type ToolSet,
+} from "ai";
 import { getServers } from "@/app/catalog/actions";
 
 export const maxDuration = 60;
@@ -78,6 +83,7 @@ export async function POST(req: Request) {
     messages: convertToModelMessages(messages),
     tools,
     toolChoice: "auto",
+    stopWhen: stepCountIs(5), // Allow multiple steps for tool execution and response generation
     system: `You are a helpful assistant with access to MCP (Model Context Protocol) servers from ToolHive.
 
     You have access to various specialized tools from enabled MCP servers. Each tool is prefixed with the server name (e.g., github-stats-mcp_get_repository_info).
