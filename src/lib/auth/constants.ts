@@ -8,11 +8,12 @@
  * Server-side only - not exposed to the client.
  */
 export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
-export const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
+const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
 export const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
+export const OIDC_DISCOVERY_URL = `${OIDC_ISSUER_URL}/.well-known/openid-configuration`;
 export const BETTER_AUTH_SECRET =
   process.env.BETTER_AUTH_SECRET || "build-time-better-auth-secret";
 export const OIDC_SCOPES = process.env.OIDC_SCOPES?.split(",") ?? [
@@ -27,7 +28,7 @@ export const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // 3,600,000 ms (1 hour)
 export const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // 604,800 seconds (7 days)
 
 // Cookie configuration
-export const COOKIE_NAME = "oidc_token" as const;
+export const OIDC_TOKEN_COOKIE_NAME = "oidc_token" as const;
 
 // Trusted origins for Better Auth
 const trustedOriginsFromEnv = process.env.TRUSTED_ORIGINS

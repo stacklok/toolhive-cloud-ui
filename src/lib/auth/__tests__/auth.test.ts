@@ -82,9 +82,14 @@ describe("auth", () => {
 
     it("should return null when token is expired", async () => {
       const expiredTokenData: OidcTokenData = {
+        id: "expired-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "expired-token",
         userId: "user-123",
-        expiresAt: Date.now() - 1000, // Expired 1 second ago
+        accessTokenExpiresAt: Date.now() - 1000, // Expired 1 second ago
       };
 
       const encryptedPayload = await encrypt(
@@ -102,9 +107,14 @@ describe("auth", () => {
 
     it("should return null when token belongs to different user", async () => {
       const tokenData: OidcTokenData = {
+        id: "valid-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "valid-token",
         userId: "user-456", // Different user
-        expiresAt: Date.now() + 3600000,
+        accessTokenExpiresAt: Date.now() + 3600000,
       };
 
       const encryptedPayload = await encrypt(
@@ -120,9 +130,14 @@ describe("auth", () => {
 
     it("should return access token when valid", async () => {
       const tokenData: OidcTokenData = {
+        id: "valid-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "valid-access-token-123",
         userId: "user-123",
-        expiresAt: Date.now() + 3600000, // Valid for 1 hour
+        accessTokenExpiresAt: Date.now() + 3600000, // Valid for 1 hour
       };
 
       const encryptedPayload = await encrypt(
@@ -138,7 +153,7 @@ describe("auth", () => {
 
     it("should return null when token data is invalid", async () => {
       // Create invalid token data (missing required fields)
-      const invalidData = { accessToken: "token" }; // Missing userId and expiresAt
+      const invalidData = { accessToken: "token" }; // Missing userId and accessTokenExpiresAt
       const invalidPayload = await encrypt(
         invalidData as OidcTokenData,
         process.env.BETTER_AUTH_SECRET as string,
@@ -181,26 +196,36 @@ describe("auth", () => {
   describe("OidcTokenData Type Guard", () => {
     it("should validate correct OidcTokenData structure", () => {
       const validData: OidcTokenData = {
+        id: "valid-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "token",
         userId: "user-123",
-        expiresAt: Date.now() + 3600000,
+        accessTokenExpiresAt: Date.now() + 3600000,
         refreshToken: "refresh-token",
       };
 
       // Type guard is private, so we test indirectly through getOidcProviderAccessToken
       expect(validData).toHaveProperty("accessToken");
       expect(validData).toHaveProperty("userId");
-      expect(validData).toHaveProperty("expiresAt");
+      expect(validData).toHaveProperty("accessTokenExpiresAt");
       expect(typeof validData.accessToken).toBe("string");
       expect(typeof validData.userId).toBe("string");
-      expect(typeof validData.expiresAt).toBe("number");
+      expect(typeof validData.accessTokenExpiresAt).toBe("number");
     });
 
     it("should handle optional refreshToken", () => {
       const dataWithoutRefresh: OidcTokenData = {
+        id: "valid-token-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        providerId: "provider-id",
+        accountId: "account-id",
         accessToken: "token",
         userId: "user-123",
-        expiresAt: Date.now() + 3600000,
+        accessTokenExpiresAt: Date.now() + 3600000,
       };
 
       expect(dataWithoutRefresh.refreshToken).toBeUndefined();
