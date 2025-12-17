@@ -1,9 +1,62 @@
+import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { convertToModelMessages, streamText } from "ai";
+import { convertToModelMessages, streamText, type ToolSet } from "ai";
+import { getServers } from "@/app/catalog/actions";
 
 export const maxDuration = 60;
 
 const MODEL = "anthropic/claude-sonnet-4";
+
+async function getMcpTools(): Promise<{
+  tools: ToolSet;
+  clients: Awaited<ReturnType<typeof createMCPClient>>[];
+}> {
+  const tools: ToolSet = {};
+  const clients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
+
+  try {
+    const servers = await getServers();
+
+    for (const server of servers) {
+      for (const remote of server.remotes ?? []) {
+        if (!remote.url) continue;
+
+        try {
+          // const url = new URL(remote.url);
+          const url = new URL("http://127.0.0.1:57834/mcp");
+          const transport =
+            remote.type === "sse"
+              ? new SSEClientTransport(url)
+              : new StreamableHTTPClientTransport(url);
+
+          const client = await createMCPClient({
+            name: server.name ?? "unknown",
+            transport,
+          });
+
+          clients.push(client);
+
+          const serverTools = await client.tools();
+          for (const [toolName, toolDef] of Object.entries(serverTools)) {
+            tools[toolName] = toolDef;
+          }
+          console.log(tools);
+        } catch (error) {
+          console.error(
+            `Failed to connect to MCP server ${server.name} at ${remote.url}:`,
+            error,
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch servers:", error);
+  }
+
+  return { tools, clients };
+}
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -15,12 +68,15 @@ export async function POST(req: Request) {
     });
   }
 
+  const { tools, clients } = await getMcpTools();
+
   const provider = createOpenRouter({ apiKey });
   const model = provider(MODEL);
 
   const result = streamText({
     model,
     messages: convertToModelMessages(messages),
+    tools,
     system: `You are a helpful assistant with access to MCP (Model Context Protocol) servers from ToolHive.
 
     You have access to various specialized tools from enabled MCP servers. Each tool is prefixed with the server name (e.g., github-stats-mcp_get_repository_info).
@@ -85,6 +141,16 @@ export async function POST(req: Request) {
     \`\`\`
 
     Remember: Always interpret and format tool results beautifully. Never show raw data!`,
+    onFinish: async () => {
+      // Close all MCP clients
+      for (const client of clients) {
+        try {
+          await client.close();
+        } catch {
+          // Ignore close errors
+        }
+      }
+    },
   });
 
   return result.toTextStreamResponse();
