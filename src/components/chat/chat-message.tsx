@@ -29,9 +29,16 @@ function ToolCallComponent({ part }: { part: MessagePart }) {
   const [isInputOpen, setIsInputOpen] = useState(false);
   const [isOutputOpen, setIsOutputOpen] = useState(false);
 
-  if (!part.type.startsWith("tool-")) return null;
+  // Handle both static tools (type: "tool-{name}") and dynamic tools (type: "dynamic-tool")
+  const isDynamicTool = part.type === "dynamic-tool";
+  const isStaticTool = part.type.startsWith("tool-");
 
-  const toolName = part.type.replace("tool-", "");
+  if (!isDynamicTool && !isStaticTool) return null;
+
+  // Extract tool name based on type
+  const toolName = isDynamicTool
+    ? ((part as { toolName?: string }).toolName ?? "unknown")
+    : part.type.replace("tool-", "");
   const hasState = "state" in part;
   const state = hasState ? (part as { state?: string }).state : null;
 
@@ -264,7 +271,7 @@ export function ChatMessage({ message, status }: ChatMessageProps) {
       <div className="min-w-0 flex-1 space-y-2 pr-2">
         <div className="wrap-break-word">
           {message.parts.map((part, index) => {
-            if (part.type.startsWith("tool-")) {
+            if (part.type.startsWith("tool-") || part.type === "dynamic-tool") {
               return (
                 <ToolCallComponent
                   key={`tool-${index}-${part.type}`}
