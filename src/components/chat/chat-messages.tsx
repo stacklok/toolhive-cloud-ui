@@ -1,6 +1,6 @@
 import type { ChatStatus, UIMessage } from "ai";
 import { MessageSquare } from "lucide-react";
-import { ChatMessage } from "./chat-message";
+import { ChatMessage } from "./message/chat-message";
 
 interface ChatMessagesProps {
   messages: UIMessage[];
@@ -35,17 +35,17 @@ export function ChatMessages({
             <ChatMessage status={status} message={message} />
           </div>
         ))}
-        {isLoading && messages[messages.length - 1]?.role === "user" && (
+        {isLoading && (
           <div className="animate-in fade-in-0 flex items-start gap-4 duration-500">
-            <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-              <MessageSquare className="h-4 w-4" />
+            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-lg">
+              <MessageSquare className="size-4" />
             </div>
             <div className="flex-1 space-y-2">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <div className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full [animation-delay:-0.3s]" />
-                  <div className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full [animation-delay:-0.15s]" />
-                  <div className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full" />
+                  <div className="bg-muted-foreground size-1.5 animate-bounce rounded-full [animation-delay:-0.3s]" />
+                  <div className="bg-muted-foreground size-1.5 animate-bounce rounded-full [animation-delay:-0.15s]" />
+                  <div className="bg-muted-foreground size-1.5 animate-bounce rounded-full" />
                 </div>
                 <span className="text-muted-foreground text-sm">
                   Thinking...
