@@ -17,7 +17,6 @@ export function TokenUsage({
 
   return (
     <div className="text-muted-foreground flex items-center gap-3 text-xs">
-      {/* Token counts */}
       <div className="flex items-center gap-1">
         <span className="font-mono">{usage.inputTokens.toLocaleString()}</span>
         <span className="text-muted-foreground/70">→</span>
@@ -25,7 +24,6 @@ export function TokenUsage({
         <span className="text-muted-foreground/70">tokens</span>
       </div>
 
-      {/* Response time if available */}
       {responseTime && responseTime > 0 && (
         <div className="flex items-center gap-1">
           <span className="text-muted-foreground/70">•</span>
@@ -33,7 +31,6 @@ export function TokenUsage({
         </div>
       )}
 
-      {/* Provider ID if available */}
       {providerId && (
         <div className="flex items-center gap-1">
           <span className="text-muted-foreground/70">•</span>

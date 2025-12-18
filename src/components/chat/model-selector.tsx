@@ -27,6 +27,26 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/**
+ * Extract display name from model ID (e.g., "anthropic/claude-3.5-sonnet" -> "claude-3.5-sonnet")
+ */
+const getDisplayName = (modelId: string): string => {
+  if (modelId.includes("/")) {
+    return modelId.split("/").pop() ?? modelId;
+  }
+  return modelId;
+};
+
+/**
+ * Extract provider prefix from model ID (e.g., "anthropic/claude-3.5-sonnet" -> "anthropic")
+ */
+const getProviderPrefix = (modelId: string): string | null => {
+  if (modelId.includes("/")) {
+    return modelId.split("/")[0] ?? null;
+  }
+  return null;
+};
+
 interface ModelSelectorProps {
   selectedModel: string;
   onModelChange: (model: string) => void;
@@ -50,35 +70,13 @@ export function ModelSelector({
 
   const hasSearch = models.length > 20;
 
-  /**
-   * Extract display name from model ID (e.g., "anthropic/claude-3.5-sonnet" -> "claude-3.5-sonnet")
-   */
-  const getDisplayName = (modelId: string): string => {
-    if (modelId.includes("/")) {
-      return modelId.split("/").pop() ?? modelId;
-    }
-    return modelId;
-  };
-
-  /**
-   * Extract provider prefix from model ID (e.g., "anthropic/claude-3.5-sonnet" -> "anthropic")
-   */
-  const getProviderPrefix = (modelId: string): string | null => {
-    if (modelId.includes("/")) {
-      return modelId.split("/")[0] ?? null;
-    }
-    return null;
-  };
-
   return (
     <DropdownMenu
       onOpenChange={(open) => {
         if (open && hasSearch) {
-          // Focus search input when dropdown opens
           setTimeout(() => inputRef.current?.focus(), 0);
         }
         if (!open) {
-          // Clear search when closing
           setSearchQuery("");
         }
       }}

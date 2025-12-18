@@ -9,7 +9,6 @@ interface StepBoundaryProps {
 export function StepBoundary({ part, index }: StepBoundaryProps) {
   if (part.type !== "step-start") return null;
 
-  // Show step boundaries as horizontal lines (skip first step)
   return index > 0 ? (
     <div className="text-muted-foreground my-4">
       <hr className="border-border" />

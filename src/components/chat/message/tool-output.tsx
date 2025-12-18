@@ -58,7 +58,6 @@ function ToolOutputItem({ item, index }: ToolOutputItemProps) {
     );
   }
 
-  // Other types - show as JSON
   const otherKey = `other-${typedItem.type}-${index}`;
   return (
     <div key={otherKey} className="bg-background rounded border p-2 text-xs">
@@ -75,7 +74,6 @@ interface ToolOutputContentProps {
 }
 
 export function ToolOutputContent({ output }: ToolOutputContentProps) {
-  // Handle MCP server response format with content array
   if (
     output &&
     typeof output === "object" &&
@@ -102,7 +100,6 @@ export function ToolOutputContent({ output }: ToolOutputContentProps) {
     );
   }
 
-  // Fallback to JSON display
   return (
     <pre className="bg-background max-h-60 overflow-x-auto rounded border p-2 text-xs">
       {JSON.stringify(output, null, 2)}
