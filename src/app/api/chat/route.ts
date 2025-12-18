@@ -15,6 +15,7 @@ import { SYSTEM_PROMPT } from "./system-prompt";
 export const maxDuration = 60;
 
 interface ConnectionResult {
+  serverName: string;
   client: Awaited<ReturnType<typeof createMCPClient>>;
   tools: ToolSet;
 }
@@ -70,7 +71,7 @@ async function connectToMcpRemote(
 
     return {
       success: true,
-      data: { client, tools },
+      data: { serverName, client, tools },
     };
   } catch (error) {
     console.error(
@@ -89,20 +90,45 @@ async function connectToMcpRemote(
   }
 }
 
-async function getMcpTools(): Promise<{
+interface McpToolsRequest {
+  /** Server names to connect to. If empty, connects to all servers. */
+  selectedServers?: string[];
+  /** Map of server name -> enabled tool names. If not provided, all tools are enabled. */
+  enabledTools?: Record<string, string[]>;
+}
+
+interface McpToolsResult {
   tools: ToolSet;
   clients: Awaited<ReturnType<typeof createMCPClient>>[];
   errors: ConnectionError[];
-}> {
+  /** Map of server name -> available tool names (for UI) */
+  availableTools: Record<string, { name: string; description?: string }[]>;
+}
+
+async function getMcpTools(
+  options: McpToolsRequest = {},
+): Promise<McpToolsResult> {
   const allTools: ToolSet = {};
   const allClients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
   const connectionErrors: ConnectionError[] = [];
+  const availableTools: Record<
+    string,
+    { name: string; description?: string }[]
+  > = {};
 
   try {
     const servers = await getServers();
 
+    // Filter servers if selectedServers is provided
+    const serversToConnect =
+      options.selectedServers && options.selectedServers.length > 0
+        ? servers.filter(
+            (s) => s.name && options.selectedServers?.includes(s.name),
+          )
+        : servers;
+
     // Flatten servers and remotes into a single array of connection tasks
-    const remoteConnections = servers.flatMap((server) =>
+    const remoteConnections = serversToConnect.flatMap((server) =>
       (server.remotes ?? []).map((remote) =>
         connectToMcpRemote(server.name ?? "unknown", remote),
       ),
@@ -115,7 +141,28 @@ async function getMcpTools(): Promise<{
     for (const result of results) {
       if (result.success) {
         allClients.push(result.data.client);
-        Object.assign(allTools, result.data.tools);
+
+        // Track available tools for this server
+        const serverName = result.data.serverName;
+        const serverToolsList: { name: string; description?: string }[] = [];
+
+        for (const [toolName, toolDef] of Object.entries(result.data.tools)) {
+          serverToolsList.push({
+            name: toolName,
+            description: toolDef.description,
+          });
+
+          // Check if this tool is enabled
+          const serverEnabledTools = options.enabledTools?.[serverName];
+          const isToolEnabled =
+            !serverEnabledTools || serverEnabledTools.includes(toolName);
+
+          if (isToolEnabled) {
+            allTools[toolName] = toolDef;
+          }
+        }
+
+        availableTools[serverName] = serverToolsList;
       } else {
         connectionErrors.push(result.error);
       }
@@ -124,11 +171,21 @@ async function getMcpTools(): Promise<{
     console.error("Failed to fetch servers:", error);
   }
 
-  return { tools: allTools, clients: allClients, errors: connectionErrors };
+  return {
+    tools: allTools,
+    clients: allClients,
+    errors: connectionErrors,
+    availableTools,
+  };
 }
 
 export async function POST(req: Request) {
-  const { messages, model: requestedModel } = await req.json();
+  const {
+    messages,
+    model: requestedModel,
+    selectedServers,
+    enabledTools: enabledToolsFromRequest,
+  } = await req.json();
 
   // Use the model from the request body, or fall back to the default
   const modelId =
@@ -143,7 +200,10 @@ export async function POST(req: Request) {
     });
   }
 
-  const { tools, clients, errors } = await getMcpTools();
+  const { tools, clients, errors } = await getMcpTools({
+    selectedServers,
+    enabledTools: enabledToolsFromRequest,
+  });
 
   // If all servers failed to connect, return an error
   if (Object.keys(tools).length === 0 && errors.length > 0) {
