@@ -14,53 +14,119 @@ export const maxDuration = 60;
 
 const MODEL = "anthropic/claude-sonnet-4.5";
 
+interface ConnectionResult {
+  client: Awaited<ReturnType<typeof createMCPClient>>;
+  tools: ToolSet;
+}
+
+interface ConnectionError {
+  serverName: string;
+  url: string;
+  error: string;
+}
+
+/**
+ * Connects to a single MCP server remote and collects its tools.
+ * Returns the connection result or an error object.
+ */
+async function connectToMcpRemote(
+  serverName: string,
+  remote: { url?: string; type?: string },
+): Promise<
+  | { success: true; data: ConnectionResult }
+  | { success: false; error: ConnectionError }
+> {
+  if (!remote.url) {
+    return {
+      success: false,
+      error: {
+        serverName,
+        url: "N/A",
+        error: "Missing URL",
+      },
+    };
+  }
+
+  try {
+    // const url = new URL(remote.url);
+    // MOCK LOCAL MCP SERVER cause the remote one is not working
+    const url = new URL("http://127.0.0.1:16459/mcp");
+    const transport =
+      remote.type === "sse"
+        ? new SSEClientTransport(url)
+        : new StreamableHTTPClientTransport(url);
+
+    const client = await createMCPClient({
+      name: serverName,
+      transport,
+    });
+
+    const serverTools = await client.tools();
+    const tools: ToolSet = {};
+
+    for (const [toolName, toolDef] of Object.entries(serverTools)) {
+      tools[toolName] = toolDef;
+    }
+
+    return {
+      success: true,
+      data: { client, tools },
+    };
+  } catch (error) {
+    console.error(
+      `Failed to connect to MCP server ${serverName} at ${remote.url}:`,
+      error,
+    );
+
+    return {
+      success: false,
+      error: {
+        serverName,
+        url: remote.url,
+        error: "Connection failed",
+      },
+    };
+  }
+}
+
 async function getMcpTools(): Promise<{
   tools: ToolSet;
   clients: Awaited<ReturnType<typeof createMCPClient>>[];
+  errors: ConnectionError[];
 }> {
-  const tools: ToolSet = {};
-  const clients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
+  const allTools: ToolSet = {};
+  const allClients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
+  const connectionErrors: ConnectionError[] = [];
 
   try {
     const servers = await getServers();
 
-    for (const server of servers) {
-      for (const remote of server.remotes ?? []) {
-        if (!remote.url) continue;
+    // Flatten servers and remotes into a single array of connection tasks
+    const remoteConnections = servers.flatMap((server) =>
+      (server.remotes ?? []).map((remote) =>
+        connectToMcpRemote(server.name ?? "unknown", remote),
+      ),
+    );
 
-        try {
-          // const url = new URL(remote.url);
-          const url = new URL("http://127.0.0.1:57834/mcp");
-          const transport =
-            remote.type === "sse"
-              ? new SSEClientTransport(url)
-              : new StreamableHTTPClientTransport(url);
+    // Connect to all remotes in parallel
+    const results = await Promise.all(remoteConnections);
 
-          const client = await createMCPClient({
-            name: server.name ?? "unknown",
-            transport,
-          });
-
-          clients.push(client);
-
-          const serverTools = await client.tools();
-          for (const [toolName, toolDef] of Object.entries(serverTools)) {
-            tools[toolName] = toolDef;
-          }
-          console.log(tools);
-        } catch (error) {
-          console.error(
-            `Failed to connect to MCP server ${server.name} at ${remote.url}:`,
-            error,
-          );
-        }
+    // Collect successful connections and errors
+    for (const result of results) {
+      if (result.success) {
+        allClients.push(result.data.client);
+        Object.assign(allTools, result.data.tools);
+      } else {
+        connectionErrors.push(result.error);
       }
     }
+
+    console.log("Connected tools:", allTools);
   } catch (error) {
     console.error("Failed to fetch servers:", error);
   }
 
-  return { tools, clients };
+  return { tools: allTools, clients: allClients, errors: connectionErrors };
 }
 
 export async function POST(req: Request) {
@@ -73,7 +139,19 @@ export async function POST(req: Request) {
     });
   }
 
-  const { tools, clients } = await getMcpTools();
+  const { tools, clients, errors } = await getMcpTools();
+
+  // If all servers failed to connect, return an error
+  if (Object.keys(tools).length === 0 && errors.length > 0) {
+    const serverNames = errors.map((err) => err.serverName).join(", ");
+    return new Response(
+      `Unable to connect to ${serverNames} MCP servers. Please check that the servers are running and accessible.`,
+      {
+        status: 503,
+        headers: { "Content-Type": "text/plain" },
+      },
+    );
+  }
 
   const provider = createOpenRouter({ apiKey });
   const model = provider(MODEL);
