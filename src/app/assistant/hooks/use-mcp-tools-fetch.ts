@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getMcpServerTools } from "@/app/assistant/mcp-actions";
-import { useMcpSettings } from "@/app/assistant/mcp-settings-context";
+import { useMcpSettings } from "./use-mcp-settings";
 
 /**
  * Hook for fetching MCP server tools with deduplication.

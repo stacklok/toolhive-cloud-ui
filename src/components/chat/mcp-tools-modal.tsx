@@ -9,8 +9,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
 import { getMcpServerTools } from "@/app/assistant/mcp-actions";
-import { useMcpSettings } from "@/app/assistant/mcp-settings-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

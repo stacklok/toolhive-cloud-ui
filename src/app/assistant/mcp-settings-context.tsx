@@ -4,7 +4,6 @@ import {
   createContext,
   type ReactNode,
   useCallback,
-  useContext,
   useMemo,
   useState,
 } from "react";
@@ -22,7 +21,7 @@ export interface McpServerWithTools {
   isSelected: boolean;
 }
 
-interface McpSettingsContextValue {
+export interface McpSettingsContextValue {
   /** Available servers from catalog */
   availableServers: V0ServerJson[];
   /** Set available servers (called by parent) */
@@ -55,7 +54,9 @@ interface McpSettingsContextValue {
   selectedServersCount: number;
 }
 
-const McpSettingsContext = createContext<McpSettingsContextValue | null>(null);
+export const McpSettingsContext = createContext<McpSettingsContextValue | null>(
+  null,
+);
 
 interface McpSettingsProviderProps {
   children: ReactNode;
@@ -219,12 +220,4 @@ export function McpSettingsProvider({
       {children}
     </McpSettingsContext.Provider>
   );
-}
-
-export function useMcpSettings(): McpSettingsContextValue {
-  const context = useContext(McpSettingsContext);
-  if (!context) {
-    throw new Error("useMcpSettings must be used within McpSettingsProvider");
-  }
-  return context;
 }
