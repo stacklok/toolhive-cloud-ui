@@ -18,6 +18,7 @@ import {
   usePromptInputAttachments,
 } from "../ai-elements/prompt-input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { ModelSelector } from "./model-selector";
 
 const errorToastConfig = {
   max_files: {
@@ -45,6 +46,8 @@ interface ChatInputProps {
   }) => Promise<void>;
   onStopGeneration: () => void;
   hasProviderAndModel: boolean;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 function InputWithAttachments({
@@ -53,6 +56,8 @@ function InputWithAttachments({
   status,
   onStopGeneration,
   hasProviderAndModel,
+  selectedModel,
+  onModelChange,
 }: Omit<ChatInputProps, "onSendMessage"> & {
   text: string;
   setText: (text: string) => void;
@@ -91,7 +96,7 @@ function InputWithAttachments({
 
   return (
     <>
-      <PromptInputBody>
+      <PromptInputBody className="p-1">
         <PromptInputAttachments>
           {(attachment) => (
             <Tooltip>
@@ -106,9 +111,10 @@ function InputWithAttachments({
           onChange={(e) => setText(e.target.value)}
           value={text}
           placeholder={getPlaceholder()}
+          className="min-h-[60px]"
         />
       </PromptInputBody>
-      <PromptInputToolbar>
+      <PromptInputToolbar className="p-2">
         <PromptInputTools>
           <PromptInputActionMenu>
             <PromptInputActionMenuTrigger />
@@ -116,6 +122,10 @@ function InputWithAttachments({
               <PromptInputActionAddAttachments label="Add images or PDFs" />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
+          <ModelSelector
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
+          />
         </PromptInputTools>
         <PromptInputSubmit
           onClick={handleSubmit}
@@ -132,6 +142,8 @@ export function ChatInputPrompt({
   onSendMessage,
   onStopGeneration,
   hasProviderAndModel,
+  selectedModel,
+  onModelChange,
 }: ChatInputProps) {
   const [text, setText] = useState<string>("");
 
@@ -190,6 +202,8 @@ export function ChatInputPrompt({
         hasProviderAndModel={hasProviderAndModel}
         text={text}
         setText={setText}
+        selectedModel={selectedModel}
+        onModelChange={onModelChange}
       />
     </PromptInput>
   );

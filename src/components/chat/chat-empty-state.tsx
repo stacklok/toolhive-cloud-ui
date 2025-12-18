@@ -9,12 +9,16 @@ interface ChatEmptyStateProps {
     files?: FileUIPart[];
   }) => Promise<void>;
   onStopGeneration: () => void;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 export function ChatEmptyState({
   status,
   onSendMessage,
   onStopGeneration,
+  selectedModel,
+  onModelChange,
 }: ChatEmptyStateProps) {
   return (
     <div className="flex h-full items-center justify-center px-6">
@@ -33,13 +37,14 @@ export function ChatEmptyState({
           </p>
         </div>
 
-        {/* Chat Input in empty state */}
-        <div className="mx-auto max-w-xl">
+        <div className="mx-auto max-w-2xl">
           <ChatInputPrompt
             onStopGeneration={onStopGeneration}
             hasProviderAndModel={true}
             status={status}
             onSendMessage={onSendMessage}
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
           />
         </div>
       </div>

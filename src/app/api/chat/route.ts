@@ -8,12 +8,11 @@ import {
   streamText,
   type ToolSet,
 } from "ai";
+import { DEFAULT_MODEL } from "@/app/assistant/constants";
 import { getServers } from "@/app/catalog/actions";
 import { SYSTEM_PROMPT } from "./system-prompt";
 
 export const maxDuration = 60;
-
-const MODEL = "anthropic/claude-sonnet-4.5";
 
 interface ConnectionResult {
   client: Awaited<ReturnType<typeof createMCPClient>>;
@@ -121,8 +120,6 @@ async function getMcpTools(): Promise<{
         connectionErrors.push(result.error);
       }
     }
-
-    console.log("Connected tools:", allTools);
   } catch (error) {
     console.error("Failed to fetch servers:", error);
   }
@@ -131,7 +128,13 @@ async function getMcpTools(): Promise<{
 }
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, model: requestedModel } = await req.json();
+
+  // Use the model from the request body, or fall back to the default
+  const modelId =
+    typeof requestedModel === "string" && requestedModel.trim()
+      ? requestedModel
+      : DEFAULT_MODEL;
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -155,7 +158,7 @@ export async function POST(req: Request) {
   }
 
   const provider = createOpenRouter({ apiKey });
-  const model = provider(MODEL);
+  const model = provider(modelId);
 
   const startTime = Date.now();
 
@@ -181,7 +184,7 @@ export async function POST(req: Request) {
       if (part.type === "start") {
         return {
           createdAt: Date.now(),
-          model: MODEL,
+          model: modelId,
           providerId: "openrouter",
         };
       }
