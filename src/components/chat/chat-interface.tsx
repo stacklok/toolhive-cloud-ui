@@ -74,22 +74,9 @@ export function ChatInterface({
     return () => container.removeEventListener("scroll", checkScrollPosition);
   }, [checkScrollPosition]);
 
-  const handleClearMessages = () => {
-    if (!onClearMessages) return;
-    const confirmed = window.confirm(
-      "Are you sure you want to delete all messages?",
-    );
-    if (confirmed) {
-      onClearMessages();
-    }
-  };
-
   return (
     <div className="flex h-full flex-col px-8">
-      <ChatHeader
-        hasMessages={hasMessages}
-        onClearMessages={handleClearMessages}
-      />
+      <ChatHeader hasMessages={hasMessages} onClearMessages={onClearMessages} />
 
       {hasMessages && <Separator />}
 
