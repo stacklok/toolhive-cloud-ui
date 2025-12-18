@@ -1,9 +1,7 @@
 "use server";
 
-import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { getServers } from "@/app/catalog/actions";
+import { createMcpConnection } from "@/lib/mcp/client";
 
 export interface McpToolInfo {
   name: string;
@@ -47,7 +45,6 @@ export async function getMcpServerTools(
       };
     }
 
-    // Try to connect to the first remote
     const remote = remotes[0];
     if (!remote?.url) {
       return {
@@ -58,28 +55,16 @@ export async function getMcpServerTools(
       };
     }
 
-    // MOCK LOCAL MCP SERVER cause the remote one is not working
-    const url = new URL("http://127.0.0.1:13942/mcp");
-    const transport =
-      remote.type === "sse"
-        ? new SSEClientTransport(url)
-        : new StreamableHTTPClientTransport(url);
-
-    // Don't call client.close() after use - the MCP SDK logs AbortError
-    // internally and there's no way to suppress it. Connection cleanup
-    // happens automatically when the transport is garbage collected.
-    const client = await createMCPClient({
-      name: serverName,
-      transport,
-    });
-
-    const serverTools = await client.tools();
+    const { tools: serverTools } = await createMcpConnection(
+      serverName,
+      remote,
+    );
 
     const tools: McpToolInfo[] = Object.entries(serverTools).map(
       ([name, def]) => ({
         name,
-        description: def.description,
-        enabled: true, // All enabled by default
+        description: (def as { description?: string }).description,
+        enabled: true,
       }),
     );
 

@@ -1,6 +1,3 @@
-import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import {
   convertToModelMessages,
@@ -10,13 +7,18 @@ import {
 } from "ai";
 import { DEFAULT_MODEL } from "@/app/assistant/constants";
 import { getServers } from "@/app/catalog/actions";
+import {
+  createMcpConnection,
+  type McpClient,
+  type McpRemote,
+} from "@/lib/mcp/client";
 import { SYSTEM_PROMPT } from "./system-prompt";
 
 export const maxDuration = 60;
 
 interface ConnectionResult {
   serverName: string;
-  client: Awaited<ReturnType<typeof createMCPClient>>;
+  client: McpClient;
   tools: ToolSet;
 }
 
@@ -32,7 +34,7 @@ interface ConnectionError {
  */
 async function connectToMcpRemote(
   serverName: string,
-  remote: { url?: string; type?: string },
+  remote: McpRemote,
 ): Promise<
   | { success: true; data: ConnectionResult }
   | { success: false; error: ConnectionError }
@@ -49,24 +51,14 @@ async function connectToMcpRemote(
   }
 
   try {
-    // const url = new URL(remote.url);
-    // MOCK LOCAL MCP SERVER cause the remote one is not working
-    const url = new URL("http://127.0.0.1:13942/mcp");
-    const transport =
-      remote.type === "sse"
-        ? new SSEClientTransport(url)
-        : new StreamableHTTPClientTransport(url);
+    const { client, tools: serverTools } = await createMcpConnection(
+      serverName,
+      remote,
+    );
 
-    const client = await createMCPClient({
-      name: serverName,
-      transport,
-    });
-
-    const serverTools = await client.tools();
     const tools: ToolSet = {};
-
     for (const [toolName, toolDef] of Object.entries(serverTools)) {
-      tools[toolName] = toolDef;
+      tools[toolName] = toolDef as ToolSet[string];
     }
 
     return {
@@ -99,7 +91,7 @@ interface McpToolsRequest {
 
 interface McpToolsResult {
   tools: ToolSet;
-  clients: Awaited<ReturnType<typeof createMCPClient>>[];
+  clients: McpClient[];
   errors: ConnectionError[];
   /** Map of server name -> available tool names (for UI) */
   availableTools: Record<string, { name: string; description?: string }[]>;
@@ -109,7 +101,7 @@ async function getMcpTools(
   options: McpToolsRequest = {},
 ): Promise<McpToolsResult> {
   const allTools: ToolSet = {};
-  const allClients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
+  const allClients: McpClient[] = [];
   const connectionErrors: ConnectionError[] = [];
   const availableTools: Record<
     string,
