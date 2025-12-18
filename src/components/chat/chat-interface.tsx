@@ -18,6 +18,8 @@ interface ChatInterfaceProps {
   cancelRequest: () => void;
   onClearMessages?: () => void;
   sendMessage: (args: { text: string; files?: FileUIPart[] }) => Promise<void>;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 export function ChatInterface({
@@ -27,6 +29,8 @@ export function ChatInterface({
   cancelRequest,
   onClearMessages,
   sendMessage,
+  selectedModel,
+  onModelChange,
 }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -63,7 +67,6 @@ export function ChatInterface({
     setTimeout(checkScrollPosition, 200);
   }, [messagesLength, checkScrollPosition]);
 
-  // Add scroll listener
   useLayoutEffect(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -105,10 +108,11 @@ export function ChatInterface({
             status={status}
             onSendMessage={sendMessage}
             onStopGeneration={cancelRequest}
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
           />
         )}
 
-        {/* Scroll to bottom button */}
         {showScrollToBottom && (
           <Button
             size="sm"
@@ -121,7 +125,6 @@ export function ChatInterface({
         )}
       </div>
 
-      {/* Error Alert */}
       <ErrorAlert error={error?.message ?? null} />
 
       {hasMessages && (
@@ -131,6 +134,8 @@ export function ChatInterface({
             hasProviderAndModel={true}
             status={status}
             onSendMessage={sendMessage}
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
           />
         </div>
       )}
