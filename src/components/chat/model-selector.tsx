@@ -117,7 +117,7 @@ export function ModelSelector({
               <span className="text-sm">Select Model</span>
             )}
           </div>
-          <ChevronDown className="size-4 shrink-0 opacity-50" />
+          <ChevronDown className="size-4 shrink-0" />
         </Button>
       </DropdownMenuTrigger>
 

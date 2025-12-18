@@ -22,7 +22,7 @@ export function ChatEmptyState({
 }: ChatEmptyStateProps) {
   return (
     <div className="flex h-full items-center justify-center px-6">
-      <div className="w-full max-w-2xl space-y-8 text-center">
+      <div className="w-full max-w-3xl space-y-8 text-center">
         <div>
           <MessageCircleMore
             strokeWidth={1}
@@ -37,7 +37,7 @@ export function ChatEmptyState({
           </p>
         </div>
 
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-3xl">
           <ChatInputPrompt
             onStopGeneration={onStopGeneration}
             hasProviderAndModel={true}
