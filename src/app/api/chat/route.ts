@@ -5,8 +5,10 @@ import {
   streamText,
   type ToolSet,
 } from "ai";
+import { headers } from "next/headers";
 import { DEFAULT_MODEL } from "@/app/assistant/constants";
 import { getServers } from "@/app/catalog/actions";
+import { auth } from "@/lib/auth/auth";
 import {
   createMcpConnection,
   type McpClient,
@@ -172,6 +174,15 @@ async function getMcpTools(
 }
 
 export async function POST(req: Request) {
+  // Verify user is authenticated
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const {
     messages,
     model: requestedModel,
@@ -187,9 +198,8 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    return new Response("OPENROUTER_API_KEY not configured", {
-      status: 500,
-    });
+    console.error("[Chat API] OPENROUTER_API_KEY not configured");
+    return new Response("Service unavailable", { status: 503 });
   }
 
   const { tools, clients, errors } = await getMcpTools({
@@ -226,7 +236,9 @@ export async function POST(req: Request) {
       for (const client of clients) {
         try {
           await client.close();
-        } catch {}
+        } catch (error) {
+          console.error("[Chat API] Failed to close MCP client:", error);
+        }
       }
     },
   });
