@@ -18,6 +18,7 @@ import {
   usePromptInputAttachments,
 } from "../ai-elements/prompt-input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { McpServerSelector } from "./mcp-server-selector";
 import { ModelSelector } from "./model-selector";
 
 const errorToastConfig = {
@@ -88,7 +89,6 @@ function InputWithAttachments({
     if (isStoppable) {
       onStopGeneration();
     }
-    // if there is an error, clear the attachments
     if (status === "error") {
       attachments.clear();
     }
@@ -122,6 +122,7 @@ function InputWithAttachments({
               <PromptInputActionAddAttachments label="Add images or PDFs" />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
+          <McpServerSelector />
           <ModelSelector
             selectedModel={selectedModel}
             onModelChange={onModelChange}
@@ -160,14 +161,12 @@ export function ChatInputPrompt({
         text: message.text || "Sent with attachments",
         files: message.files,
       });
-      // Only clear text after successful send
       setText("");
     } catch (error) {
       console.error("Failed to send message:", error);
       if (message.text) {
         setText(message.text);
       }
-      // Don't clear on error so user can retry
     }
   };
 

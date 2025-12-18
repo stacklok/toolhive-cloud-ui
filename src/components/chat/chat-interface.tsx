@@ -57,7 +57,6 @@ export function ChatInterface({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  // Scroll to bottom when messages change
   const messagesLength = messages.length;
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally scroll when message count changes
   useLayoutEffect(() => {
