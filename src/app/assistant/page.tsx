@@ -50,20 +50,6 @@ export default function AssistantPage() {
           sendMessage={sendMessage}
         />
       </div>
-
-      {/* MCP Server URLs */}
-      <div className="border-t p-4 text-xs text-muted-foreground font-mono">
-        <div className="font-semibold mb-2">MCP Server URLs:</div>
-        <div className="space-y-1">
-          {servers.flatMap((server) =>
-            (server.remotes ?? []).map((remote, idx) => (
-              <div key={`${server.name}-${idx}`}>
-                [{remote.type}] {remote.url}
-              </div>
-            )),
-          )}
-        </div>
-      </div>
     </div>
   );
 }
