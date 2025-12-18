@@ -65,31 +65,39 @@ export async function getMcpServerTools(
         ? new SSEClientTransport(url)
         : new StreamableHTTPClientTransport(url);
 
+    // Don't call client.close() after use - the MCP SDK logs AbortError
+    // internally and there's no way to suppress it. Connection cleanup
+    // happens automatically when the transport is garbage collected.
     const client = await createMCPClient({
       name: serverName,
       transport,
     });
 
-    try {
-      const serverTools = await client.tools();
+    const serverTools = await client.tools();
 
-      const tools: McpToolInfo[] = Object.entries(serverTools).map(
-        ([name, def]) => ({
-          name,
-          description: def.description,
-          enabled: true, // All enabled by default
-        }),
-      );
+    const tools: McpToolInfo[] = Object.entries(serverTools).map(
+      ([name, def]) => ({
+        name,
+        description: def.description,
+        enabled: true, // All enabled by default
+      }),
+    );
 
+    return {
+      serverName,
+      tools,
+      isRunning: true,
+    };
+  } catch (error) {
+    // Silently handle AbortError - happens when component re-renders during fetch
+    if (error instanceof Error && error.name === "AbortError") {
       return {
         serverName,
-        tools,
-        isRunning: true,
+        tools: [],
+        isRunning: false,
       };
-    } finally {
-      await client.close();
     }
-  } catch (error) {
+
     console.error(`Failed to fetch tools for ${serverName}:`, error);
     return {
       serverName,
