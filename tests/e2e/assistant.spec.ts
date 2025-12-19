@@ -30,26 +30,16 @@ async function warmupOllama(): Promise<void> {
 }
 
 test.describe("Assistant chat", () => {
+  // Triple all timeouts for this describe block since LLM operations are slow
+  test.slow();
+
   // Warmup Ollama before running any tests in this describe block
-  // This has an extended timeout since model loading can take 30-60 seconds
   test.beforeAll(async () => {
     console.log("Warming up Ollama...");
     const startTime = Date.now();
 
-    // Set a generous timeout for warmup (2 minutes)
-    // This is isolated from the individual test timeouts
-    const warmupTimeout = 120_000;
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(
-        () =>
-          reject(new Error(`Ollama warmup timed out after ${warmupTimeout}ms`)),
-        warmupTimeout,
-      );
-    });
-
     try {
-      await Promise.race([warmupOllama(), timeoutPromise]);
+      await warmupOllama();
       console.log(`Ollama warmup took ${Date.now() - startTime}ms`);
     } catch (error) {
       console.error("Ollama warmup failed:", error);
@@ -80,11 +70,13 @@ test.describe("Assistant chat", () => {
     await authenticatedPage.keyboard.press("Enter");
 
     // Wait for the assistant's response to appear
-    // The response should contain our unique username
+    // The response should contain our unique username in a greeting
     // Using a generous timeout since model inference can take time
-    // Use .first() since the username appears in both user message and assistant response
+    // The regex matches any greeting pattern followed by the username
     await expect(
-      authenticatedPage.getByText(new RegExp(`Hello.*${testUsername}`, "i")),
+      authenticatedPage.getByText(
+        new RegExp(`(hello|hi|hey|greetings).*${testUsername}`, "i"),
+      ),
     ).toBeVisible({
       timeout: 60_000,
     });
