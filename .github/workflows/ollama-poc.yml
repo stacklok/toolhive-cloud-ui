@@ -1,0 +1,110 @@
+name: Ollama POC
+
+on:
+  workflow_dispatch: # Manual trigger only for POC
+  pull_request:
+    paths:
+      - ".github/workflows/ollama-poc.yml" # Only run when this file changes
+
+permissions:
+  contents: read
+
+jobs:
+  ollama-benchmark:
+    name: Ollama Benchmark
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Cache Ollama models
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen2.5-1.5b-v1
+
+      - name: Install Ollama
+        run: |
+          echo "::group::Installing Ollama"
+          START=$(date +%s)
+          curl -fsSL https://ollama.com/install.sh | sh
+          END=$(date +%s)
+          echo "::endgroup::"
+          echo "⏱️ Ollama install time: $((END-START)) seconds"
+
+      - name: Start Ollama server
+        run: |
+          ollama serve &
+          sleep 3 # Wait for server to start
+
+      - name: Pull model
+        run: |
+          echo "::group::Pulling qwen2.5:1.5b"
+          START=$(date +%s)
+          ollama pull qwen2.5:1.5b
+          END=$(date +%s)
+          echo "::endgroup::"
+          echo "⏱️ Model pull time: $((END-START)) seconds (may be cached)"
+
+      - name: Test simple generation
+        run: |
+          echo "::group::Simple generation test"
+          START=$(date +%s)
+          ollama run qwen2.5:1.5b "Say 'Hello, CI!' and nothing else." --verbose
+          END=$(date +%s)
+          echo "::endgroup::"
+          echo "⏱️ Simple generation time: $((END-START)) seconds"
+
+      - name: Test tool calling capability
+        run: |
+          echo "::group::Tool calling test"
+          START=$(date +%s)
+
+          # Test if model can understand tool-like prompts
+          RESPONSE=$(ollama run qwen2.5:1.5b "You have access to a tool called 'get_weather' that takes a 'city' parameter. The user asks: 'What is the weather in Paris?' Respond ONLY with a JSON tool call like: {\"tool\": \"get_weather\", \"parameters\": {\"city\": \"Paris\"}}")
+
+          END=$(date +%s)
+          echo "Response: $RESPONSE"
+          echo "::endgroup::"
+          echo "⏱️ Tool-style generation time: $((END-START)) seconds"
+
+          # Check if response contains expected structure
+          if echo "$RESPONSE" | grep -q "get_weather"; then
+            echo "✅ Model understood tool calling format"
+          else
+            echo "⚠️ Model response didn't match expected tool format (may still work with proper AI SDK integration)"
+          fi
+
+      - name: Test multiple quick generations
+        run: |
+          echo "::group::Multiple generation benchmark"
+          START=$(date +%s)
+
+          for i in 1 2 3 4 5; do
+            echo "--- Run $i ---"
+            ollama run qwen2.5:1.5b "Reply with only: Response $i" 2>/dev/null
+          done
+
+          END=$(date +%s)
+          echo "::endgroup::"
+          echo "⏱️ 5 generations total time: $((END-START)) seconds"
+          echo "⏱️ Average per generation: $(( (END-START) / 5 )) seconds"
+
+      - name: Print summary
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "📊 OLLAMA POC SUMMARY"
+          echo "=========================================="
+          echo "Model: qwen2.5:1.5b"
+          echo "Runner: ubuntu-latest"
+          echo ""
+          echo "This POC demonstrates that Ollama can run"
+          echo "in GitHub Actions for E2E AI testing."
+          echo ""
+          echo "Next steps if timings are acceptable:"
+          echo "1. Add AI SDK integration with Ollama provider"
+          echo "2. Create mock-free E2E tests for assistant"
+          echo "3. Merge into main E2E workflow"
+          echo "=========================================="
