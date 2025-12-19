@@ -48,12 +48,11 @@ export default defineConfig({
           NEXT_PUBLIC_OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
-          // Pass Ollama config to the dev server if set
-          ...(process.env.USE_OLLAMA && {
-            USE_OLLAMA: process.env.USE_OLLAMA,
-            OLLAMA_MODEL: process.env.OLLAMA_MODEL,
-            OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
-          }),
+          // Always use Ollama for E2E tests to avoid needing OpenRouter API keys
+          USE_OLLAMA: "true",
+          OLLAMA_MODEL: process.env.OLLAMA_MODEL ?? "qwen2.5:1.5b",
+          OLLAMA_BASE_URL:
+            process.env.OLLAMA_BASE_URL ?? "http://localhost:11434",
         },
       },
 });

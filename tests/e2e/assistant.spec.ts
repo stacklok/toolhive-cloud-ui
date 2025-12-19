@@ -1,6 +1,5 @@
 import { expect, test } from "./fixtures";
 
-const USE_OLLAMA = process.env.USE_OLLAMA === "true";
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "qwen2.5:1.5b";
 
@@ -31,14 +30,9 @@ async function warmupOllama(): Promise<void> {
 }
 
 test.describe("Assistant chat", () => {
-  // Skip all tests in this describe block if not using Ollama
-  test.skip(!USE_OLLAMA, "Skipping assistant tests - USE_OLLAMA not set");
-
   // Warmup Ollama before running any tests in this describe block
   // This has an extended timeout since model loading can take 30-60 seconds
   test.beforeAll(async () => {
-    if (!USE_OLLAMA) return;
-
     console.log("Warming up Ollama...");
     const startTime = Date.now();
 
