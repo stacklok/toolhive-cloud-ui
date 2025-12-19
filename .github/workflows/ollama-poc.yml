@@ -22,6 +22,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
+      - name: Cache Ollama binary
+        id: cache-ollama
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/ollama
+          key: ollama-binary-v0.13.5
+
       - name: Cache Ollama models
         uses: actions/cache@v4
         with:
@@ -29,6 +36,7 @@ jobs:
           key: ollama-qwen2.5-1.5b-v3
 
       - name: Install Ollama
+        if: steps.cache-ollama.outputs.cache-hit != 'true'
         run: |
           echo "::group::Installing Ollama"
           START=$(date +%s)
@@ -39,8 +47,8 @@ jobs:
 
       - name: Start Ollama server
         run: |
-          # Stop the system service if running, we'll run it manually
-          sudo systemctl stop ollama || true
+          # Stop the system service if running (may not exist if we skipped install)
+          sudo systemctl stop ollama 2>/dev/null || true
           # Start with our custom model path
           OLLAMA_MODELS=/home/runner/.ollama/models ollama serve &
           sleep 3
