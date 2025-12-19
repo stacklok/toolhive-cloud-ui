@@ -9,8 +9,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
 import { getMcpServerTools } from "@/app/assistant/mcp-actions";
-import { useMcpSettings } from "@/app/assistant/mcp-settings-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,11 +51,12 @@ export function McpToolsModal({
   const [error, setError] = useState<string | null>(null);
 
   const tools = serverTools.get(serverName) ?? [];
+  const hasTools = serverTools.has(serverName) && tools.length > 0;
   const enabledToolsSet = enabledTools.get(serverName) ?? new Set<string>();
 
   // Fetch tools when modal opens and we don't have them yet
   const fetchTools = useCallback(async () => {
-    if (!serverName || tools.length > 0) return;
+    if (!serverName || hasTools) return;
 
     setIsLoading(true);
     setError(null);
@@ -72,7 +73,7 @@ export function McpToolsModal({
     } finally {
       setIsLoading(false);
     }
-  }, [serverName, tools.length, setServerTools]);
+  }, [serverName, hasTools, setServerTools]);
 
   useEffect(() => {
     if (open && serverName) {
@@ -105,9 +106,7 @@ export function McpToolsModal({
           <DialogTitle className="flex items-center gap-2">
             Manage tools
           </DialogTitle>
-          <DialogDescription
-            aria-describedby={`Manage the tools for ${serverName}`}
-          >
+          <DialogDescription>
             <span className="flex items-center gap-1">
               {serverName}
               <Badge variant="secondary" className="text-muted-foreground">

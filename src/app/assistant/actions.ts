@@ -41,10 +41,15 @@ const FALLBACK_OPENROUTER_MODELS = [
 ] as const;
 
 /**
- * Create OpenRouter SDK client instance
+ * Create OpenRouter SDK client instance with explicit API key.
+ * The SDK reads from OPENROUTER_API_KEY env var, but we make it explicit for clarity.
  */
 function createOpenRouterClient(): OpenRouter {
-  return new OpenRouter();
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENROUTER_API_KEY environment variable is not set");
+  }
+  return new OpenRouter({ apiKey });
 }
 
 /**

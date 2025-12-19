@@ -5,7 +5,7 @@ import { DefaultChatTransport } from "ai";
 import { useMemo, useRef, useState } from "react";
 import { ChatInterface } from "@/components/chat/chat-interface";
 import { DEFAULT_MODEL } from "./constants";
-import { useMcpSettings } from "./mcp-settings-context";
+import { useMcpSettings } from "./hooks/use-mcp-settings";
 
 export function AssistantChat() {
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);

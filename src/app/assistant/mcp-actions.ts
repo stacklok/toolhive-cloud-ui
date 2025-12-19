@@ -1,9 +1,7 @@
 "use server";
 
-import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { getServers } from "@/app/catalog/actions";
+import { createMcpConnection } from "@/lib/mcp/client";
 
 export interface McpToolInfo {
   name: string;
@@ -47,7 +45,6 @@ export async function getMcpServerTools(
       };
     }
 
-    // Try to connect to the first remote
     const remote = remotes[0];
     if (!remote?.url) {
       return {
@@ -58,38 +55,34 @@ export async function getMcpServerTools(
       };
     }
 
-    // MOCK LOCAL MCP SERVER cause the remote one is not working
-    const url = new URL("http://127.0.0.1:13942/mcp");
-    const transport =
-      remote.type === "sse"
-        ? new SSEClientTransport(url)
-        : new StreamableHTTPClientTransport(url);
+    const { tools: serverTools } = await createMcpConnection(
+      serverName,
+      remote,
+    );
 
-    const client = await createMCPClient({
-      name: serverName,
-      transport,
-    });
+    const tools: McpToolInfo[] = Object.entries(serverTools).map(
+      ([name, def]) => ({
+        name,
+        description: (def as { description?: string }).description,
+        enabled: true,
+      }),
+    );
 
-    try {
-      const serverTools = await client.tools();
-
-      const tools: McpToolInfo[] = Object.entries(serverTools).map(
-        ([name, def]) => ({
-          name,
-          description: def.description,
-          enabled: true, // All enabled by default
-        }),
-      );
-
+    return {
+      serverName,
+      tools,
+      isRunning: true,
+    };
+  } catch (error) {
+    // Silently handle AbortError - happens when component re-renders during fetch
+    if (error instanceof Error && error.name === "AbortError") {
       return {
         serverName,
-        tools,
-        isRunning: true,
+        tools: [],
+        isRunning: false,
       };
-    } finally {
-      await client.close();
     }
-  } catch (error) {
+
     console.error(`Failed to fetch tools for ${serverName}:`, error);
     return {
       serverName,
