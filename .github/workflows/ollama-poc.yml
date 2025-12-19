@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  # Use a known path for models so we can cache them
+  # Use a known path for models so we can cache them (v2)
   OLLAMA_MODELS: /home/runner/.ollama/models
 
 jobs:
