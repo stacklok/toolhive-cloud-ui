@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # Use a known path for models so we can cache them
+  OLLAMA_MODELS: /home/runner/.ollama/models
+
 jobs:
   ollama-benchmark:
     name: Ollama Benchmark
@@ -21,8 +25,8 @@ jobs:
       - name: Cache Ollama models
         uses: actions/cache@v4
         with:
-          path: ~/.ollama/models
-          key: ollama-qwen2.5-1.5b-v1
+          path: /home/runner/.ollama/models
+          key: ollama-qwen2.5-1.5b-v3
 
       - name: Install Ollama
         run: |
@@ -35,23 +39,34 @@ jobs:
 
       - name: Start Ollama server
         run: |
-          ollama serve &
-          sleep 3 # Wait for server to start
+          # Stop the system service if running, we'll run it manually
+          sudo systemctl stop ollama || true
+          # Start with our custom model path
+          OLLAMA_MODELS=/home/runner/.ollama/models ollama serve &
+          sleep 3
 
       - name: Pull model
         run: |
           echo "::group::Pulling qwen2.5:1.5b"
           START=$(date +%s)
-          ollama pull qwen2.5:1.5b
+          OLLAMA_MODELS=/home/runner/.ollama/models ollama pull qwen2.5:1.5b
           END=$(date +%s)
           echo "::endgroup::"
-          echo "⏱️ Model pull time: $((END-START)) seconds (may be cached)"
+          echo "⏱️ Model pull time: $((END-START)) seconds (should be ~0 if cached)"
+
+      - name: Debug - Check model location
+        run: |
+          echo "Models directory contents:"
+          ls -la /home/runner/.ollama/models/ || echo "Directory doesn't exist"
+          echo ""
+          echo "Disk usage:"
+          du -sh /home/runner/.ollama/models/ || echo "Can't measure"
 
       - name: Test simple generation
         run: |
           echo "::group::Simple generation test"
           START=$(date +%s)
-          ollama run qwen2.5:1.5b "Say 'Hello, CI!' and nothing else." --verbose
+          OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "Say 'Hello, CI!' and nothing else."
           END=$(date +%s)
           echo "::endgroup::"
           echo "⏱️ Simple generation time: $((END-START)) seconds"
@@ -61,19 +76,17 @@ jobs:
           echo "::group::Tool calling test"
           START=$(date +%s)
 
-          # Test if model can understand tool-like prompts
-          RESPONSE=$(ollama run qwen2.5:1.5b "You have access to a tool called 'get_weather' that takes a 'city' parameter. The user asks: 'What is the weather in Paris?' Respond ONLY with a JSON tool call like: {\"tool\": \"get_weather\", \"parameters\": {\"city\": \"Paris\"}}")
+          RESPONSE=$(OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "You have access to a tool called 'get_weather' that takes a 'city' parameter. The user asks: 'What is the weather in Paris?' Respond ONLY with a JSON tool call like: {\"tool\": \"get_weather\", \"parameters\": {\"city\": \"Paris\"}}")
 
           END=$(date +%s)
           echo "Response: $RESPONSE"
           echo "::endgroup::"
           echo "⏱️ Tool-style generation time: $((END-START)) seconds"
 
-          # Check if response contains expected structure
           if echo "$RESPONSE" | grep -q "get_weather"; then
             echo "✅ Model understood tool calling format"
           else
-            echo "⚠️ Model response didn't match expected tool format (may still work with proper AI SDK integration)"
+            echo "⚠️ Model response didn't match expected tool format"
           fi
 
       - name: Test multiple quick generations
@@ -83,7 +96,7 @@ jobs:
 
           for i in 1 2 3 4 5; do
             echo "--- Run $i ---"
-            ollama run qwen2.5:1.5b "Reply with only: Response $i" 2>/dev/null
+            OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "Reply with only: Response $i" 2>/dev/null
           done
 
           END=$(date +%s)
