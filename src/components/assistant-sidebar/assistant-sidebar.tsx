@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AssistantSidebarContent } from "./assistant-sidebar-content";
 
-export function AppSidebar() {
+export function AssistantSidebar() {
   const { state, toggleSidebar, isMobile, openMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
 

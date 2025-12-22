@@ -58,6 +58,20 @@ export function ChatInterface({
   }, []);
 
   const messagesLength = messages.length;
+
+  // Scroll to bottom when component mounts with existing messages
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally run only on mount
+  useLayoutEffect(() => {
+    if (messages.length > 0) {
+      // Small delay to ensure DOM is fully rendered after mount
+      const timeoutId = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, []);
+
+  // Scroll to bottom when new messages arrive
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally scroll when message count changes
   useLayoutEffect(() => {
     if (messagesEndRef.current) {

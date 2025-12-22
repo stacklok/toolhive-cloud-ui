@@ -3,7 +3,7 @@ import { ChatProvider } from "@/app/assistant/chat-context";
 import { McpSettingsProvider } from "@/app/assistant/mcp-settings-context";
 import { ModelsProvider } from "@/app/assistant/models-context";
 import { getServers } from "@/app/catalog/actions";
-import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
+import { AssistantSidebar } from "@/components/assistant-sidebar/assistant-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface SidebarLayoutProps {
@@ -22,7 +22,7 @@ export async function SidebarLayout({ children }: SidebarLayoutProps) {
         <ChatProvider>
           <SidebarProvider defaultOpen={false}>
             {children}
-            <AppSidebar />
+            <AssistantSidebar />
           </SidebarProvider>
         </ChatProvider>
       </McpSettingsProvider>
