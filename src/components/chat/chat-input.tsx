@@ -112,6 +112,7 @@ function InputWithAttachments({
           value={text}
           placeholder={getPlaceholder()}
           className="min-h-[60px]"
+          autoFocus
         />
       </PromptInputBody>
       <PromptInputToolbar className="p-2">

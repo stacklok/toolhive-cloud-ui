@@ -2,12 +2,21 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useMemo, useRef, useState } from "react";
-import { ChatInterface } from "@/components/chat/chat-interface";
-import { DEFAULT_MODEL } from "./constants";
-import { useMcpSettings } from "./hooks/use-mcp-settings";
+import { createContext, useContext, useMemo, useRef, useState } from "react";
+import { DEFAULT_MODEL } from "@/app/assistant/constants";
+import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
 
-export function AssistantChat() {
+type ChatHelpers = ReturnType<typeof useChat>;
+
+interface ChatContextValue extends ChatHelpers {
+  selectedModel: string;
+  setSelectedModel: (model: string) => void;
+  clearMessages: () => void;
+}
+
+const ChatContext = createContext<ChatContextValue | null>(null);
+
+export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
   const { selectedServers, enabledTools } = useMcpSettings();
 
@@ -51,39 +60,28 @@ export function AssistantChat() {
     [],
   );
 
-  const {
-    messages,
-    sendMessage,
-    status,
-    clearError,
-    stop,
-    error,
-    setMessages,
-  } = useChat({
+  const chatHelpers = useChat({
     transport,
   });
 
-  const handleClearMessages = () => {
-    setMessages([]);
+  const clearMessages = () => {
+    chatHelpers.setMessages([]);
   };
 
-  const handleModelChange = (model: string) => {
-    setSelectedModel(model);
+  const value: ChatContextValue = {
+    ...chatHelpers,
+    selectedModel,
+    setSelectedModel,
+    clearMessages,
   };
 
-  return (
-    <ChatInterface
-      messages={messages}
-      status={status}
-      error={error}
-      cancelRequest={async () => {
-        await stop();
-        clearError();
-      }}
-      onClearMessages={handleClearMessages}
-      sendMessage={sendMessage}
-      selectedModel={selectedModel}
-      onModelChange={handleModelChange}
-    />
-  );
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+}
+
+export function useChatContext() {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error("useChatContext must be used within a ChatProvider");
+  }
+  return context;
 }

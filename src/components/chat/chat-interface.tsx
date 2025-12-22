@@ -2,9 +2,9 @@
 
 import type { ChatStatus, FileUIPart, UIMessage } from "ai";
 import { ChevronDown } from "lucide-react";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useAutoScroll } from "@/hooks/use-auto-scroll";
 import { ChatEmptyState } from "./chat-empty-state";
 import { ChatHeader } from "./chat-header";
 import { ChatInputPrompt } from "./chat-input";
@@ -32,50 +32,18 @@ export function ChatInterface({
   selectedModel,
   onModelChange,
 }: ChatInterfaceProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const {
+    messagesEndRef,
+    messagesContainerRef,
+    showScrollButton: showScrollToBottom,
+    scrollToBottom,
+  } = useAutoScroll({ messagesLength: messages.length });
 
   const isLoading = status === "streaming" || status === "submitted";
   const hasMessages = messages.length > 0;
 
-  const checkScrollPosition = useCallback(() => {
-    const container = messagesContainerRef.current;
-    if (!container || messages.length === 0) {
-      setShowScrollToBottom(false);
-      return;
-    }
-
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    const isAtBottom = distanceFromBottom <= 10;
-
-    setShowScrollToBottom(!isAtBottom);
-  }, [messages.length]);
-
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
-  const messagesLength = messages.length;
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally scroll when message count changes
-  useLayoutEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-    setTimeout(checkScrollPosition, 200);
-  }, [messagesLength, checkScrollPosition]);
-
-  useLayoutEffect(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return;
-
-    container.addEventListener("scroll", checkScrollPosition);
-    return () => container.removeEventListener("scroll", checkScrollPosition);
-  }, [checkScrollPosition]);
-
   return (
-    <div className="flex h-full flex-col px-8">
+    <div className="flex h-full flex-col px-8 pb-4">
       <ChatHeader hasMessages={hasMessages} onClearMessages={onClearMessages} />
 
       {hasMessages && <Separator />}
