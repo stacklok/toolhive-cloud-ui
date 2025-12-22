@@ -1,0 +1,99 @@
+#
+# Copyright 2025 Stacklok, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Workflow to publish Helm chart to OCI registry (ghcr.io)
+# with Cosign signing for supply chain security.
+#
+# Triggered on version tags (v*) - same as Docker image publish.
+#
+# Usage:
+#   helm install toolhive-cloud-ui oci://ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui --version 0.0.7
+#
+# Verify signature:
+#   cosign verify ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui:0.0.7
+
+name: Publish Helm Chart to OCI
+
+on:
+    push:
+        tags: ["v*"]
+
+permissions:
+    contents: read
+    packages: write
+    id-token: write
+
+env:
+    CHART_PATH: helm
+    REGISTRY: ghcr.io
+    REGISTRY_PATH: ghcr.io/${{ github.repository }}
+
+jobs:
+    release-helm-chart:
+        name: Package and Publish Helm Chart
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+            - name: Set up Helm
+              uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+              with:
+                  version: "latest"
+
+            - name: Get Version from Tag
+              id: version
+              run: |
+                  # Remove 'v' prefix from tag (v0.0.7 -> 0.0.7)
+                  VERSION="${GITHUB_REF_NAME#v}"
+                  echo "version=${VERSION}" >> $GITHUB_OUTPUT
+                  echo "Chart version: ${VERSION}"
+
+            - name: Update Chart.yaml with Tag Version
+              run: |
+                  sed -i "s/^version:.*/version: ${{ steps.version.outputs.version }}/" ${{ env.CHART_PATH }}/Chart.yaml
+                  sed -i "s/^appVersion:.*/appVersion: \"${{ steps.version.outputs.version }}\"/" ${{ env.CHART_PATH }}/Chart.yaml
+                  echo "Updated Chart.yaml:"
+                  cat ${{ env.CHART_PATH }}/Chart.yaml
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Cosign
+              uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+
+            - name: Package Helm Chart
+              run: |
+                  helm package ${{ env.CHART_PATH }} --destination .helm-packages
+
+            - name: Push and Sign Helm Chart to OCI
+              run: |
+                  for chart in .helm-packages/*.tgz; do
+                    echo "Pushing ${chart} to OCI registry..."
+                    helm push "${chart}" oci://${{ env.REGISTRY_PATH }} |& tee helm-push-output.log
+                    
+                    # Extract chart name and digest for signing
+                    file_name="${chart##*/}"
+                    chart_name="${file_name%-*}"
+                    digest=$(awk -F "[, ]+" '/Digest/{print $NF}' < helm-push-output.log)
+                    
+                    echo "Signing chart: ${{ env.REGISTRY_PATH }}/${chart_name}@${digest}"
+                    cosign sign -y "${{ env.REGISTRY_PATH }}/${chart_name}@${digest}"
+                  done
