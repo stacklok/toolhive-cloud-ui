@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getMcpServerTools } from "@/features/assistant/actions";
+import { getMcpServerTools } from "@/features/assistant/actions/mcp-actions";
 import { useMcpSettings } from "./use-mcp-settings";
 
 /**

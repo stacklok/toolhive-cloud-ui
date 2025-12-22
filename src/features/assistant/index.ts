@@ -1,28 +1,31 @@
 // Actions
 
-export type { McpServerToolsResponse, McpToolInfo } from "./actions";
-export { getMcpServerTools, getOpenRouterModels } from "./actions";
-// Components
 export {
-  AssistantSidebar,
-  AssistantSidebarContent,
-  AssistantTrigger,
-} from "./components";
+  getMcpServerTools,
+  type McpServerToolsResponse,
+  type McpToolInfo,
+} from "./actions/mcp-actions";
+export { getOpenRouterModels } from "./actions/model-actions";
+
+// Components
+export { AssistantSidebar } from "./components/sidebar";
+export { AssistantSidebarContent } from "./components/sidebar-content";
+export { AssistantTrigger } from "./components/trigger";
+
 // Constants
 export { DEFAULT_MODEL } from "./constants";
-export type {
-  McpServerWithTools,
-  McpSettingsContextValue,
-  ToolInfo,
-} from "./contexts";
+
 // Contexts
+export { ChatProvider, useChatContext } from "./contexts/chat-context";
 export {
-  ChatProvider,
+  type McpServerWithTools,
   McpSettingsContext,
+  type McpSettingsContextValue,
   McpSettingsProvider,
-  ModelsProvider,
-  useChatContext,
-  useModels,
-} from "./contexts";
+  type ToolInfo,
+} from "./contexts/mcp-settings-context";
+export { ModelsProvider, useModels } from "./contexts/models-context";
+
 // Hooks
-export { useMcpSettings, useMcpToolsFetch } from "./hooks";
+export { useMcpSettings } from "./hooks/use-mcp-settings";
+export { useMcpToolsFetch } from "./hooks/use-mcp-tools-fetch";
