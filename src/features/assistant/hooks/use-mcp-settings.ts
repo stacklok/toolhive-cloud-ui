@@ -4,7 +4,7 @@ import { useContext } from "react";
 import {
   McpSettingsContext,
   type McpSettingsContextValue,
-} from "../mcp-settings-context";
+} from "@/features/assistant/contexts/mcp-settings-context";
 
 export function useMcpSettings(): McpSettingsContextValue {
   const context = useContext(McpSettingsContext);

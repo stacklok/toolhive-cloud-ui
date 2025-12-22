@@ -2,8 +2,6 @@
 
 import { ChevronDown, Loader2, Settings2 } from "lucide-react";
 import { useState } from "react";
-import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
-import { useMcpToolsFetch } from "@/app/assistant/hooks/use-mcp-tools-fetch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useMcpSettings, useMcpToolsFetch } from "@/features/assistant";
 import { cn } from "@/lib/utils";
 import { McpToolsModal } from "./mcp-tools-modal";
 

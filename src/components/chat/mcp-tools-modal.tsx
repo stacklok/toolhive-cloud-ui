@@ -9,8 +9,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
-import { getMcpServerTools } from "@/app/assistant/mcp-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
+import { getMcpServerTools, useMcpSettings } from "@/features/assistant";
 import { cn } from "@/lib/utils";
 
 interface McpToolsModalProps {

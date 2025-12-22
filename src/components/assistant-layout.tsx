@@ -1,17 +1,19 @@
-import { getOpenRouterModels } from "@/app/assistant/actions";
-import { ChatProvider } from "@/app/assistant/chat-context";
-import { McpSettingsProvider } from "@/app/assistant/mcp-settings-context";
-import { ModelsProvider } from "@/app/assistant/models-context";
 import { getServers } from "@/app/catalog/actions";
-import { AssistantSidebar } from "@/components/assistant-sidebar/assistant-sidebar";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import {
+  AssistantSidebar,
+  ChatProvider,
+  getOpenRouterModels,
+  McpSettingsProvider,
+  ModelsProvider,
+} from "@/features/assistant";
 
-interface SidebarLayoutProps {
+interface AssistantLayoutProps {
   children: React.ReactNode;
 }
 
-export async function SidebarLayout({ children }: SidebarLayoutProps) {
+export async function AssistantLayout({ children }: AssistantLayoutProps) {
   const [models, servers] = await Promise.all([
     getOpenRouterModels(),
     getServers(),

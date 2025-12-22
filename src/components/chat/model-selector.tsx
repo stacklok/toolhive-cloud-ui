@@ -9,7 +9,6 @@
 
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { useModels } from "@/app/assistant/models-context";
 import { OpenRouterIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useModels } from "@/features/assistant";
 
 /**
  * Extract display name from model ID (e.g., "anthropic/claude-3.5-sonnet" -> "claude-3.5-sonnet")

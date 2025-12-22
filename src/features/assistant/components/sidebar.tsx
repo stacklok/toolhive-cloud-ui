@@ -8,7 +8,7 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { AssistantSidebarContent } from "./assistant-sidebar-content";
+import { AssistantSidebarContent } from "./sidebar-content";
 
 export function AssistantSidebar() {
   const { state, toggleSidebar, isMobile, openMobile } = useSidebar();

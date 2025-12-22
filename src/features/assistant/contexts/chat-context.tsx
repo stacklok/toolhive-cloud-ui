@@ -3,8 +3,8 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { createContext, useContext, useMemo, useRef, useState } from "react";
-import { DEFAULT_MODEL } from "@/app/assistant/constants";
-import { useMcpSettings } from "@/app/assistant/hooks/use-mcp-settings";
+import { DEFAULT_MODEL } from "@/features/assistant/constants";
+import { useMcpSettings } from "@/features/assistant/hooks/use-mcp-settings";
 
 type ChatHelpers = ReturnType<typeof useChat>;
 
