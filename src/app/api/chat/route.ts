@@ -6,8 +6,8 @@ import {
   type ToolSet,
 } from "ai";
 import { headers } from "next/headers";
-import { DEFAULT_MODEL } from "@/app/assistant/constants";
 import { getServers } from "@/app/catalog/actions";
+import { DEFAULT_MODEL } from "@/features/assistant";
 import { auth } from "@/lib/auth/auth";
 import {
   createMcpConnection,

@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
-import { AssistantTrigger } from "@/components/assistant-trigger";
 import { NavbarLogo } from "@/components/navbar-logo";
 import { UserMenu } from "@/components/user-menu";
+import { AssistantTrigger } from "@/features/assistant";
 import { auth } from "@/lib/auth/auth";
 
 export async function Navbar() {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useChatContext } from "@/app/assistant/chat-context";
 import { ChatInterface } from "@/components/chat/chat-interface";
+import { useChatContext } from "@/features/assistant/contexts";
 
 export function AssistantSidebarContent() {
   const {
