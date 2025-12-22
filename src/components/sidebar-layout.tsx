@@ -4,6 +4,7 @@ import { McpSettingsProvider } from "@/app/assistant/mcp-settings-context";
 import { ModelsProvider } from "@/app/assistant/models-context";
 import { getServers } from "@/app/catalog/actions";
 import { AssistantSidebar } from "@/components/assistant-sidebar/assistant-sidebar";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface SidebarLayoutProps {
@@ -22,7 +23,9 @@ export async function SidebarLayout({ children }: SidebarLayoutProps) {
         <ChatProvider>
           <SidebarProvider defaultOpen={false}>
             {children}
-            <AssistantSidebar />
+            <ErrorBoundary>
+              <AssistantSidebar />
+            </ErrorBoundary>
           </SidebarProvider>
         </ChatProvider>
       </McpSettingsProvider>
