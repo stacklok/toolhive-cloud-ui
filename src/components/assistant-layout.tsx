@@ -9,11 +9,11 @@ import {
   ModelsProvider,
 } from "@/features/assistant";
 
-interface SidebarLayoutProps {
+interface AssistantLayoutProps {
   children: React.ReactNode;
 }
 
-export async function SidebarLayout({ children }: SidebarLayoutProps) {
+export async function AssistantLayout({ children }: AssistantLayoutProps) {
   const [models, servers] = await Promise.all([
     getOpenRouterModels(),
     getServers(),
