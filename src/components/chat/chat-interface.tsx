@@ -89,7 +89,7 @@ export function ChatInterface({
   }, [checkScrollPosition]);
 
   return (
-    <div className="flex h-full flex-col px-8">
+    <div className="flex h-full flex-col px-8 pb-4">
       <ChatHeader hasMessages={hasMessages} onClearMessages={onClearMessages} />
 
       {hasMessages && <Separator />}
