@@ -1,4 +1,5 @@
 import { getOpenRouterModels } from "@/app/assistant/actions";
+import { ChatProvider } from "@/app/assistant/chat-context";
 import { McpSettingsProvider } from "@/app/assistant/mcp-settings-context";
 import { ModelsProvider } from "@/app/assistant/models-context";
 import { getServers } from "@/app/catalog/actions";
@@ -18,10 +19,12 @@ export async function SidebarLayout({ children }: SidebarLayoutProps) {
   return (
     <ModelsProvider models={models}>
       <McpSettingsProvider initialServers={servers}>
-        <SidebarProvider defaultOpen={false}>
-          {children}
-          <AppSidebar />
-        </SidebarProvider>
+        <ChatProvider>
+          <SidebarProvider defaultOpen={false}>
+            {children}
+            <AppSidebar />
+          </SidebarProvider>
+        </ChatProvider>
       </McpSettingsProvider>
     </ModelsProvider>
   );
