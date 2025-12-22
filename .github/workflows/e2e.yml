@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # Ollama config for AI assistant tests
+  OLLAMA_MODELS: /home/runner/.ollama/models
+
 jobs:
   e2e:
     name: Playwright E2E
@@ -22,9 +26,38 @@ jobs:
       NEXT_PUBLIC_OIDC_PROVIDER_ID: oidc
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
+      USE_OLLAMA: "true"
+      OLLAMA_MODEL: qwen2.5:1.5b
+      OLLAMA_BASE_URL: http://localhost:11434
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Cache Ollama binary
+        id: cache-ollama
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/ollama
+          key: ollama-binary-v0.13.5
+
+      - name: Cache Ollama models
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.ollama/models
+          key: ollama-qwen2.5-1.5b-v3
+
+      - name: Install Ollama
+        if: steps.cache-ollama.outputs.cache-hit != 'true'
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama server
+        run: |
+          sudo systemctl stop ollama 2>/dev/null || true
+          OLLAMA_MODELS=/home/runner/.ollama/models ollama serve &
+          sleep 3
+
+      - name: Pull Ollama model
+        run: OLLAMA_MODELS=/home/runner/.ollama/models ollama pull qwen2.5:1.5b
 
       - name: Setup
         uses: ./.github/actions/setup
