@@ -34,7 +34,7 @@ export function AssistantTrigger() {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">
-          <p>AI Assistant (⌘B)</p>
+          <p>AI Assistant (Cmd/Ctrl+B)</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
