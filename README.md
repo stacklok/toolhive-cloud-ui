@@ -331,9 +331,12 @@ See [`docs/mocks.md`](./docs/mocks.md) for details.
 
 ### Optional
 
-| Variable          | Description                             | Default                                                |
-| ----------------- | --------------------------------------- | ------------------------------------------------------ |
-| `TRUSTED_ORIGINS` | Comma-separated list of trusted origins | `BASE_URL,http://localhost:3002,http://localhost:3003` |
+| Variable             | Description                             | Default                                                |
+| -------------------- | --------------------------------------- | ------------------------------------------------------ |
+| `TRUSTED_ORIGINS`    | Comma-separated list of trusted origins | `BASE_URL,http://localhost:3002,http://localhost:3003` |
+| `OPENROUTER_API_KEY` | OpenRouter API key for AI Assistant     | None (assistant disabled without it)                   |
+
+> **Note**: The AI Assistant feature requires an OpenRouter API key. See the [Assistant documentation](./src/features/assistant/README.md) for setup instructions.
 
 ### Development (Auto-configured)
 
@@ -498,6 +501,7 @@ For detailed information about the project:
 - **[AGENTS.md](./AGENTS.md)** - Project overview, architecture, and key patterns
 - **[CLAUDE.md](./CLAUDE.md)** - Detailed development guidelines
 - **[docs/mocks.md](./docs/mocks.md)** - MSW mock server documentation
+- **[AI Assistant](./src/features/assistant/README.md)** - AI Assistant feature documentation (requires OpenRouter API key)
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute
 
 ### Technology Stack
