@@ -179,6 +179,9 @@ export type ModelTransport = {
   headers?: Array<ModelKeyValueInput>;
   type?: string;
   url?: string;
+  variables?: {
+    [key: string]: ModelInput;
+  };
 };
 
 export type V0Metadata = {
