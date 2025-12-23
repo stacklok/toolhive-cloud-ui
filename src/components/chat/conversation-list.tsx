@@ -86,7 +86,7 @@ export function ConversationList({
             onClick={onClearAll}
           >
             <Trash className="mr-2 size-4" />
-            Clear all messages
+            Clear all conversations
           </Button>
         </div>
       )}
