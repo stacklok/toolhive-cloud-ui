@@ -1,17 +1,11 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 import { DEFAULT_MODEL } from "@/features/assistant/constants";
 import { useChatHistory } from "@/features/assistant/hooks/use-chat-history";
+import { useChatPersistence } from "@/features/assistant/hooks/use-chat-persistence";
+import { useChatTransport } from "@/features/assistant/hooks/use-chat-transport";
 import { useMcpSettings } from "@/features/assistant/hooks/use-mcp-settings";
 
 type ChatHelpers = ReturnType<typeof useChat>;
@@ -32,155 +26,27 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
   const { selectedServers, enabledTools } = useMcpSettings();
   const chatHistory = useChatHistory();
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const hasLoadedInitialConversation = useRef(false);
-  const isLoadingConversationRef = useRef(false);
 
-  // Use refs to access current values in the transport callback
-  const selectedModelRef = useRef(selectedModel);
-  selectedModelRef.current = selectedModel;
-
-  const selectedServersRef = useRef(selectedServers);
-  selectedServersRef.current = selectedServers;
-
-  const enabledToolsRef = useRef(enabledTools);
-  enabledToolsRef.current = enabledTools;
-
-  // Create transport with prepareSendMessagesRequest to inject settings dynamically
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        prepareSendMessagesRequest: ({ messages, body, ...rest }) => {
-          // Convert Set to array for selectedServers
-          const serversArray = Array.from(selectedServersRef.current);
-
-          // Convert Map<string, Set<string>> to Record<string, string[]>
-          const toolsRecord: Record<string, string[]> = {};
-          for (const [serverName, toolsSet] of enabledToolsRef.current) {
-            toolsRecord[serverName] = Array.from(toolsSet);
-          }
-
-          return {
-            ...rest,
-            body: {
-              messages,
-              ...body,
-              model: selectedModelRef.current,
-              selectedServers: serversArray,
-              enabledTools: toolsRecord,
-            },
-          };
-        },
-      }),
-    [],
-  );
-
-  const chatHelpers = useChat({
-    transport,
-  });
-
-  // Load last conversation on mount only (not on subsequent updates)
-  useEffect(() => {
-    async function loadLastConversation() {
-      if (chatHistory.isLoading) {
-        return;
-      }
-
-      // Skip if already loaded initial conversation
-      if (hasLoadedInitialConversation.current) {
-        return;
-      }
-
-      // Only load if no messages are already loaded
-      if (chatHelpers.messages.length > 0) {
-        hasLoadedInitialConversation.current = true;
-        return;
-      }
-
-      // Load the most recent conversation
-      if (chatHistory.conversations.length > 0) {
-        const lastConversation = chatHistory.conversations[0]; // Already sorted by updatedAt desc
-        try {
-          isLoadingConversationRef.current = true;
-          const messages = await chatHistory.loadConversation(
-            lastConversation.id,
-          );
-          if (messages.length > 0) {
-            chatHelpers.setMessages(messages);
-            // Restore model if available
-            if (lastConversation.model) {
-              setSelectedModel(lastConversation.model);
-            }
-          }
-        } catch (error) {
-          isLoadingConversationRef.current = false;
-          console.error(
-            "[ChatProvider] Failed to load last conversation:",
-            error,
-          );
-        }
-      }
-
-      hasLoadedInitialConversation.current = true;
-    }
-
-    loadLastConversation();
-  }, [
-    chatHistory.isLoading,
-    chatHistory.conversations,
-    chatHistory.loadConversation,
-    chatHelpers.messages.length,
-    chatHelpers.setMessages,
-  ]);
-
-  // Auto-save messages to IndexedDB with debouncing
-  useEffect(() => {
-    // Clear previous timeout
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    // Skip if loading a conversation (avoid updating timestamp on load)
-    if (isLoadingConversationRef.current) {
-      isLoadingConversationRef.current = false;
-      return;
-    }
-
-    // Skip if no messages or still streaming
-    if (
-      chatHelpers.messages.length === 0 ||
-      chatHelpers.status === "streaming"
-    ) {
-      return;
-    }
-
-    // Debounce save to avoid too many writes during rapid updates
-    saveTimeoutRef.current = setTimeout(() => {
-      const serversArray = Array.from(selectedServers);
-      chatHistory
-        .saveCurrentMessages(chatHelpers.messages, selectedModel, serversArray)
-        .catch((error) => {
-          console.error("[ChatProvider] Failed to save messages:", error);
-        });
-    }, 500); // Wait 500ms after last change
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [
-    chatHelpers.messages,
-    chatHelpers.status,
+  const transport = useChatTransport({
     selectedModel,
     selectedServers,
+    enabledTools,
+  });
+
+  const chatHelpers = useChat({ transport });
+
+  const { isLoadingConversation } = useChatPersistence({
     chatHistory,
-  ]);
+    messages: chatHelpers.messages,
+    status: chatHelpers.status,
+    setMessages: chatHelpers.setMessages,
+    selectedModel,
+    setSelectedModel,
+    selectedServers,
+  });
 
   const clearMessages = async () => {
     chatHelpers.setMessages([]);
-    // Start a new conversation when clearing
     await chatHistory.startNewConversation(
       selectedModel,
       Array.from(selectedServers),
@@ -188,12 +54,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleLoadConversation = async (conversationId: string) => {
-    isLoadingConversationRef.current = true;
+    isLoadingConversation.current = true;
     try {
       const messages = await chatHistory.loadConversation(conversationId);
       chatHelpers.setMessages(messages);
 
-      // Restore model from conversation
       const conv = chatHistory.conversations.find(
         (c) => c.id === conversationId,
       );
@@ -201,14 +66,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setSelectedModel(conv.model);
       }
     } catch (error) {
-      isLoadingConversationRef.current = false;
+      isLoadingConversation.current = false;
       throw error;
     }
   };
 
   const handleDeleteConversation = async (conversationId: string) => {
     await chatHistory.deleteConversation(conversationId);
-    // If we deleted the current conversation, clear messages
     if (conversationId === chatHistory.currentConversationId) {
       chatHelpers.setMessages([]);
     }

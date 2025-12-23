@@ -25,7 +25,6 @@ export function useChatHistory() {
   const [isLoading, setIsLoading] = useState(true);
   const isInitializedRef = useRef(false);
 
-  // Load conversations on mount
   useEffect(() => {
     async function loadConversations() {
       try {
