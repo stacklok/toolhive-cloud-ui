@@ -7,6 +7,7 @@ import {
 } from "ai";
 import { headers } from "next/headers";
 import { getServers } from "@/app/catalog/actions";
+import { getArtifactTools } from "@/features/artifacts/tools/vmcp-builder-tool";
 import { DEFAULT_MODEL } from "@/features/assistant";
 import { auth } from "@/lib/auth/auth";
 import {
@@ -202,13 +203,21 @@ export async function POST(req: Request) {
     return new Response("Service unavailable", { status: 503 });
   }
 
-  const { tools, clients, errors } = await getMcpTools({
+  const {
+    tools: mcpTools,
+    clients,
+    errors,
+  } = await getMcpTools({
     selectedServers,
     enabledTools: enabledToolsFromRequest,
   });
 
+  // Add artifact tools (like vmcp_builder) to the tool set
+  const artifactTools = getArtifactTools();
+  const tools: ToolSet = { ...mcpTools, ...artifactTools };
+
   // If all servers failed to connect, return an error
-  if (Object.keys(tools).length === 0 && errors.length > 0) {
+  if (Object.keys(mcpTools).length === 0 && errors.length > 0) {
     const serverNames = errors.map((err) => err.serverName).join(", ");
     return new Response(
       `Unable to connect to ${serverNames} MCP servers. Please check that the servers are running and accessible.`,

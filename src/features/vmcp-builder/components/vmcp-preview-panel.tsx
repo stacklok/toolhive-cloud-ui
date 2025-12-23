@@ -1,19 +1,19 @@
 "use client";
 
-import type { VirtualMCPServerSpec } from "@/features/vmcp-builder/types";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import {
+  Check,
   Code2,
   Copy,
-  Check,
   Rocket,
-  Wrench,
   Server,
   Settings,
+  Wrench,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { VirtualMCPServerSpec } from "@/features/vmcp-builder/types";
 
 interface VMCPPreviewPanelProps {
   spec: VirtualMCPServerSpec | null;
@@ -191,4 +191,3 @@ export function VMCPPreviewPanel({
     </div>
   );
 }
-

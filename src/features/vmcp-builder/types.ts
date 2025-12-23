@@ -161,4 +161,3 @@ export interface ListVMCPResponse {
 export interface ListMCPServersWithToolsResponse {
   servers: MCPServerWithTools[];
 }
-

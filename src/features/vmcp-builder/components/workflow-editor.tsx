@@ -1,37 +1,37 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
 import {
-  ReactFlow,
-  Background,
-  Controls,
-  MiniMap,
   addEdge,
-  useNodesState,
-  useEdgesState,
+  Background,
   type Connection,
+  Controls,
   type Edge,
+  MiniMap,
   type Node,
   type NodeProps,
   type OnConnect,
+  ReactFlow,
   ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
   useReactFlow,
 } from "@xyflow/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import "./vmcp-flow.css";
 
-import { ToolPalette } from "./tool-palette";
-import { VMCPPreviewPanel } from "./vmcp-preview-panel";
+import { toast } from "sonner";
 import type {
   MCPServerWithTools,
-  ToolNodeData,
-  OutputNodeData,
-  VirtualMCPServerSpec,
   MCPTool,
+  OutputNodeData,
+  ToolNodeData,
+  VirtualMCPServerSpec,
 } from "@/features/vmcp-builder/types";
-import { toast } from "sonner";
-import { ToolNode } from "./nodes/tool-node";
 import { OutputNode } from "./nodes/output-node";
+import { ToolNode } from "./nodes/tool-node";
+import { ToolPalette } from "./tool-palette";
+import { VMCPPreviewPanel } from "./vmcp-preview-panel";
 
 // Initial output node for workflow
 const initialWorkflowNodes: Node[] = [
@@ -48,12 +48,20 @@ const initialWorkflowNodes: Node[] = [
 
 interface WorkflowEditorInnerProps {
   servers: MCPServerWithTools[];
+  /** Called when YAML content changes */
+  onYamlChange?: (yaml: string | null) => void;
+  /** Whether the editor is embedded in an artifact (compact mode) */
+  embedded?: boolean;
 }
 
 /**
  * Inner component that uses React Flow hooks for workflow editor.
  */
-function WorkflowEditorInner({ servers }: WorkflowEditorInnerProps) {
+function WorkflowEditorInner({
+  servers,
+  onYamlChange,
+  embedded = false,
+}: WorkflowEditorInnerProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialWorkflowNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -83,10 +91,8 @@ function WorkflowEditorInner({ servers }: WorkflowEditorInnerProps) {
 
       if (hasConnectionToOutput) {
         const toolData = toolNode.data as ToolNodeData;
-        const workflowName = `${toolData.serverName}-${toolData.tool.name}`.replace(
-          /-/g,
-          "_",
-        );
+        const workflowName =
+          `${toolData.serverName}-${toolData.tool.name}`.replace(/-/g, "_");
 
         workflows.push({
           name: workflowName,
@@ -132,9 +138,8 @@ function WorkflowEditorInner({ servers }: WorkflowEditorInnerProps) {
   }, [nodes, edges]);
 
   /** Generate YAML preview from spec (client-side for POC) */
-  const generateYaml = useCallback(
-    (spec: VirtualMCPServerSpec): string => {
-      return `apiVersion: toolhive.stacklok.dev/v1alpha1
+  const generateYaml = useCallback((spec: VirtualMCPServerSpec): string => {
+    return `apiVersion: toolhive.stacklok.dev/v1alpha1
 kind: VirtualMCPServer
 metadata:
   name: ${spec.name}
@@ -148,9 +153,10 @@ spec:
     conflictResolution: ${spec.aggregation.conflictResolution}
     tools: []
   compositeTools:
-${spec.compositeTools
-  ?.map(
-    (ct) => `    - name: ${ct.name}
+${
+  spec.compositeTools
+    ?.map(
+      (ct) => `    - name: ${ct.name}
       description: ${ct.description}
       steps:
 ${ct.steps
@@ -160,23 +166,25 @@ ${ct.steps
           tool: ${s.tool}`,
   )
   .join("\n")}`,
-  )
-  .join("\n") ?? "    []"}
+    )
+    .join("\n") ?? "    []"
+}
   serviceType: ${spec.serviceType ?? "ClusterIP"}`;
-    },
-    [],
-  );
+  }, []);
 
   // Generate YAML preview when spec changes
   useEffect(() => {
     const spec = buildWorkflowSpec();
     if (!spec) {
       setYaml(null);
+      onYamlChange?.(null);
       return;
     }
 
-    setYaml(generateYaml(spec));
-  }, [buildWorkflowSpec, generateYaml]);
+    const generatedYaml = generateYaml(spec);
+    setYaml(generatedYaml);
+    onYamlChange?.(generatedYaml);
+  }, [buildWorkflowSpec, generateYaml, onYamlChange]);
 
   // Handle new connections - allow tool-to-tool and tool-to-output
   const onConnect: OnConnect = useCallback(
@@ -243,11 +251,7 @@ ${ct.steps
 
   // Handle drag start from palette
   const onPaletteDragStart = useCallback(
-    (
-      event: React.DragEvent,
-      server: MCPServerWithTools,
-      tool: MCPTool,
-    ) => {
+    (event: React.DragEvent, server: MCPServerWithTools, tool: MCPTool) => {
       event.dataTransfer.setData(
         "application/json",
         JSON.stringify({ server, tool }),
@@ -298,11 +302,13 @@ ${ct.steps
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
       {/* Left sidebar - Tool palette */}
-      <div className="w-64 shrink-0">
-        <ToolPalette servers={servers} onDragStart={onPaletteDragStart} />
-      </div>
+      {!embedded && (
+        <div className="w-64 shrink-0">
+          <ToolPalette servers={servers} onDragStart={onPaletteDragStart} />
+        </div>
+      )}
 
       {/* Center - Flow canvas */}
       <div ref={reactFlowWrapper} className="flex-1 bg-muted/30">
@@ -320,42 +326,68 @@ ${ct.steps
         >
           <Background gap={16} size={1} />
           <Controls />
-          <MiniMap
-            nodeColor={(node) => {
-              if (node.type === "output") return "hsl(var(--primary))";
-              return "hsl(var(--muted-foreground))";
-            }}
-            className="!bg-card !border-border"
-          />
+          {!embedded && (
+            <MiniMap
+              nodeColor={(node) => {
+                if (node.type === "output") return "hsl(var(--primary))";
+                return "hsl(var(--muted-foreground))";
+              }}
+              className="!bg-card !border-border"
+            />
+          )}
         </ReactFlow>
       </div>
 
-      {/* Right sidebar - Preview */}
-      <div className="w-80 shrink-0">
-        <VMCPPreviewPanel
-          spec={spec}
-          yaml={yaml}
-          isLoading={isDeploying}
-          onDeploy={handleDeploy}
-        />
-      </div>
+      {/* Right sidebar - Preview (only in standalone mode) */}
+      {!embedded && (
+        <div className="w-80 shrink-0">
+          <VMCPPreviewPanel
+            spec={spec}
+            yaml={yaml}
+            isLoading={isDeploying}
+            onDeploy={handleDeploy}
+          />
+        </div>
+      )}
+
+      {/* Floating palette for embedded mode */}
+      {embedded && (
+        <div className="absolute left-4 top-4 z-10 w-56 rounded-lg border border-border bg-card shadow-lg">
+          <ToolPalette
+            servers={servers}
+            onDragStart={onPaletteDragStart}
+            compact
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 interface WorkflowEditorProps {
   servers: MCPServerWithTools[];
+  /** Called when YAML content changes */
+  onYamlChange?: (yaml: string | null) => void;
+  /** Whether the editor is embedded in an artifact (compact mode) */
+  embedded?: boolean;
 }
 
 /**
  * Main Workflow Editor component.
  * Wrapped in ReactFlowProvider for hook access.
  */
-export function WorkflowEditor({ servers }: WorkflowEditorProps) {
+export function WorkflowEditor({
+  servers,
+  onYamlChange,
+  embedded,
+}: WorkflowEditorProps) {
   return (
     <ReactFlowProvider>
-      <WorkflowEditorInner servers={servers} />
+      <WorkflowEditorInner
+        servers={servers}
+        onYamlChange={onYamlChange}
+        embedded={embedded}
+      />
     </ReactFlowProvider>
   );
 }
-

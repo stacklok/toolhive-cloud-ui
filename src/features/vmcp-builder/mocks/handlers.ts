@@ -4,7 +4,7 @@
  */
 
 import type { RequestHandler } from "msw";
-import { HttpResponse, http, delay } from "msw";
+import { delay, HttpResponse, http } from "msw";
 import {
   mockMCPServersWithTools,
   mockSavedVMCPs,
@@ -15,7 +15,7 @@ import type {
 } from "@/features/vmcp-builder/types";
 
 // In-memory store for created vMCPs (simulates database)
-let vmcpStore: VirtualMCPServer[] = [...mockSavedVMCPs];
+const vmcpStore: VirtualMCPServer[] = [...mockSavedVMCPs];
 
 /**
  * Generate a unique ID for new vMCPs
@@ -194,4 +194,3 @@ ${t.filter.map((f) => `          - ${f}`).join("\n")}`,
     return HttpResponse.json({ yaml });
   }),
 ];
-

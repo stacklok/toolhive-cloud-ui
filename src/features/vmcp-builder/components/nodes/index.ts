@@ -8,4 +8,3 @@ export const nodeTypes = {
   mcpServer: MCPServerNode,
   output: OutputNode,
 } as const;
-

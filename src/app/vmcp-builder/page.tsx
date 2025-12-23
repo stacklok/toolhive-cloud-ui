@@ -1,5 +1,5 @@
-import { VMCPBuilderClient } from "./vmcp-builder-client";
 import { getMCPServersWithTools } from "@/features/vmcp-builder/actions";
+import { VMCPBuilderClient } from "./vmcp-builder-client";
 
 export const metadata = {
   title: "vMCP Builder | ToolHive",
@@ -11,4 +11,3 @@ export default async function VMCPBuilderPage() {
 
   return <VMCPBuilderClient servers={servers} />;
 }
-

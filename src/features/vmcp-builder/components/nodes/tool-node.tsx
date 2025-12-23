@@ -1,11 +1,12 @@
 "use client";
 
+import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
-import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
-import type { ToolNodeData } from "@/features/vmcp-builder/types";
-import { Wrench } from "lucide-react";
+import type {
+  MCPServerWithTools,
+  ToolNodeData,
+} from "@/features/vmcp-builder/types";
 import { ServiceIcon } from "../service-icon";
-import type { MCPServerWithTools } from "@/features/vmcp-builder/types";
 
 /** Node type for Tool nodes */
 type ToolNode = Node<ToolNodeData, "tool">;
@@ -19,7 +20,6 @@ interface ToolNodeComponentProps extends NodeProps<ToolNode> {
  * Represents a single tool from an MCP server.
  */
 function ToolNodeComponent({
-  id,
   data,
   selected,
   servers,
@@ -116,4 +116,3 @@ function ToolNodeComponent({
 }
 
 export const ToolNode = memo(ToolNodeComponent);
-

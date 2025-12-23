@@ -1,9 +1,9 @@
 "use client";
 
-import { memo } from "react";
-import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
-import type { OutputNodeData } from "@/features/vmcp-builder/types";
+import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import { Layers, Zap } from "lucide-react";
+import { memo } from "react";
+import type { OutputNodeData } from "@/features/vmcp-builder/types";
 
 /** Node type for Output nodes */
 type OutputNode = Node<OutputNodeData, "output">;
@@ -74,4 +74,3 @@ function OutputNodeComponent({ data, selected }: NodeProps<OutputNode>) {
 }
 
 export const OutputNode = memo(OutputNodeComponent);
-

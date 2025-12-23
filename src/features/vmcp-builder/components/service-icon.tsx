@@ -1,17 +1,17 @@
 "use client";
 
-import type { ServiceIconName } from "@/features/vmcp-builder/types";
 import {
-  Github,
-  Slack,
-  Ticket,
+  Code,
   Database,
   Folder,
-  Server,
-  Code,
+  Github,
   Globe,
   type LucideIcon,
+  Server,
+  Slack,
+  Ticket,
 } from "lucide-react";
+import type { ServiceIconName } from "@/features/vmcp-builder/types";
 
 const iconMap: Record<ServiceIconName, LucideIcon> = {
   github: Github,
@@ -65,4 +65,3 @@ export function ServiceIcon({
   // Fallback
   return <Server className={className} />;
 }
-

@@ -7,10 +7,31 @@ import {
   ChevronRight,
   Wrench,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  type BuilderCommand,
+  builderCommandBus,
+} from "@/features/artifacts/contexts/builder-command-bus";
+import { ArtifactPart, extractArtifactFromOutput } from "./artifact-part";
 import type { MessagePart } from "./helpers";
 import { ToolOutputContent } from "./tool-output";
+
+/**
+ * Checks if an output contains a builder command
+ */
+function extractBuilderCommand(output: unknown): BuilderCommand | null {
+  if (!output || typeof output !== "object") return null;
+
+  if ("command" in output && output.command) {
+    const cmd = output.command as Record<string, unknown>;
+    if (cmd.action && cmd.timestamp) {
+      return cmd as unknown as BuilderCommand;
+    }
+  }
+
+  return null;
+}
 
 interface ToolCallProps {
   part: MessagePart;
@@ -34,6 +55,20 @@ export function ToolCall({ part }: ToolCallProps) {
   const toolCallId = "toolCallId" in part ? String(part.toolCallId) : "unknown";
   const hasState = "state" in part;
   const state = hasState ? (part as { state?: string }).state : null;
+
+  // Check if output contains an artifact
+  const output = "output" in part ? part.output : undefined;
+  const artifact = useMemo(() => extractArtifactFromOutput(output), [output]);
+
+  // Check if output contains a builder command and send it
+  const builderCommand = useMemo(() => extractBuilderCommand(output), [output]);
+
+  // Send builder command when detected
+  useEffect(() => {
+    if (builderCommand && state === "output-available") {
+      builderCommandBus.sendCommand(builderCommand);
+    }
+  }, [builderCommand, state]);
 
   return (
     <div className="bg-card mb-3 rounded-lg border p-3">
@@ -136,24 +171,31 @@ export function ToolCall({ part }: ToolCallProps) {
 
       {"output" in part && part.output !== undefined && (
         <div className="mt-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsOutputOpen(!isOutputOpen)}
-            className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
-          >
-            {isOutputOpen ? (
-              <ChevronDown className="size-3" />
-            ) : (
-              <ChevronRight className="size-3" />
-            )}
-            <span>Tool Result</span>
-            <CheckCircle className="size-3 text-green-500" />
-          </Button>
-          {isOutputOpen && (
-            <div className="mt-2">
-              <ToolOutputContent output={part.output} />
-            </div>
+          {/* Render artifact if present */}
+          {artifact ? (
+            <ArtifactPart artifact={artifact} />
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOutputOpen(!isOutputOpen)}
+                className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
+              >
+                {isOutputOpen ? (
+                  <ChevronDown className="size-3" />
+                ) : (
+                  <ChevronRight className="size-3" />
+                )}
+                <span>Tool Result</span>
+                <CheckCircle className="size-3 text-green-500" />
+              </Button>
+              {isOutputOpen && (
+                <div className="mt-2">
+                  <ToolOutputContent output={part.output} />
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

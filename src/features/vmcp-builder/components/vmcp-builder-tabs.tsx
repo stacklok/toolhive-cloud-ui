@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { MCPServerWithTools } from "@/features/vmcp-builder/types";
 import { VMCPFlowEditor } from "./vmcp-flow-editor";
 import { WorkflowEditor } from "./workflow-editor";
-import type { MCPServerWithTools } from "@/features/vmcp-builder/types";
 
 interface VMCPBuilderTabsProps {
   servers: MCPServerWithTools[];
@@ -41,4 +41,3 @@ export function VMCPBuilderTabs({ servers }: VMCPBuilderTabsProps) {
     </Tabs>
   );
 }
-

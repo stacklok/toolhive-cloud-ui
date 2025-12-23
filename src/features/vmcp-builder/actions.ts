@@ -1,13 +1,13 @@
 "use server";
 
+import { mockMCPServersWithTools } from "./mocks/fixtures";
 import type {
+  ListMCPServersWithToolsResponse,
+  ListVMCPResponse,
   MCPServerWithTools,
   VirtualMCPServer,
   VirtualMCPServerSpec,
-  ListMCPServersWithToolsResponse,
-  ListVMCPResponse,
 } from "./types";
-import { mockMCPServersWithTools } from "./mocks/fixtures";
 
 // For POC, use mock server URL. In production, this would be the API URL.
 const API_BASE = process.env.VMCP_API_URL ?? "http://localhost:8080";
@@ -114,4 +114,3 @@ export async function deleteVMCP(id: string): Promise<void> {
     throw new Error("Failed to delete vMCP");
   }
 }
-

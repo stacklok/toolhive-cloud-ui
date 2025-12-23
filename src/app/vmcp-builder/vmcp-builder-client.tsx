@@ -1,10 +1,10 @@
 "use client";
 
-import { VMCPBuilderTabs } from "@/features/vmcp-builder";
-import type { MCPServerWithTools } from "@/features/vmcp-builder/types";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { VMCPBuilderTabs } from "@/features/vmcp-builder";
+import type { MCPServerWithTools } from "@/features/vmcp-builder/types";
 
 interface VMCPBuilderClientProps {
   servers: MCPServerWithTools[];
@@ -53,4 +53,3 @@ export function VMCPBuilderClient({ servers }: VMCPBuilderClientProps) {
     </div>
   );
 }
-

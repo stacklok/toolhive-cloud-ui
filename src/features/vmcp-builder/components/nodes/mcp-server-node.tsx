@@ -1,11 +1,11 @@
 "use client";
 
+import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
+import { Wrench } from "lucide-react";
 import { memo, useCallback } from "react";
-import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
-import type { MCPServerNodeData } from "@/features/vmcp-builder/types";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Wrench } from "lucide-react";
+import type { MCPServerNodeData } from "@/features/vmcp-builder/types";
 import { ServiceIcon } from "../service-icon";
 
 /** Node type for MCP Server nodes */
@@ -57,7 +57,10 @@ function MCPServerNodeComponent({
           </h3>
           <p className="text-xs text-zinc-400 truncate">v{server.version}</p>
         </div>
-        <Badge variant="secondary" className="shrink-0 bg-zinc-700 text-zinc-200">
+        <Badge
+          variant="secondary"
+          className="shrink-0 bg-zinc-700 text-zinc-200"
+        >
           {selectedTools.length}/{server.tools.length}
         </Badge>
       </div>
@@ -112,4 +115,3 @@ function MCPServerNodeComponent({
 }
 
 export const MCPServerNode = memo(MCPServerNodeComponent);
-
