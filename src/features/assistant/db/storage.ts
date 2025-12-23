@@ -136,10 +136,8 @@ export async function saveMessages(
   }
 
   await db.transaction("rw", db.messages, db.conversations, async () => {
-    // Delete existing messages for this conversation
-    await db.messages.where("conversationId").equals(conversationId).delete();
-    // Add new messages
-    await db.messages.bulkAdd(storedMessages);
+    // Upsert messages (insert if new, update if exists)
+    await db.messages.bulkPut(storedMessages);
     // Update conversation timestamp
     await db.conversations.update(conversationId, {
       updatedAt: Date.now(),
