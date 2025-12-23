@@ -15,6 +15,7 @@ interface ChatHeaderProps {
   onDeleteConversation: (id: string) => void;
   onNewConversation: () => void;
   onClearAll: () => Promise<void>;
+  hasMessages: boolean;
 }
 
 export function ChatHeader({
@@ -24,6 +25,7 @@ export function ChatHeader({
   onDeleteConversation,
   onNewConversation,
   onClearAll,
+  hasMessages,
 }: ChatHeaderProps) {
   const { confirm, ConfirmDialog } = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -88,7 +90,7 @@ export function ChatHeader({
           onClick={handleNewConversation}
           variant="secondary"
           size="sm"
-          className="cursor-pointer"
+          disabled={!hasMessages}
         >
           <Plus className="mr-2 size-4" />
           New Conversation

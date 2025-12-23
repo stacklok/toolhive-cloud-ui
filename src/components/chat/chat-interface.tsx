@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useChatContext } from "@/features/assistant/contexts/chat-context";
@@ -9,7 +11,6 @@ import { ChatEmptyState } from "./chat-empty-state";
 import { ChatHeader } from "./chat-header";
 import { ChatInputPrompt } from "./chat-input";
 import { ChatMessages } from "./chat-messages";
-import { ErrorAlert } from "./error-alert";
 
 export function ChatInterface() {
   const {
@@ -38,6 +39,17 @@ export function ChatInterface() {
 
   const isLoading = status === "streaming" || status === "submitted";
   const hasMessages = messages.length > 0;
+  const previousErrorRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const errorMessage = error?.message ?? null;
+    if (errorMessage && errorMessage !== previousErrorRef.current) {
+      toast.error("Something went wrong", {
+        description: errorMessage,
+      });
+    }
+    previousErrorRef.current = errorMessage;
+  }, [error]);
 
   const handleCancelRequest = async () => {
     await stop();
@@ -57,6 +69,7 @@ export function ChatInterface() {
         onDeleteConversation={deleteConversation}
         onNewConversation={handleNewConversation}
         onClearAll={clearAllConversations}
+        hasMessages={hasMessages}
       />
 
       {hasMessages && <Separator />}
@@ -91,8 +104,6 @@ export function ChatInterface() {
           </Button>
         )}
       </div>
-
-      <ErrorAlert error={error?.message ?? null} />
 
       {hasMessages && (
         <div className="w-full">
