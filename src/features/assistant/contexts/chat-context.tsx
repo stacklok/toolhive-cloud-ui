@@ -33,6 +33,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const { selectedServers, enabledTools } = useMcpSettings();
   const chatHistory = useChatHistory();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasLoadedInitialConversation = useRef(false);
 
   // Use refs to access current values in the transport callback
   const selectedModelRef = useRef(selectedModel);
@@ -78,15 +79,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     transport,
   });
 
-  // Load last conversation on mount
+  // Load last conversation on mount only (not on subsequent updates)
   useEffect(() => {
     async function loadLastConversation() {
       if (chatHistory.isLoading) {
         return;
       }
 
+      // Skip if already loaded initial conversation
+      if (hasLoadedInitialConversation.current) {
+        return;
+      }
+
       // Only load if no messages are already loaded
       if (chatHelpers.messages.length > 0) {
+        hasLoadedInitialConversation.current = true;
         return;
       }
 
@@ -111,6 +118,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           );
         }
       }
+
+      hasLoadedInitialConversation.current = true;
     }
 
     loadLastConversation();

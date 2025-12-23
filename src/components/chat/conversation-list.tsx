@@ -119,34 +119,32 @@ function ConversationItem({
     addSuffix: true,
   });
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete();
-  };
-
   return (
-    <button
-      type="button"
-      onClick={onSelect}
+    <div
       className={cn(
-        "group flex w-full items-start gap-2 rounded-md p-2 text-left transition-colors",
+        "group flex w-full items-center gap-2 rounded-md p-2 transition-colors",
         "hover:bg-accent hover:text-accent-foreground",
         isActive && "bg-accent text-accent-foreground",
       )}
     >
-      <MessageSquare className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{title}</p>
-        <p className="text-muted-foreground truncate text-xs">{timeAgo}</p>
-      </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-        onClick={handleDelete}
+      <button
+        type="button"
+        onClick={onSelect}
+        className="flex min-w-0 flex-1 items-center gap-2 text-left"
       >
-        <Trash2 className="h-3 w-3" />
-      </Button>
-    </button>
+        <MessageSquare className="text-muted-foreground h-4 w-4 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{title}</p>
+          <p className="text-muted-foreground truncate text-xs">{timeAgo}</p>
+        </div>
+      </button>
+      <button
+        type="button"
+        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 rounded p-1 opacity-0 transition-opacity hover:bg-red-100 hover:text-red-600 group-hover:opacity-100 dark:hover:bg-red-900/20"
+        onClick={onDelete}
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
   );
 }

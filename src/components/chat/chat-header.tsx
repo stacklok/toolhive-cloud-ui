@@ -62,10 +62,10 @@ export function ChatHeader({
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="hover:bg-accent flex items-center gap-1 rounded-md p-1 transition-colors"
+              className="hover:bg-accent flex items-center gap-2 rounded-md p-1 transition-colors"
             >
               <h1 className="text-2xl font-bold">Assistant</h1>
-              <ChevronDown className="text-muted-foreground h-4 w-4" />
+              <ChevronDown className="text-muted-foreground ml-1 h-4 w-4" />
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" className="p-0">
