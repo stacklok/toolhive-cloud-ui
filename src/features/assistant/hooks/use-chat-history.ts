@@ -6,12 +6,30 @@ import {
   createConversation,
   deleteConversation,
   getAllConversations,
+  getConversation,
   getMessages,
   type StoredConversation,
   saveMessages,
   storedMessagesToUIMessages,
   updateConversation,
 } from "../db";
+
+/**
+ * Extracts title from the first user message.
+ */
+function extractTitleFromMessages(messages: UIMessage[]): string | null {
+  const firstUserMessage = messages.find((m) => m.role === "user");
+  if (!firstUserMessage) return null;
+
+  const textContent = firstUserMessage.parts
+    .filter((p) => p.type === "text")
+    .map((p) => ("text" in p ? p.text : ""))
+    .join("")
+    .trim()
+    .slice(0, 100);
+
+  return textContent || null;
+}
 
 /**
  * Hook for managing chat history with Dexie.
@@ -83,38 +101,23 @@ export function useChatHistory() {
 
     let conversationId = currentConversationId;
 
-    // Create conversation if it doesn't exist
     if (!conversationId) {
       conversationId = await startNewConversation(model, selectedServers);
     }
 
-    // Update conversation metadata if model/servers changed
     if (model || selectedServers) {
       await updateConversation(conversationId, { model, selectedServers });
     }
 
-    // Save messages
     await saveMessages(conversationId, messages);
 
-    // Update conversation title from first user message if not set
-    const conversation = await getAllConversations();
-    const currentConv = conversation.find((c) => c.id === conversationId);
+    // Update title from first user message if not set
+    const currentConv = await getConversation(conversationId);
     if (currentConv && !currentConv.title) {
-      const firstUserMessage = messages.find((m) => m.role === "user");
-      if (firstUserMessage) {
-        const textContent = firstUserMessage.parts
-          .filter((p) => p.type === "text")
-          .map((p) => ("text" in p ? p.text : ""))
-          .join("")
-          .trim()
-          .slice(0, 100); // Limit title length
-
-        if (textContent) {
-          await updateConversation(conversationId, {
-            title: textContent,
-          });
-          await refreshConversations();
-        }
+      const title = extractTitleFromMessages(messages);
+      if (title) {
+        await updateConversation(conversationId, { title });
+        await refreshConversations();
       }
     }
   };
