@@ -2,8 +2,16 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { createContext, useContext, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { DEFAULT_MODEL } from "@/features/assistant/constants";
+import { useChatHistory } from "@/features/assistant/hooks/use-chat-history";
 import { useMcpSettings } from "@/features/assistant/hooks/use-mcp-settings";
 
 type ChatHelpers = ReturnType<typeof useChat>;
@@ -19,6 +27,8 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
   const { selectedServers, enabledTools } = useMcpSettings();
+  const chatHistory = useChatHistory();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use refs to access current values in the transport callback
   const selectedModelRef = useRef(selectedModel);
@@ -64,8 +74,47 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     transport,
   });
 
+  // Auto-save messages to IndexedDB with debouncing
+  useEffect(() => {
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Skip if no messages or still streaming
+    if (
+      chatHelpers.messages.length === 0 ||
+      chatHelpers.status === "streaming"
+    ) {
+      return;
+    }
+
+    // Debounce save to avoid too many writes during rapid updates
+    saveTimeoutRef.current = setTimeout(() => {
+      const serversArray = Array.from(selectedServers);
+      chatHistory
+        .saveCurrentMessages(chatHelpers.messages, selectedModel, serversArray)
+        .catch((error) => {
+          console.error("[ChatProvider] Failed to save messages:", error);
+        });
+    }, 500); // Wait 500ms after last change
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [
+    chatHelpers.messages,
+    chatHelpers.status,
+    selectedModel,
+    selectedServers,
+    chatHistory,
+  ]);
+
   const clearMessages = () => {
     chatHelpers.setMessages([]);
+    chatHistory.clearCurrentConversation();
   };
 
   const value: ChatContextValue = {

@@ -25,7 +25,7 @@ export {
   type ToolInfo,
 } from "./contexts/mcp-settings-context";
 export { ModelsProvider, useModels } from "./contexts/models-context";
-
+export { useChatHistory } from "./hooks/use-chat-history";
 // Hooks
 export { useMcpSettings } from "./hooks/use-mcp-settings";
 export { useMcpToolsFetch } from "./hooks/use-mcp-tools-fetch";
