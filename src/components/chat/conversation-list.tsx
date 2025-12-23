@@ -84,7 +84,7 @@ export function ConversationList({
             {searchQuery ? "No conversations found" : "No conversations yet"}
           </div>
         ) : (
-          <div className="p-1">
+          <div className="space-y-1 p-1">
             {filteredConversations.map((conv) => (
               <ConversationItem
                 key={conv.id}
