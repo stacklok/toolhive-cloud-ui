@@ -17,13 +17,12 @@ interface UseChatPersistenceOptions {
 }
 
 interface UseChatPersistenceResult {
-  /** Whether we're currently loading a conversation (skip auto-save) */
   isLoadingConversation: React.RefObject<boolean>;
 }
 
 /**
  * Handles chat persistence: auto-loading last conversation on mount
- * and auto-saving messages to IndexedDB with debouncing.
+ * and auto-saving messages when streaming completes.
  */
 export function useChatPersistence({
   chatHistory,
@@ -34,52 +33,44 @@ export function useChatPersistence({
   setSelectedModel,
   selectedServers,
 }: UseChatPersistenceOptions): UseChatPersistenceResult {
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasLoadedInitialConversation = useRef(false);
   const isLoadingConversationRef = useRef(false);
+  const previousStatusRef = useRef(status);
 
   // Auto-load last conversation on mount
   useEffect(() => {
-    async function loadLastConversation() {
-      if (chatHistory.isLoading) {
-        return;
-      }
+    if (chatHistory.isLoading || hasLoadedInitialConversation.current) {
+      return;
+    }
 
-      if (hasLoadedInitialConversation.current) {
-        return;
-      }
+    if (messages.length > 0) {
+      hasLoadedInitialConversation.current = true;
+      return;
+    }
 
-      if (messages.length > 0) {
-        hasLoadedInitialConversation.current = true;
-        return;
-      }
+    if (chatHistory.conversations.length > 0) {
+      const lastConversation = chatHistory.conversations[0];
+      isLoadingConversationRef.current = true;
 
-      if (chatHistory.conversations.length > 0) {
-        const lastConversation = chatHistory.conversations[0];
-        try {
-          isLoadingConversationRef.current = true;
-          const loadedMessages = await chatHistory.loadConversation(
-            lastConversation.id,
-          );
+      chatHistory
+        .loadConversation(lastConversation.id)
+        .then((loadedMessages) => {
           if (loadedMessages.length > 0) {
             setMessages(loadedMessages);
             if (lastConversation.model) {
               setSelectedModel(lastConversation.model);
             }
           }
-        } catch (error) {
+        })
+        .catch((error) => {
+          console.error("[useChatPersistence] Failed to load:", error);
+        })
+        .finally(() => {
           isLoadingConversationRef.current = false;
-          console.error(
-            "[useChatPersistence] Failed to load last conversation:",
-            error,
-          );
-        }
-      }
-
-      hasLoadedInitialConversation.current = true;
+        });
     }
 
-    loadLastConversation();
+    hasLoadedInitialConversation.current = true;
   }, [
     chatHistory.isLoading,
     chatHistory.conversations,
@@ -89,38 +80,27 @@ export function useChatPersistence({
     setSelectedModel,
   ]);
 
-  // Auto-save messages with debouncing
+  // Save when streaming completes (status changes from "streaming" to "ready")
   useEffect(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+    const wasStreaming = previousStatusRef.current === "streaming";
+    const isNowReady = status === "ready";
+    previousStatusRef.current = status;
 
-    // Skip if loading a conversation (avoid updating timestamp on load)
-    if (isLoadingConversationRef.current) {
-      isLoadingConversationRef.current = false;
+    if (!wasStreaming || !isNowReady) {
       return;
     }
 
-    // Skip if no messages or still streaming
-    if (messages.length === 0 || status === "streaming") {
+    if (messages.length === 0 || isLoadingConversationRef.current) {
       return;
     }
 
-    saveTimeoutRef.current = setTimeout(() => {
-      const serversArray = Array.from(selectedServers);
-      chatHistory
-        .saveCurrentMessages(messages, selectedModel, serversArray)
-        .catch((error) => {
-          console.error("[useChatPersistence] Failed to save messages:", error);
-        });
-    }, 500);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [messages, status, selectedModel, selectedServers, chatHistory]);
+    const serversArray = Array.from(selectedServers);
+    chatHistory
+      .saveCurrentMessages(messages, selectedModel, serversArray)
+      .catch((error) => {
+        console.error("[useChatPersistence] Failed to save:", error);
+      });
+  }, [status, messages, selectedModel, selectedServers, chatHistory]);
 
   return {
     isLoadingConversation: isLoadingConversationRef,
