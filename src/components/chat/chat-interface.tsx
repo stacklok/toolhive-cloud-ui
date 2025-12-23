@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChatStatus, FileUIPart, UIMessage } from "ai";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useAutoScroll } from "@/hooks/use-auto-scroll";
@@ -20,7 +20,6 @@ interface ChatInterfaceProps {
   sendMessage: (args: { text: string; files?: FileUIPart[] }) => Promise<void>;
   selectedModel: string;
   onModelChange: (model: string) => void;
-  isLoadingHistory?: boolean;
 }
 
 export function ChatInterface({
@@ -32,7 +31,6 @@ export function ChatInterface({
   sendMessage,
   selectedModel,
   onModelChange,
-  isLoadingHistory = false,
 }: ChatInterfaceProps) {
   const {
     messagesEndRef,
@@ -51,11 +49,7 @@ export function ChatInterface({
       {hasMessages && <Separator />}
 
       <div className="relative flex-1 overflow-hidden">
-        {isLoadingHistory ? (
-          <div className="flex h-full items-center justify-center">
-            <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-          </div>
-        ) : hasMessages ? (
+        {hasMessages ? (
           <ChatMessages
             messages={messages}
             status={status}
@@ -63,7 +57,7 @@ export function ChatInterface({
             messagesEndRef={messagesEndRef}
             messagesContainerRef={messagesContainerRef}
           />
-        ) : !isLoadingHistory ? (
+        ) : (
           <ChatEmptyState
             status={status}
             onSendMessage={sendMessage}
@@ -71,7 +65,7 @@ export function ChatInterface({
             selectedModel={selectedModel}
             onModelChange={onModelChange}
           />
-        ) : null}
+        )}
 
         {showScrollToBottom && (
           <Button
