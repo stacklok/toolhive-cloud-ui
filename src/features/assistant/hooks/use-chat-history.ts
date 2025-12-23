@@ -4,6 +4,7 @@ import type { UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import {
   createConversation,
+  deleteAllConversations,
   deleteConversation,
   getAllConversations,
   getConversation,
@@ -141,6 +142,15 @@ export function useChatHistory() {
     setConversations(allConversations);
   };
 
+  /**
+   * Clears all conversations and messages.
+   */
+  const clearAll = async (): Promise<void> => {
+    await deleteAllConversations();
+    setCurrentConversationId(null);
+    setConversations([]);
+  };
+
   return {
     currentConversationId,
     conversations,
@@ -150,5 +160,6 @@ export function useChatHistory() {
     saveCurrentMessages,
     deleteConversation: deleteConv,
     refreshConversations,
+    clearAll,
   };
 }

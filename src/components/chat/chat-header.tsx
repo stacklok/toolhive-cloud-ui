@@ -14,6 +14,7 @@ interface ChatHeaderProps {
   onSelectConversation: (id: string) => void;
   onDeleteConversation: (id: string) => void;
   onNewConversation: () => void;
+  onClearAll: () => Promise<void>;
 }
 
 export function ChatHeader({
@@ -22,6 +23,7 @@ export function ChatHeader({
   onSelectConversation,
   onDeleteConversation,
   onNewConversation,
+  onClearAll,
 }: ChatHeaderProps) {
   const { confirm, ConfirmDialog } = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -42,6 +44,20 @@ export function ChatHeader({
     }
   };
 
+  const handleClearAll = async () => {
+    const confirmed = await confirm({
+      title: "Clear all conversations?",
+      description:
+        "This will permanently delete all conversations and messages.",
+      confirmText: "Clear All",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
+      await onClearAll();
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-between border-b p-4">
@@ -58,6 +74,7 @@ export function ChatHeader({
               currentConversationId={currentConversationId}
               onSelectConversation={onSelectConversation}
               onDeleteConversation={handleDeleteConversation}
+              onClearAll={handleClearAll}
               onClose={() => setIsOpen(false)}
             />
           </PopoverContent>

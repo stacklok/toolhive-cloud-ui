@@ -177,3 +177,13 @@ export function storedMessagesToUIMessages(
 export async function deleteMessages(conversationId: string): Promise<void> {
   await db.messages.where("conversationId").equals(conversationId).delete();
 }
+
+/**
+ * Deletes all conversations and messages.
+ */
+export async function deleteAllConversations(): Promise<void> {
+  await db.transaction("rw", db.conversations, db.messages, async () => {
+    await db.messages.clear();
+    await db.conversations.clear();
+  });
+}

@@ -26,6 +26,7 @@ export function ChatInterface() {
     currentConversationId,
     loadConversation,
     deleteConversation,
+    clearAllConversations,
   } = useChatContext();
 
   const {
@@ -55,6 +56,7 @@ export function ChatInterface() {
         onSelectConversation={loadConversation}
         onDeleteConversation={deleteConversation}
         onNewConversation={handleNewConversation}
+        onClearAll={clearAllConversations}
       />
 
       {hasMessages && <Separator />}

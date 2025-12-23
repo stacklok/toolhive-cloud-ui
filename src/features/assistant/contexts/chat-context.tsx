@@ -18,6 +18,7 @@ interface ChatContextValue extends ChatHelpers {
   currentConversationId: string | null;
   loadConversation: (id: string) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
+  clearAllConversations: () => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -82,6 +83,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleClearAll = async () => {
+    await chatHistory.clearAll();
+    chatHelpers.setMessages([]);
+  };
+
   const value: ChatContextValue = {
     ...chatHelpers,
     selectedModel,
@@ -91,6 +97,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     currentConversationId: chatHistory.currentConversationId,
     loadConversation: handleLoadConversation,
     deleteConversation: handleDeleteConversation,
+    clearAllConversations: handleClearAll,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

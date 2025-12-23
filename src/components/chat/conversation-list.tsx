@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { MessageSquare, Search, Trash2 } from "lucide-react";
+import { MessageSquare, Search, Trash, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ interface ConversationListProps {
   currentConversationId: string | null;
   onSelectConversation: (id: string) => void;
   onDeleteConversation: (id: string) => void;
+  onClearAll: () => void;
   onClose?: () => void;
 }
 
@@ -22,6 +23,7 @@ export function ConversationList({
   currentConversationId,
   onSelectConversation,
   onDeleteConversation,
+  onClearAll,
   onClose,
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,6 +78,19 @@ export function ConversationList({
           </div>
         )}
       </ScrollArea>
+
+      {conversations.length > 0 && (
+        <div className="border-t p-2">
+          <Button
+            variant="ghost"
+            className="text-muted-foreground hover:text-destructive w-full justify-start"
+            onClick={onClearAll}
+          >
+            <Trash className="mr-2 size-4" />
+            Clear all messages
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
