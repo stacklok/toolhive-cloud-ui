@@ -11,12 +11,12 @@ export async function Navbar() {
 
   return (
     <header className="w-full border-b bg-muted/50 flex items-center justify-between pl-4 pr-4 h-16">
+      <NavbarLogo />
       <div className="flex items-center">
-        <AssistantTrigger />
+        {session?.user?.name && <UserMenu userName={session.user.name} />}
         <div className="ml-2 mr-4 h-6 w-px bg-muted-foreground/30" />
-        <NavbarLogo />
+        <AssistantTrigger />
       </div>
-      {session?.user?.name && <UserMenu userName={session.user.name} />}
     </header>
   );
 }

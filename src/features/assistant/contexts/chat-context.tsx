@@ -1,9 +1,11 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { createContext, useContext, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { DEFAULT_MODEL } from "@/features/assistant/constants";
+import { useChatHistory } from "@/features/assistant/hooks/use-chat-history";
+import { useChatPersistence } from "@/features/assistant/hooks/use-chat-persistence";
+import { useChatTransport } from "@/features/assistant/hooks/use-chat-transport";
 import { useMcpSettings } from "@/features/assistant/hooks/use-mcp-settings";
 
 type ChatHelpers = ReturnType<typeof useChat>;
@@ -12,6 +14,11 @@ interface ChatContextValue extends ChatHelpers {
   selectedModel: string;
   setSelectedModel: (model: string) => void;
   clearMessages: () => void;
+  conversations: ReturnType<typeof useChatHistory>["conversations"];
+  currentConversationId: string | null;
+  loadConversation: (id: string) => Promise<void>;
+  deleteConversation: (id: string) => Promise<void>;
+  clearAllConversations: () => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -19,52 +26,65 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
   const { selectedServers, enabledTools } = useMcpSettings();
+  const chatHistory = useChatHistory();
 
-  // Use refs to access current values in the transport callback
-  const selectedModelRef = useRef(selectedModel);
-  selectedModelRef.current = selectedModel;
+  const transport = useChatTransport({
+    selectedModel,
+    selectedServers,
+    enabledTools,
+  });
 
-  const selectedServersRef = useRef(selectedServers);
-  selectedServersRef.current = selectedServers;
+  const chatHelpers = useChat({ transport });
 
-  const enabledToolsRef = useRef(enabledTools);
-  enabledToolsRef.current = enabledTools;
-
-  // Create transport with prepareSendMessagesRequest to inject settings dynamically
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        prepareSendMessagesRequest: ({ messages, body, ...rest }) => {
-          // Convert Set to array for selectedServers
-          const serversArray = Array.from(selectedServersRef.current);
-
-          // Convert Map<string, Set<string>> to Record<string, string[]>
-          const toolsRecord: Record<string, string[]> = {};
-          for (const [serverName, toolsSet] of enabledToolsRef.current) {
-            toolsRecord[serverName] = Array.from(toolsSet);
-          }
-
-          return {
-            ...rest,
-            body: {
-              messages,
-              ...body,
-              model: selectedModelRef.current,
-              selectedServers: serversArray,
-              enabledTools: toolsRecord,
-            },
-          };
-        },
-      }),
-    [],
-  );
-
-  const chatHelpers = useChat({
-    transport,
+  const { isLoadingConversation } = useChatPersistence({
+    chatHistory,
+    messages: chatHelpers.messages,
+    status: chatHelpers.status,
+    setMessages: chatHelpers.setMessages,
+    selectedModel,
+    setSelectedModel,
+    selectedServers,
   });
 
   const clearMessages = () => {
+    chatHelpers.setMessages([]);
+    chatHistory
+      .startNewConversation(selectedModel, Array.from(selectedServers))
+      .catch((error) => {
+        console.error(
+          "[ChatProvider] Failed to start new conversation:",
+          error,
+        );
+      });
+  };
+
+  const handleLoadConversation = async (conversationId: string) => {
+    isLoadingConversation.current = true;
+    try {
+      const messages = await chatHistory.loadConversation(conversationId);
+      chatHelpers.setMessages(messages);
+
+      const conv = chatHistory.conversations.find(
+        (c) => c.id === conversationId,
+      );
+      if (conv?.model) {
+        setSelectedModel(conv.model);
+      }
+    } catch (error) {
+      isLoadingConversation.current = false;
+      throw error;
+    }
+  };
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    await chatHistory.deleteConversation(conversationId);
+    if (conversationId === chatHistory.currentConversationId) {
+      chatHelpers.setMessages([]);
+    }
+  };
+
+  const handleClearAll = async () => {
+    await chatHistory.clearAll();
     chatHelpers.setMessages([]);
   };
 
@@ -73,6 +93,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     selectedModel,
     setSelectedModel,
     clearMessages,
+    conversations: chatHistory.conversations,
+    currentConversationId: chatHistory.currentConversationId,
+    loadConversation: handleLoadConversation,
+    deleteConversation: handleDeleteConversation,
+    clearAllConversations: handleClearAll,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

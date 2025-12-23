@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, PanelLeftClose } from "lucide-react";
+import { MessageCircle, PanelRightClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -13,12 +13,10 @@ import { AssistantSidebarContent } from "./sidebar-content";
 export function AssistantSidebar() {
   const { state, toggleSidebar, isMobile, openMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
-
-  // Show content when: on mobile and sheet is open, OR on desktop and not collapsed
   const showContent = isMobile ? openMobile : !isCollapsed;
 
   return (
-    <Sidebar side="left" collapsible="offcanvas">
+    <Sidebar side="right" collapsible="offcanvas">
       <SidebarHeader className="flex-row items-center justify-between border-b px-4 py-3 h-16">
         <div className="flex items-center gap-2">
           <MessageCircle className="size-5" />
@@ -31,7 +29,7 @@ export function AssistantSidebar() {
           onClick={toggleSidebar}
           aria-label="Close sidebar"
         >
-          <PanelLeftClose className="size-4" />
+          <PanelRightClose className="size-4" />
         </Button>
       </SidebarHeader>
       <SidebarContent className="p-0">

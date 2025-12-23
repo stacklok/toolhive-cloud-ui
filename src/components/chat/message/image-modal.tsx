@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -42,14 +43,15 @@ export function ImageModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
       onClick={onClose}
     >
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onClose}
-        className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+        className="absolute top-4 right-4 rounded-full bg-white/10 text-white hover:bg-white/20"
         aria-label="Close modal"
       >
         <X className="size-6" />
-      </button>
+      </Button>
 
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only prevents backdrop close */}
       {/* biome-ignore lint/a11y/noStaticElementInteractions: container for image */}
