@@ -14,6 +14,7 @@ export function AssistantSidebarContent() {
     clearMessages,
     selectedModel,
     setSelectedModel,
+    isLoadingHistory,
   } = useChatContext();
 
   return (
@@ -30,6 +31,7 @@ export function AssistantSidebarContent() {
         sendMessage={sendMessage}
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
+        isLoadingHistory={isLoadingHistory}
       />
     </div>
   );

@@ -20,6 +20,7 @@ interface ChatContextValue extends ChatHelpers {
   selectedModel: string;
   setSelectedModel: (model: string) => void;
   clearMessages: () => void;
+  isLoadingHistory: boolean;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -170,6 +171,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     selectedModel,
     setSelectedModel,
     clearMessages,
+    isLoadingHistory: chatHistory.isLoading,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
