@@ -9,7 +9,7 @@ class ChatDatabase extends Dexie {
   messages!: EntityTable<StoredMessage, "id">;
 
   constructor() {
-    super("ToolHiveChatDB");
+    super("ToolHiveCloudUIChatDB");
 
     this.version(1).stores({
       conversations: "id, createdAt, updatedAt",
