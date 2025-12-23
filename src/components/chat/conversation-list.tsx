@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { MessageSquare, Plus, Search, Trash2 } from "lucide-react";
+import { MessageSquare, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,6 @@ interface ConversationListProps {
   currentConversationId: string | null;
   onSelectConversation: (id: string) => void;
   onDeleteConversation: (id: string) => void;
-  onNewConversation: () => void;
   onClose?: () => void;
 }
 
@@ -23,7 +22,6 @@ export function ConversationList({
   currentConversationId,
   onSelectConversation,
   onDeleteConversation,
-  onNewConversation,
   onClose,
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,11 +43,6 @@ export function ConversationList({
     onClose?.();
   };
 
-  const handleNewConversation = () => {
-    onNewConversation();
-    onClose?.();
-  };
-
   return (
     <div className="flex w-72 flex-col">
       <div className="border-b p-2">
@@ -62,17 +55,6 @@ export function ConversationList({
             className="pl-8"
           />
         </div>
-      </div>
-
-      <div className="border-b p-2">
-        <Button
-          variant="outline"
-          className="w-full justify-start"
-          onClick={handleNewConversation}
-        >
-          <Plus className="mr-2 size-4" />
-          New conversation
-        </Button>
       </div>
 
       <ScrollArea className="max-h-80">
@@ -141,7 +123,7 @@ function ConversationItem({
         variant="ghost"
         size="icon"
         onClick={onDelete}
-        className="text-muted-foreground hover:text-foreground size-6 shrink-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
+        className="text-muted-foreground size-6 shrink-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
       >
         <Trash2 className="size-4" />
       </Button>

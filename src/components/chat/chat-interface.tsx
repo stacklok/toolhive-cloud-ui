@@ -50,8 +50,6 @@ export function ChatInterface() {
   return (
     <div className="flex h-full flex-col px-8 pb-4">
       <ChatHeader
-        hasMessages={hasMessages}
-        onClearMessages={clearMessages}
         conversations={conversations}
         currentConversationId={currentConversationId}
         onSelectConversation={loadConversation}

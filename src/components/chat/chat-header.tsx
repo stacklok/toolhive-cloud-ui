@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Trash2 } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import { useState } from "react";
 import type { StoredConversation } from "@/features/assistant/db";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -9,8 +9,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ConversationList } from "./conversation-list";
 
 interface ChatHeaderProps {
-  hasMessages: boolean;
-  onClearMessages?: () => void;
   conversations: StoredConversation[];
   currentConversationId: string | null;
   onSelectConversation: (id: string) => void;
@@ -19,8 +17,6 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({
-  hasMessages,
-  onClearMessages,
   conversations,
   currentConversationId,
   onSelectConversation,
@@ -30,17 +26,8 @@ export function ChatHeader({
   const { confirm, ConfirmDialog } = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleClearMessages = async () => {
-    if (!onClearMessages) return;
-    const confirmed = await confirm({
-      title: "Clear all messages?",
-      description: "Are you sure you want to delete all messages?",
-      confirmText: "Clear",
-      cancelText: "Cancel",
-    });
-    if (confirmed) {
-      onClearMessages();
-    }
+  const handleNewConversation = () => {
+    onNewConversation();
   };
 
   const handleDeleteConversation = async (id: string) => {
@@ -71,7 +58,6 @@ export function ChatHeader({
               currentConversationId={currentConversationId}
               onSelectConversation={onSelectConversation}
               onDeleteConversation={handleDeleteConversation}
-              onNewConversation={onNewConversation}
               onClose={() => setIsOpen(false)}
             />
           </PopoverContent>
@@ -81,17 +67,15 @@ export function ChatHeader({
           Chat with AI using MCP servers
         </p>
 
-        {hasMessages && onClearMessages && (
-          <Button
-            onClick={handleClearMessages}
-            variant="secondary"
-            size="sm"
-            className="cursor-pointer"
-          >
-            <Trash2 className="mr-2 size-4" />
-            Clear Chat
-          </Button>
-        )}
+        <Button
+          onClick={handleNewConversation}
+          variant="secondary"
+          size="sm"
+          className="cursor-pointer"
+        >
+          <Plus className="mr-2 size-4" />
+          New Conversation
+        </Button>
       </div>
       {ConfirmDialog}
     </>
