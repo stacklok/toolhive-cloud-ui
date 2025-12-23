@@ -1,3 +1,5 @@
+"use client";
+
 import type { UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import {
