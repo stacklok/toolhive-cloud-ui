@@ -122,29 +122,32 @@ function ConversationItem({
   return (
     <div
       className={cn(
-        "group grid w-full grid-cols-[1fr_auto] items-center gap-2 rounded-md p-2 transition-colors",
+        "group grid w-full grid-cols-[1fr_auto] items-center gap-1 rounded-md transition-colors",
         "hover:bg-accent hover:text-accent-foreground",
         isActive && "bg-accent text-accent-foreground",
       )}
     >
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={onSelect}
-        className="flex min-w-0 items-center gap-2 text-left"
+        className="h-auto min-w-0 justify-start gap-2 px-2 py-2"
       >
         <MessageSquare className="text-muted-foreground h-4 w-4 shrink-0" />
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
           <p className="truncate text-sm font-medium">{title}</p>
-          <p className="text-muted-foreground truncate text-xs">{timeAgo}</p>
+          <p className="text-muted-foreground truncate text-xs font-normal">
+            {timeAgo}
+          </p>
         </div>
-      </button>
-      <button
-        type="button"
-        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 rounded p-1 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onDelete}
+        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
       >
         <Trash2 className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   );
 }
