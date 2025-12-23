@@ -5,7 +5,6 @@ import { MessageSquare, Search, Trash, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import type { StoredConversation } from "@/features/assistant/db";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +45,7 @@ export function ConversationList({
   };
 
   return (
-    <div className="flex w-72 flex-col">
+    <div className="flex w-72 flex-col overflow-hidden">
       <div className="border-b p-2">
         <div className="relative">
           <Search className="text-muted-foreground absolute left-2.5 top-2.5 size-4" />
@@ -59,7 +58,7 @@ export function ConversationList({
         </div>
       </div>
 
-      <ScrollArea className="max-h-80">
+      <div className="max-h-64 overflow-y-auto">
         {filteredConversations.length === 0 ? (
           <div className="text-muted-foreground p-4 text-center text-sm">
             {searchQuery ? "No conversations found" : "No conversations yet"}
@@ -77,7 +76,7 @@ export function ConversationList({
             ))}
           </div>
         )}
-      </ScrollArea>
+      </div>
 
       {conversations.length > 0 && (
         <div className="border-t p-2">
@@ -138,7 +137,7 @@ function ConversationItem({
           e.stopPropagation();
           onDelete();
         }}
-        className="text-muted-foreground hover:text-destructive shrink-0 rounded p-1 opacity-0 transition-opacity group-hover:opacity-100"
+        className="text-muted-foreground hover:text-destructive shrink-0 rounded p-1"
       >
         <Trash2 className="size-4" />
       </button>
