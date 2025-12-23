@@ -13,8 +13,6 @@ import { AssistantSidebarContent } from "./sidebar-content";
 export function AssistantSidebar() {
   const { state, toggleSidebar, isMobile, openMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
-
-  // Show content when: on mobile and sheet is open, OR on desktop and not collapsed
   const showContent = isMobile ? openMobile : !isCollapsed;
 
   return (

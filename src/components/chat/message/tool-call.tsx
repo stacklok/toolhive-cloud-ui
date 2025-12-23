@@ -8,6 +8,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { MessagePart } from "./helpers";
 import { ToolOutputContent } from "./tool-output";
 
@@ -61,10 +62,11 @@ export function ToolCall({ part }: ToolCallProps) {
       </div>
 
       <div className="mb-2">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setIsDetailsOpen(!isDetailsOpen)}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+          className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
         >
           {isDetailsOpen ? (
             <ChevronDown className="size-3" />
@@ -72,7 +74,7 @@ export function ToolCall({ part }: ToolCallProps) {
             <ChevronRight className="size-3" />
           )}
           <span>Tool Details</span>
-        </button>
+        </Button>
 
         {isDetailsOpen && (
           <div className="text-muted-foreground mt-2 space-y-1 text-xs">
@@ -106,10 +108,11 @@ export function ToolCall({ part }: ToolCallProps) {
 
       {"input" in part && part.input !== undefined && (
         <div className="mt-2">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setIsInputOpen(!isInputOpen)}
-            className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+            className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
           >
             {isInputOpen ? (
               <ChevronDown className="size-3" />
@@ -120,7 +123,7 @@ export function ToolCall({ part }: ToolCallProps) {
             {state === "input-streaming" && (
               <span className="text-blue-500">(Streaming...)</span>
             )}
-          </button>
+          </Button>
           {isInputOpen && (
             <div className="mt-2">
               <pre className="bg-background overflow-x-auto rounded border p-2 text-xs">
@@ -133,10 +136,11 @@ export function ToolCall({ part }: ToolCallProps) {
 
       {"output" in part && part.output !== undefined && (
         <div className="mt-2">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setIsOutputOpen(!isOutputOpen)}
-            className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+            className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
           >
             {isOutputOpen ? (
               <ChevronDown className="size-3" />
@@ -145,7 +149,7 @@ export function ToolCall({ part }: ToolCallProps) {
             )}
             <span>Tool Result</span>
             <CheckCircle className="size-3 text-green-500" />
-          </button>
+          </Button>
           {isOutputOpen && (
             <div className="mt-2">
               <ToolOutputContent output={part.output} />

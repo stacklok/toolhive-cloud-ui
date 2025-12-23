@@ -5,6 +5,7 @@ import { Brain, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import remarkGfm from "remark-gfm";
 import { Streamdown } from "streamdown";
+import { Button } from "@/components/ui/button";
 import type { MessagePart } from "./helpers";
 
 interface ReasoningProps {
@@ -35,10 +36,11 @@ export function Reasoning({ part, status }: ReasoningProps) {
       </div>
 
       <div className="mb-2">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setIsOpen(!isOpen)}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-xs transition-colors"
+          className="text-muted-foreground hover:text-foreground h-auto gap-2 p-0 text-xs"
         >
           {isOpen ? (
             <ChevronDown className="size-3" />
@@ -46,7 +48,7 @@ export function Reasoning({ part, status }: ReasoningProps) {
             <ChevronRight className="size-3" />
           )}
           <span>View reasoning steps</span>
-        </button>
+        </Button>
 
         {isOpen && (
           <div className="mt-2">
