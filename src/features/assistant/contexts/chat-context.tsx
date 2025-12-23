@@ -45,12 +45,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     selectedServers,
   });
 
-  const clearMessages = async () => {
+  const clearMessages = () => {
     chatHelpers.setMessages([]);
-    await chatHistory.startNewConversation(
-      selectedModel,
-      Array.from(selectedServers),
-    );
+    chatHistory
+      .startNewConversation(selectedModel, Array.from(selectedServers))
+      .catch((error) => {
+        console.error(
+          "[ChatProvider] Failed to start new conversation:",
+          error,
+        );
+      });
   };
 
   const handleLoadConversation = async (conversationId: string) => {

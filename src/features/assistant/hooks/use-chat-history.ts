@@ -141,13 +141,6 @@ export function useChatHistory() {
     setConversations(allConversations);
   };
 
-  /**
-   * Clears the current conversation (but doesn't delete it from DB).
-   */
-  const clearCurrentConversation = (): void => {
-    setCurrentConversationId(null);
-  };
-
   return {
     currentConversationId,
     conversations,
@@ -157,6 +150,5 @@ export function useChatHistory() {
     saveCurrentMessages,
     deleteConversation: deleteConv,
     refreshConversations,
-    clearCurrentConversation,
   };
 }
