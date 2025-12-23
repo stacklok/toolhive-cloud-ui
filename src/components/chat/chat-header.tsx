@@ -65,7 +65,7 @@ export function ChatHeader({
               className="hover:bg-accent flex items-center gap-2 rounded-md p-1 transition-colors"
             >
               <h1 className="text-2xl font-bold">Assistant</h1>
-              <ChevronDown className="text-muted-foreground ml-1 h-4 w-4" />
+              <ChevronDown className="text-muted-foreground ml-1 size-4" />
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" className="p-0">
@@ -87,11 +87,11 @@ export function ChatHeader({
         {hasMessages && onClearMessages && (
           <Button
             onClick={handleClearMessages}
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="cursor-pointer"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="mr-2 size-4" />
             Clear Chat
           </Button>
         )}
