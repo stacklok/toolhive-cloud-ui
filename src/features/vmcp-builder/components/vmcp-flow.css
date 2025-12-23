@@ -1,0 +1,62 @@
+/* Override React Flow default node styles */
+.react-flow__node {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.react-flow__node-mcpServer,
+.react-flow__node-output,
+.react-flow__node-tool {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Ensure handles are positioned correctly on edges */
+.react-flow__handle-left {
+  left: -6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.react-flow__handle-right {
+  right: -6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.react-flow__handle-top {
+  top: -6px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+.react-flow__handle-bottom {
+  bottom: -6px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Make handles more visible and clickable */
+.react-flow__handle {
+  cursor: crosshair !important;
+  opacity: 0.8 !important;
+  transition: opacity 0.2s !important;
+}
+
+.react-flow__handle:hover {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+}
+
+/* Ensure handles are above other elements */
+.react-flow__handle-left,
+.react-flow__handle-right,
+.react-flow__handle-top,
+.react-flow__handle-bottom {
+  z-index: 10 !important;
+}
+
