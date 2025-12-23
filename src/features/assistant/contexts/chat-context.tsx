@@ -20,6 +20,10 @@ interface ChatContextValue extends ChatHelpers {
   selectedModel: string;
   setSelectedModel: (model: string) => void;
   clearMessages: () => void;
+  conversations: ReturnType<typeof useChatHistory>["conversations"];
+  currentConversationId: string | null;
+  loadConversation: (id: string) => Promise<void>;
+  deleteConversation: (id: string) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -165,11 +169,34 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const handleLoadConversation = async (conversationId: string) => {
+    const messages = await chatHistory.loadConversation(conversationId);
+    chatHelpers.setMessages(messages);
+
+    // Restore model from conversation
+    const conv = chatHistory.conversations.find((c) => c.id === conversationId);
+    if (conv?.model) {
+      setSelectedModel(conv.model);
+    }
+  };
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    await chatHistory.deleteConversation(conversationId);
+    // If we deleted the current conversation, clear messages
+    if (conversationId === chatHistory.currentConversationId) {
+      chatHelpers.setMessages([]);
+    }
+  };
+
   const value: ChatContextValue = {
     ...chatHelpers,
     selectedModel,
     setSelectedModel,
     clearMessages,
+    conversations: chatHistory.conversations,
+    currentConversationId: chatHistory.currentConversationId,
+    loadConversation: handleLoadConversation,
+    deleteConversation: handleDeleteConversation,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

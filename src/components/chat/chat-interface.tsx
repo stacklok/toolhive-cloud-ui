@@ -4,6 +4,7 @@ import type { ChatStatus, FileUIPart, UIMessage } from "ai";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import type { StoredConversation } from "@/features/assistant/db";
 import { useAutoScroll } from "@/hooks/use-auto-scroll";
 import { ChatEmptyState } from "./chat-empty-state";
 import { ChatHeader } from "./chat-header";
@@ -20,6 +21,11 @@ interface ChatInterfaceProps {
   sendMessage: (args: { text: string; files?: FileUIPart[] }) => Promise<void>;
   selectedModel: string;
   onModelChange: (model: string) => void;
+  conversations: StoredConversation[];
+  currentConversationId: string | null;
+  onSelectConversation: (id: string) => void;
+  onDeleteConversation: (id: string) => void;
+  onNewConversation: () => void;
 }
 
 export function ChatInterface({
@@ -31,6 +37,11 @@ export function ChatInterface({
   sendMessage,
   selectedModel,
   onModelChange,
+  conversations,
+  currentConversationId,
+  onSelectConversation,
+  onDeleteConversation,
+  onNewConversation,
 }: ChatInterfaceProps) {
   const {
     messagesEndRef,
@@ -44,7 +55,15 @@ export function ChatInterface({
 
   return (
     <div className="flex h-full flex-col px-8 pb-4">
-      <ChatHeader hasMessages={hasMessages} onClearMessages={onClearMessages} />
+      <ChatHeader
+        hasMessages={hasMessages}
+        onClearMessages={onClearMessages}
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onSelectConversation={onSelectConversation}
+        onDeleteConversation={onDeleteConversation}
+        onNewConversation={onNewConversation}
+      />
 
       {hasMessages && <Separator />}
 

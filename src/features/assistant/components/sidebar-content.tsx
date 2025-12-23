@@ -14,7 +14,15 @@ export function AssistantSidebarContent() {
     clearMessages,
     selectedModel,
     setSelectedModel,
+    conversations,
+    currentConversationId,
+    loadConversation,
+    deleteConversation,
   } = useChatContext();
+
+  const handleNewConversation = () => {
+    clearMessages();
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -30,6 +38,11 @@ export function AssistantSidebarContent() {
         sendMessage={sendMessage}
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onSelectConversation={loadConversation}
+        onDeleteConversation={deleteConversation}
+        onNewConversation={handleNewConversation}
       />
     </div>
   );
