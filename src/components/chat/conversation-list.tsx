@@ -52,7 +52,6 @@ export function ConversationList({
 
   return (
     <div className="flex w-72 flex-col">
-      {/* Search input */}
       <div className="border-b p-2">
         <div className="relative">
           <Search className="text-muted-foreground absolute left-2.5 top-2.5 size-4" />
@@ -65,7 +64,6 @@ export function ConversationList({
         </div>
       </div>
 
-      {/* New conversation button */}
       <div className="border-b p-2">
         <Button
           variant="outline"
@@ -77,7 +75,6 @@ export function ConversationList({
         </Button>
       </div>
 
-      {/* Conversations list */}
       <ScrollArea className="max-h-80">
         {filteredConversations.length === 0 ? (
           <div className="text-muted-foreground p-4 text-center text-sm">
