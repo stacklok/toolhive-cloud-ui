@@ -156,9 +156,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     chatHistory,
   ]);
 
-  const clearMessages = () => {
+  const clearMessages = async () => {
     chatHelpers.setMessages([]);
-    chatHistory.clearCurrentConversation();
+    // Start a new conversation when clearing
+    await chatHistory.startNewConversation(
+      selectedModel,
+      Array.from(selectedServers),
+    );
   };
 
   const value: ChatContextValue = {
