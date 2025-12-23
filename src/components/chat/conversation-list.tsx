@@ -122,7 +122,7 @@ function ConversationItem({
   return (
     <div
       className={cn(
-        "group flex w-full items-center gap-2 rounded-md p-2 transition-colors",
+        "group flex w-full items-center gap-2 overflow-hidden rounded-md p-2 transition-colors",
         "hover:bg-accent hover:text-accent-foreground",
         isActive && "bg-accent text-accent-foreground",
       )}
@@ -130,10 +130,10 @@ function ConversationItem({
       <button
         type="button"
         onClick={onSelect}
-        className="flex min-w-0 flex-1 items-center gap-2 text-left"
+        className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left"
       >
         <MessageSquare className="text-muted-foreground h-4 w-4 shrink-0" />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 overflow-hidden">
           <p className="truncate text-sm font-medium">{title}</p>
           <p className="text-muted-foreground truncate text-xs">{timeAgo}</p>
         </div>
