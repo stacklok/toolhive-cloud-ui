@@ -74,6 +74,50 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     transport,
   });
 
+  // Load last conversation on mount
+  useEffect(() => {
+    async function loadLastConversation() {
+      if (chatHistory.isLoading) {
+        return;
+      }
+
+      // Only load if no messages are already loaded
+      if (chatHelpers.messages.length > 0) {
+        return;
+      }
+
+      // Load the most recent conversation
+      if (chatHistory.conversations.length > 0) {
+        const lastConversation = chatHistory.conversations[0]; // Already sorted by updatedAt desc
+        try {
+          const messages = await chatHistory.loadConversation(
+            lastConversation.id,
+          );
+          if (messages.length > 0) {
+            chatHelpers.setMessages(messages);
+            // Restore model if available
+            if (lastConversation.model) {
+              setSelectedModel(lastConversation.model);
+            }
+          }
+        } catch (error) {
+          console.error(
+            "[ChatProvider] Failed to load last conversation:",
+            error,
+          );
+        }
+      }
+    }
+
+    loadLastConversation();
+  }, [
+    chatHistory.isLoading,
+    chatHistory.conversations,
+    chatHistory.loadConversation,
+    chatHelpers.messages.length,
+    chatHelpers.setMessages,
+  ]);
+
   // Auto-save messages to IndexedDB with debouncing
   useEffect(() => {
     // Clear previous timeout
