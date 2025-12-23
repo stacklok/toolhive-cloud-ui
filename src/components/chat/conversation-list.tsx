@@ -122,7 +122,7 @@ function ConversationItem({
   return (
     <div
       className={cn(
-        "group flex w-full items-center gap-2 overflow-hidden rounded-md p-2 transition-colors",
+        "group grid w-full grid-cols-[1fr_auto] items-center gap-2 rounded-md p-2 transition-colors",
         "hover:bg-accent hover:text-accent-foreground",
         isActive && "bg-accent text-accent-foreground",
       )}
@@ -130,17 +130,17 @@ function ConversationItem({
       <button
         type="button"
         onClick={onSelect}
-        className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left"
+        className="flex min-w-0 items-center gap-2 text-left"
       >
         <MessageSquare className="text-muted-foreground h-4 w-4 shrink-0" />
-        <div className="min-w-0 flex-1 overflow-hidden">
+        <div className="min-w-0">
           <p className="truncate text-sm font-medium">{title}</p>
           <p className="text-muted-foreground truncate text-xs">{timeAgo}</p>
         </div>
       </button>
       <button
         type="button"
-        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 rounded p-1 opacity-0 transition-opacity hover:bg-red-100 hover:text-red-600 group-hover:opacity-100 dark:hover:bg-red-900/20"
+        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 rounded p-1 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
         onClick={onDelete}
       >
         <Trash2 className="h-4 w-4" />

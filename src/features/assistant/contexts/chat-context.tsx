@@ -34,6 +34,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const chatHistory = useChatHistory();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasLoadedInitialConversation = useRef(false);
+  const isLoadingConversationRef = useRef(false);
 
   // Use refs to access current values in the transport callback
   const selectedModelRef = useRef(selectedModel);
@@ -101,6 +102,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       if (chatHistory.conversations.length > 0) {
         const lastConversation = chatHistory.conversations[0]; // Already sorted by updatedAt desc
         try {
+          isLoadingConversationRef.current = true;
           const messages = await chatHistory.loadConversation(
             lastConversation.id,
           );
@@ -112,6 +114,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             }
           }
         } catch (error) {
+          isLoadingConversationRef.current = false;
           console.error(
             "[ChatProvider] Failed to load last conversation:",
             error,
@@ -136,6 +139,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     // Clear previous timeout
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Skip if loading a conversation (avoid updating timestamp on load)
+    if (isLoadingConversationRef.current) {
+      isLoadingConversationRef.current = false;
+      return;
     }
 
     // Skip if no messages or still streaming
@@ -179,13 +188,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleLoadConversation = async (conversationId: string) => {
-    const messages = await chatHistory.loadConversation(conversationId);
-    chatHelpers.setMessages(messages);
+    isLoadingConversationRef.current = true;
+    try {
+      const messages = await chatHistory.loadConversation(conversationId);
+      chatHelpers.setMessages(messages);
 
-    // Restore model from conversation
-    const conv = chatHistory.conversations.find((c) => c.id === conversationId);
-    if (conv?.model) {
-      setSelectedModel(conv.model);
+      // Restore model from conversation
+      const conv = chatHistory.conversations.find(
+        (c) => c.id === conversationId,
+      );
+      if (conv?.model) {
+        setSelectedModel(conv.model);
+      }
+    } catch (error) {
+      isLoadingConversationRef.current = false;
+      throw error;
     }
   };
 
