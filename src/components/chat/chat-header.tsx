@@ -60,13 +60,10 @@ export function ChatHeader({
       <div className="flex items-center justify-between border-b p-4">
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              className="hover:bg-accent flex items-center gap-2 rounded-md p-1 transition-colors"
-            >
-              <h1 className="text-2xl font-bold">Assistant</h1>
-              <ChevronDown className="text-muted-foreground ml-1 size-4" />
-            </button>
+            <Button variant="ghost" className="h-auto gap-2 p-1">
+              <span className="text-2xl font-bold">Assistant</span>
+              <ChevronDown className="text-muted-foreground size-4" />
+            </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="p-0">
             <ConversationList
