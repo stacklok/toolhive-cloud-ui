@@ -55,7 +55,7 @@ export function ConversationList({
       {/* Search input */}
       <div className="border-b p-2">
         <div className="relative">
-          <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
+          <Search className="text-muted-foreground absolute left-2.5 top-2.5 size-4" />
           <Input
             placeholder="Search conversations..."
             value={searchQuery}
@@ -72,7 +72,7 @@ export function ConversationList({
           className="w-full justify-start"
           onClick={handleNewConversation}
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 size-4" />
           New conversation
         </Button>
       </div>
@@ -132,7 +132,7 @@ function ConversationItem({
         onClick={onSelect}
         className="h-auto min-w-0 justify-start gap-2 px-2 py-2"
       >
-        <MessageSquare className="text-muted-foreground h-4 w-4 shrink-0" />
+        <MessageSquare className="text-muted-foreground size-4 shrink-0" />
         <div className="min-w-0 text-left">
           <p className="truncate text-sm font-medium">{title}</p>
           <p className="text-muted-foreground truncate text-xs font-normal">
@@ -144,9 +144,9 @@ function ConversationItem({
         variant="ghost"
         size="icon"
         onClick={onDelete}
-        className="text-muted-foreground hover:text-foreground h-6 w-6 shrink-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
+        className="text-muted-foreground hover:text-foreground size-6 shrink-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
       >
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="size-4" />
       </Button>
     </div>
   );
