@@ -6,6 +6,9 @@ import type {
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
   DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
+  DeleteExtensionV0RegistriesByRegistryNameData,
+  DeleteExtensionV0RegistriesByRegistryNameErrors,
+  DeleteExtensionV0RegistriesByRegistryNameResponses,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameResponses,
@@ -45,6 +48,9 @@ import type {
   PostByRegistryNameV01PublishResponses,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
+  PutExtensionV0RegistriesByRegistryNameData,
+  PutExtensionV0RegistriesByRegistryNameErrors,
+  PutExtensionV0RegistriesByRegistryNameResponses,
 } from "./types.gen";
 
 export type Options<
@@ -87,6 +93,30 @@ export const getExtensionV0Registries = <ThrowOnError extends boolean = false>(
   });
 
 /**
+ * Delete registry
+ *
+ * Delete a registry by name. Only registries created via API can be deleted.
+ */
+export const deleteExtensionV0RegistriesByRegistryName = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<DeleteExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    DeleteExtensionV0RegistriesByRegistryNameResponses,
+    DeleteExtensionV0RegistriesByRegistryNameErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/extension/v0/registries/{registryName}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
  * Get registry
  *
  * Get a registry by name
@@ -99,6 +129,30 @@ export const getExtensionV0RegistriesByRegistryName = <
   (options.client ?? client).get<
     GetExtensionV0RegistriesByRegistryNameResponses,
     GetExtensionV0RegistriesByRegistryNameErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/extension/v0/registries/{registryName}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Create or update registry
+ *
+ * Create a new registry or update an existing one. Only registries created via API can be updated.
+ */
+export const putExtensionV0RegistriesByRegistryName = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PutExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    PutExtensionV0RegistriesByRegistryNameResponses,
+    PutExtensionV0RegistriesByRegistryNameErrors,
     ThrowOnError
   >({
     security: [{ name: "Authorization", type: "apiKey" }],
