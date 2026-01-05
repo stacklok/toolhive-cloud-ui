@@ -4,13 +4,171 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
+/**
+ * API endpoint source
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigApiConfig = {
+  /**
+   * Endpoint is the base API URL (without path)
+   * The registry handler will append the appropriate paths for the MCP Registry API v0.1:
+   * - /v0.1/servers - List all servers
+   * - /v0.1/servers/{name}/versions - List server versions
+   * - /v0.1/servers/{name}/versions/{version} - Get specific version
+   * Example: "http://my-registry-api.default.svc.cluster.local/registry"
+   */
+  endpoint?: string;
+};
+
+/**
+ * Local file or URL source
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigFileConfig = {
+  /**
+   * Data is the inline registry data as a JSON string
+   * Mutually exclusive with Path and URL - exactly one must be specified
+   * Useful for API-created registries where the data is provided directly
+   */
+  data?: string;
+  /**
+   * Path is the path to the registry.json file on the local filesystem
+   * Can be absolute or relative to the working directory
+   * Mutually exclusive with URL and Data - exactly one must be specified
+   */
+  path?: string;
+  /**
+   * Timeout is the timeout for HTTP requests when using URL
+   * Defaults to 30s if not specified
+   * Only applicable when URL is set
+   */
+  timeout?: string;
+  /**
+   * URL is the HTTP/HTTPS URL to fetch the registry file from
+   * Mutually exclusive with Path and Data - exactly one must be specified
+   * HTTPS is required unless the host is localhost or THV_REGISTRY_INSECURE_URL=true
+   */
+  url?: string;
+};
+
+/**
+ * Filtering rules
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigFilterConfig =
+  {
+    names?: GithubComStacklokToolhiveRegistryServerInternalConfigNameFilterConfig;
+    tags?: GithubComStacklokToolhiveRegistryServerInternalConfigTagFilterConfig;
+  };
+
+/**
+ * Git repository source
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigGitConfig = {
+  /**
+   * Branch is the Git branch to use (mutually exclusive with Tag and Commit)
+   */
+  branch?: string;
+  /**
+   * Commit is the Git commit SHA to use (mutually exclusive with Branch and Tag)
+   */
+  commit?: string;
+  /**
+   * Path is the path to the registry file within the repository
+   */
+  path?: string;
+  /**
+   * Repository is the Git repository URL (HTTP/HTTPS/SSH)
+   */
+  repository?: string;
+  /**
+   * Tag is the Git tag to use (mutually exclusive with Branch and Commit)
+   */
+  tag?: string;
+};
+
+/**
+ * Kubernetes discovery source
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigKubernetesConfig =
+  {
+    [key: string]: unknown;
+  };
+
+/**
+ * Managed registry (no sync)
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigManagedConfig =
+  {
+    [key: string]: unknown;
+  };
+
+export type GithubComStacklokToolhiveRegistryServerInternalConfigNameFilterConfig =
+  {
+    exclude?: Array<string>;
+    include?: Array<string>;
+  };
+
+/**
+ * git, api, file, managed, kubernetes
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigSourceType =
+  string;
+
+/**
+ * Sync schedule configuration
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigSyncPolicyConfig =
+  {
+    interval?: string;
+  };
+
+export type GithubComStacklokToolhiveRegistryServerInternalConfigTagFilterConfig =
+  {
+    exclude?: Array<string>;
+    include?: Array<string>;
+  };
+
+/**
+ * API or CONFIG
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalServiceCreationType =
+  string;
+
+export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistryCreateRequest =
+  {
+    api?: GithubComStacklokToolhiveRegistryServerInternalConfigApiConfig;
+    file?: GithubComStacklokToolhiveRegistryServerInternalConfigFileConfig;
+    filter?: GithubComStacklokToolhiveRegistryServerInternalConfigFilterConfig;
+    /**
+     * "toolhive" or "upstream"
+     */
+    format?: string;
+    git?: GithubComStacklokToolhiveRegistryServerInternalConfigGitConfig;
+    kubernetes?: GithubComStacklokToolhiveRegistryServerInternalConfigKubernetesConfig;
+    managed?: GithubComStacklokToolhiveRegistryServerInternalConfigManagedConfig;
+    syncPolicy?: GithubComStacklokToolhiveRegistryServerInternalConfigSyncPolicyConfig;
+  };
+
 export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo =
   {
     createdAt?: string;
+    creationType?: GithubComStacklokToolhiveRegistryServerInternalServiceCreationType;
+    filterConfig?: GithubComStacklokToolhiveRegistryServerInternalConfigFilterConfig;
+    /**
+     * toolhive or upstream
+     */
+    format?: string;
     name?: string;
+    /**
+     * Type-specific source configuration
+     */
+    sourceConfig?: unknown;
+    sourceType?: GithubComStacklokToolhiveRegistryServerInternalConfigSourceType;
+    /**
+     * Sync interval string
+     */
+    syncSchedule?: string;
     syncStatus?: GithubComStacklokToolhiveRegistryServerInternalServiceRegistrySyncStatus;
     /**
-     * MANAGED, FILE, REMOTE
+     * MANAGED, FILE, REMOTE, KUBERNETES
      */
     type?: string;
     updatedAt?: string;
@@ -267,6 +425,72 @@ export type GetExtensionV0RegistriesResponses = {
 export type GetExtensionV0RegistriesResponse =
   GetExtensionV0RegistriesResponses[keyof GetExtensionV0RegistriesResponses];
 
+export type DeleteExtensionV0RegistriesByRegistryNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry Name
+     */
+    registryName: string;
+  };
+  query?: never;
+  url: "/extension/v0/registries/{registryName}";
+};
+
+export type DeleteExtensionV0RegistriesByRegistryNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Forbidden - cannot delete CONFIG registry
+   */
+  403: {
+    [key: string]: string;
+  };
+  /**
+   * Registry not found
+   */
+  404: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type DeleteExtensionV0RegistriesByRegistryNameError =
+  DeleteExtensionV0RegistriesByRegistryNameErrors[keyof DeleteExtensionV0RegistriesByRegistryNameErrors];
+
+export type DeleteExtensionV0RegistriesByRegistryNameResponses = {
+  /**
+   * Registry deleted
+   */
+  204: void;
+};
+
+export type DeleteExtensionV0RegistriesByRegistryNameResponse =
+  DeleteExtensionV0RegistriesByRegistryNameResponses[keyof DeleteExtensionV0RegistriesByRegistryNameResponses];
+
 export type GetExtensionV0RegistriesByRegistryNameData = {
   body?: {
     [key: string]: unknown;
@@ -326,6 +550,71 @@ export type GetExtensionV0RegistriesByRegistryNameResponses = {
 
 export type GetExtensionV0RegistriesByRegistryNameResponse =
   GetExtensionV0RegistriesByRegistryNameResponses[keyof GetExtensionV0RegistriesByRegistryNameResponses];
+
+export type PutExtensionV0RegistriesByRegistryNameData = {
+  /**
+   * Registry configuration
+   */
+  body: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryCreateRequest;
+  path: {
+    /**
+     * Registry Name
+     */
+    registryName: string;
+  };
+  query?: never;
+  url: "/extension/v0/registries/{registryName}";
+};
+
+export type PutExtensionV0RegistriesByRegistryNameErrors = {
+  /**
+   * Bad request - invalid configuration
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Forbidden - cannot modify CONFIG registry
+   */
+  403: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type PutExtensionV0RegistriesByRegistryNameError =
+  PutExtensionV0RegistriesByRegistryNameErrors[keyof PutExtensionV0RegistriesByRegistryNameErrors];
+
+export type PutExtensionV0RegistriesByRegistryNameResponses = {
+  /**
+   * Registry updated
+   */
+  200: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo;
+  /**
+   * Registry created
+   */
+  201: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo;
+};
+
+export type PutExtensionV0RegistriesByRegistryNameResponse =
+  PutExtensionV0RegistriesByRegistryNameResponses[keyof PutExtensionV0RegistriesByRegistryNameResponses];
 
 export type GetHealthData = {
   body?: never;
