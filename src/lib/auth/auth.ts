@@ -171,9 +171,8 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   baseURL: BASE_URL,
   account: {
     storeStateStrategy: "cookie",
-    // Disable account cookie to prevent 431 errors with large tokens
-    // We store tokens ourselves in an encrypted HTTP-only cookie (oidc_token)
-    storeAccountCookie: false,
+    // Required for stateless mode (no database) - stores account data in cookie
+    storeAccountCookie: true,
   },
   trustedOrigins: TRUSTED_ORIGINS,
   session: {
