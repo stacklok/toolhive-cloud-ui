@@ -53,9 +53,15 @@ test.describe("Assistant chat", () => {
     // Use a unique identifier that we expect to appear in the response
     const testUsername = `testuser_${Date.now()}`;
 
-    await authenticatedPage.goto("/assistant");
+    // Navigate to catalog page which has the assistant sidebar
+    await authenticatedPage.goto("/catalog");
 
-    // Wait for the page to load
+    // Open the assistant sidebar
+    await authenticatedPage
+      .getByRole("button", { name: "Toggle Assistant" })
+      .click();
+
+    // Wait for the sidebar to open and chat input to be visible
     await expect(
       authenticatedPage.getByPlaceholder(/type your message/i),
     ).toBeVisible({ timeout: 10_000 });
@@ -83,8 +89,15 @@ test.describe("Assistant chat", () => {
   });
 
   test("displays streaming response", async ({ authenticatedPage }) => {
-    await authenticatedPage.goto("/assistant");
+    // Navigate to catalog page which has the assistant sidebar
+    await authenticatedPage.goto("/catalog");
 
+    // Open the assistant sidebar
+    await authenticatedPage
+      .getByRole("button", { name: "Toggle Assistant" })
+      .click();
+
+    // Wait for the sidebar to open and chat input to be visible
     await expect(
       authenticatedPage.getByPlaceholder(/type your message/i),
     ).toBeVisible({ timeout: 10_000 });
