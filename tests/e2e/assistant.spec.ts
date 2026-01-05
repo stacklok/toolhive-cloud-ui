@@ -1,18 +1,18 @@
 import { expect, test } from "./fixtures";
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "qwen2.5:1.5b";
+const E2E_MODEL_NAME = process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b";
 
 /**
- * Warms up Ollama by making a simple generation request.
+ * Warms up the testing model (Ollama) by making a simple generation request.
  * This ensures the model is loaded into memory before running tests.
  */
-async function warmupOllama(): Promise<void> {
+async function warmupTestingModel(): Promise<void> {
   const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: OLLAMA_MODEL,
+      model: E2E_MODEL_NAME,
       prompt: "Say hello",
       stream: false,
     }),
@@ -20,12 +20,12 @@ async function warmupOllama(): Promise<void> {
 
   if (!response.ok) {
     throw new Error(
-      `Ollama warmup failed: ${response.status} ${response.statusText}`,
+      `E2E model warmup failed: ${response.status} ${response.statusText}`,
     );
   }
 
   const result = await response.json();
-  console.log(`Ollama warmup complete. Model: ${OLLAMA_MODEL}`);
+  console.log(`E2E model warmup complete. Model: ${E2E_MODEL_NAME}`);
   console.log(`Warmup response: ${result.response?.substring(0, 50)}...`);
 }
 
@@ -33,16 +33,16 @@ test.describe("Assistant chat", () => {
   // Triple all timeouts for this describe block since LLM operations are slow
   test.slow();
 
-  // Warmup Ollama before running any tests in this describe block
+  // Warmup testing model before running any tests in this describe block
   test.beforeAll(async () => {
-    console.log("Warming up Ollama...");
+    console.log("Warming up E2E testing model...");
     const startTime = Date.now();
 
     try {
-      await warmupOllama();
-      console.log(`Ollama warmup took ${Date.now() - startTime}ms`);
+      await warmupTestingModel();
+      console.log(`E2E model warmup took ${Date.now() - startTime}ms`);
     } catch (error) {
-      console.error("Ollama warmup failed:", error);
+      console.error("E2E model warmup failed:", error);
       throw error;
     }
   });
