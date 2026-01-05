@@ -48,6 +48,7 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "ai": "^5.0.114",
+    "ai-sdk-ollama": "^2.1.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "better-auth": "1.4.10",

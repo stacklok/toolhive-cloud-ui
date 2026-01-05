@@ -5,6 +5,7 @@ import {
   streamText,
   type ToolSet,
 } from "ai";
+import { ollama } from "ai-sdk-ollama";
 import { headers } from "next/headers";
 import { getServers } from "@/app/catalog/actions";
 import { DEFAULT_MODEL } from "@/features/assistant";
@@ -15,6 +16,8 @@ import {
   type McpRemote,
 } from "@/lib/mcp/client";
 import { SYSTEM_PROMPT } from "./system-prompt";
+
+const E2E_MODEL_NAME = process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b";
 
 export const maxDuration = 60;
 
@@ -196,19 +199,39 @@ export async function POST(req: Request) {
       ? requestedModel
       : DEFAULT_MODEL;
 
+  // Check if we should use a testing model (for E2E testing)
+  const useTestingModel = process.env.USE_E2E_MODEL === "true";
+
+  // Validate API key for production mode
   const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
+  if (!useTestingModel && !apiKey) {
     console.error("[Chat API] OPENROUTER_API_KEY not configured");
     return new Response("Service unavailable", { status: 503 });
   }
 
-  const { tools, clients, errors } = await getMcpTools({
-    selectedServers,
-    enabledTools: enabledToolsFromRequest,
-  });
+  // Create model - use testing model for E2E tests, OpenRouter for production
+  const model = useTestingModel
+    ? ollama(E2E_MODEL_NAME)
+    : createOpenRouter({ apiKey: apiKey as string })(modelId);
 
-  // If all servers failed to connect, return an error
-  if (Object.keys(tools).length === 0 && errors.length > 0) {
+  if (useTestingModel) {
+    console.log(`[Chat API] Using E2E testing model: ${E2E_MODEL_NAME}`);
+  }
+
+  // Skip MCP tool fetching in E2E test mode to avoid connection errors
+  const { tools, clients, errors } = useTestingModel
+    ? { tools: {}, clients: [], errors: [] }
+    : await getMcpTools({
+        selectedServers,
+        enabledTools: enabledToolsFromRequest,
+      });
+
+  // If all servers failed to connect, return an error (skip in E2E test mode)
+  if (
+    !useTestingModel &&
+    Object.keys(tools).length === 0 &&
+    errors.length > 0
+  ) {
     const serverNames = errors.map((err) => err.serverName).join(", ");
     return new Response(
       `Unable to connect to ${serverNames} MCP servers. Please check that the servers are running and accessible.`,
@@ -219,9 +242,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const provider = createOpenRouter({ apiKey });
-  const model = provider(modelId);
-
   const startTime = Date.now();
 
   const result = streamText({
@@ -231,6 +251,8 @@ export async function POST(req: Request) {
     toolChoice: "auto",
     stopWhen: stepCountIs(5), // Allow multiple steps for tool execution and response generation
     system: SYSTEM_PROMPT,
+    // Use low temperature for more deterministic responses in E2E test mode
+    temperature: useTestingModel ? 0 : undefined,
     onFinish: async () => {
       // Close MCP clients
       for (const client of clients) {
@@ -248,8 +270,8 @@ export async function POST(req: Request) {
       if (part.type === "start") {
         return {
           createdAt: Date.now(),
-          model: modelId,
-          providerId: "openrouter",
+          model: useTestingModel ? E2E_MODEL_NAME : modelId,
+          providerId: useTestingModel ? "e2e-testing" : "openrouter",
         };
       }
       if (part.type === "finish") {
