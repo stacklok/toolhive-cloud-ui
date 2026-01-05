@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  # Use a known path for models so we can cache them (v2)
+  # Use a known path for models so we can cache them
   OLLAMA_MODELS: /home/runner/.ollama/models
 
 jobs:
@@ -70,62 +70,47 @@ jobs:
           echo "Disk usage:"
           du -sh /home/runner/.ollama/models/ || echo "Can't measure"
 
-      - name: Test simple generation
-        run: |
-          echo "::group::Simple generation test"
-          START=$(date +%s)
-          OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "Say 'Hello, CI!' and nothing else."
-          END=$(date +%s)
-          echo "::endgroup::"
-          echo "⏱️ Simple generation time: $((END-START)) seconds"
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup
 
-      - name: Test tool calling capability
-        run: |
-          echo "::group::Tool calling test"
-          START=$(date +%s)
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
 
-          RESPONSE=$(OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "You have access to a tool called 'get_weather' that takes a 'city' parameter. The user asks: 'What is the weather in Paris?' Respond ONLY with a JSON tool call like: {\"tool\": \"get_weather\", \"parameters\": {\"city\": \"Paris\"}}")
+      - name: Run Assistant E2E tests with Ollama
+        run: pnpm test:e2e tests/e2e/assistant.spec.ts
+        env:
+          USE_OLLAMA: "true"
+          OLLAMA_MODEL: qwen2.5:1.5b
+          OLLAMA_BASE_URL: http://localhost:11434
+          API_BASE_URL: http://localhost:9090
+          OIDC_ISSUER_URL: http://localhost:4000
+          OIDC_CLIENT_ID: test-only-not-a-real-id
+          OIDC_CLIENT_SECRET: test-only-not-a-real-secret
+          NEXT_PUBLIC_OIDC_PROVIDER_ID: oidc
+          BETTER_AUTH_URL: http://localhost:3000
+          BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
 
-          END=$(date +%s)
-          echo "Response: $RESPONSE"
-          echo "::endgroup::"
-          echo "⏱️ Tool-style generation time: $((END-START)) seconds"
-
-          if echo "$RESPONSE" | grep -q "get_weather"; then
-            echo "✅ Model understood tool calling format"
-          else
-            echo "⚠️ Model response didn't match expected tool format"
-          fi
-
-      - name: Test multiple quick generations
-        run: |
-          echo "::group::Multiple generation benchmark"
-          START=$(date +%s)
-
-          for i in 1 2 3 4 5; do
-            echo "--- Run $i ---"
-            OLLAMA_MODELS=/home/runner/.ollama/models ollama run qwen2.5:1.5b "Reply with only: Response $i" 2>/dev/null
-          done
-
-          END=$(date +%s)
-          echo "::endgroup::"
-          echo "⏱️ 5 generations total time: $((END-START)) seconds"
-          echo "⏱️ Average per generation: $(( (END-START) / 5 )) seconds"
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
 
       - name: Print summary
+        if: always()
         run: |
           echo ""
           echo "=========================================="
-          echo "📊 OLLAMA POC SUMMARY"
+          echo "📊 OLLAMA E2E TEST SUMMARY"
           echo "=========================================="
           echo "Model: qwen2.5:1.5b"
           echo "Runner: ubuntu-latest"
           echo ""
-          echo "This POC demonstrates that Ollama can run"
-          echo "in GitHub Actions for E2E AI testing."
-          echo ""
-          echo "Next steps if timings are acceptable:"
-          echo "1. Add AI SDK integration with Ollama provider"
-          echo "2. Create mock-free E2E tests for assistant"
-          echo "3. Merge into main E2E workflow"
+          echo "This workflow runs E2E tests for the"
+          echo "assistant feature using Ollama for"
+          echo "deterministic, API-key-free testing."
           echo "=========================================="

@@ -5,6 +5,7 @@ import {
   streamText,
   type ToolSet,
 } from "ai";
+import { ollama } from "ai-sdk-ollama";
 import { headers } from "next/headers";
 import { getServers } from "@/app/catalog/actions";
 import { DEFAULT_MODEL } from "@/features/assistant";
@@ -15,6 +16,8 @@ import {
   type McpRemote,
 } from "@/lib/mcp/client";
 import { SYSTEM_PROMPT } from "./system-prompt";
+
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "qwen2.5:1.5b";
 
 export const maxDuration = 60;
 
@@ -196,19 +199,35 @@ export async function POST(req: Request) {
       ? requestedModel
       : DEFAULT_MODEL;
 
+  // Check if we should use Ollama (for E2E testing)
+  const useOllama = process.env.USE_OLLAMA === "true";
+
+  // Validate API key for production mode
   const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
+  if (!useOllama && !apiKey) {
     console.error("[Chat API] OPENROUTER_API_KEY not configured");
     return new Response("Service unavailable", { status: 503 });
   }
 
-  const { tools, clients, errors } = await getMcpTools({
-    selectedServers,
-    enabledTools: enabledToolsFromRequest,
-  });
+  // Create model - use Ollama for E2E tests, OpenRouter for production
+  const model = useOllama
+    ? ollama(OLLAMA_MODEL)
+    : createOpenRouter({ apiKey: apiKey as string })(modelId);
 
-  // If all servers failed to connect, return an error
-  if (Object.keys(tools).length === 0 && errors.length > 0) {
+  if (useOllama) {
+    console.log(`[Chat API] Using Ollama model: ${OLLAMA_MODEL}`);
+  }
+
+  // Skip MCP tool fetching in test mode (Ollama) to avoid connection errors
+  const { tools, clients, errors } = useOllama
+    ? { tools: {}, clients: [], errors: [] }
+    : await getMcpTools({
+        selectedServers,
+        enabledTools: enabledToolsFromRequest,
+      });
+
+  // If all servers failed to connect, return an error (skip in test mode)
+  if (!useOllama && Object.keys(tools).length === 0 && errors.length > 0) {
     const serverNames = errors.map((err) => err.serverName).join(", ");
     return new Response(
       `Unable to connect to ${serverNames} MCP servers. Please check that the servers are running and accessible.`,
@@ -219,9 +238,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const provider = createOpenRouter({ apiKey });
-  const model = provider(modelId);
-
   const startTime = Date.now();
 
   const result = streamText({
@@ -231,6 +247,8 @@ export async function POST(req: Request) {
     toolChoice: "auto",
     stopWhen: stepCountIs(5), // Allow multiple steps for tool execution and response generation
     system: SYSTEM_PROMPT,
+    // Use low temperature for more deterministic responses in test mode
+    temperature: useOllama ? 0 : undefined,
     onFinish: async () => {
       // Close MCP clients
       for (const client of clients) {
@@ -248,8 +266,8 @@ export async function POST(req: Request) {
       if (part.type === "start") {
         return {
           createdAt: Date.now(),
-          model: modelId,
-          providerId: "openrouter",
+          model: useOllama ? OLLAMA_MODEL : modelId,
+          providerId: useOllama ? "ollama" : "openrouter",
         };
       }
       if (part.type === "finish") {
