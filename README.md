@@ -516,7 +516,7 @@ For detailed information about the project:
 ### Related projects
 
 - **[toolhive-registry-server](https://github.com/stacklok/toolhive-registry-server)** - Backend API implementing the official MCP Registry API
-- **[ToolHive UI](https://github.com/stacklok/toolhive-studio)** - Desktop application for running and managing MCP servers locally
+- **[ToolHive Desktop UI](https://github.com/stacklok/toolhive-studio)** - Desktop application for running and managing MCP servers locally
 
 ### External resources
 
