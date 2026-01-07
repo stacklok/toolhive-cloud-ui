@@ -1,17 +1,11 @@
-## Note: This is an experimental project that is actively being developed and tested - features may change without notice
+<br>
 
-<p float="left">
-  <picture>
-    <img src="./docs/images/512.png" alt="ToolHive logo" height="100" align="middle" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/toolhive-wordmark-white.png">
-    <img src="docs/images/toolhive-wordmark-black.png" alt="ToolHive wordmark" width="500" align="middle" hspace="20" />
-  </picture>
-  <picture>
-    <img src="docs/images/toolhive.png" alt="ToolHive mascot" width="125" align="middle"/>
-  </picture>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/toolhive-byline-white.svg">
+  <img src="docs/images/toolhive-byline-black.svg" alt="ToolHive logo" width="500"/>
+</picture>
+
+<br>
 
 [![License: Apache 2.0][license-img]][license]
 [![Discord][discord-img]][discord]
@@ -21,19 +15,24 @@
 
 A Next.js application for visualizing MCP (Model Context Protocol) servers running in user infrastructure with easy URL copying for integration with AI agents.
 
-**Repository**: https://github.com/stacklok/toolhive-cloud-ui  
-**Backend API**: [toolhive-registry-server](https://github.com/stacklok/toolhive-registry-server) - Implements the official MCP Registry API
+**Frontend**: [toolhive-cloud-ui](https://github.com/stacklok/toolhive-cloud-ui) (this repository)
 
-## Quick Start
+**Backend API**: [toolhive-registry-server](https://github.com/stacklok/toolhive-registry-server) - implements the official MCP Registry API
+
+> [!NOTE]
+> This is an experimental project that is under active development and testing.
+> Features may change without notice.
+
+## Quickstart
 
 ### Prerequisites
 
 - **Node.js** 20+ and **pnpm** 10+
 - For Kubernetes deployment: **Docker**, **Kind**, **Helm**, **kubectl**
 
-## Developer Guide
+## Developer guide
 
-### Local Development
+### Local development
 
 This section covers all available commands and development workflows.
 
@@ -54,9 +53,9 @@ pnpm dev
 
 Authentication: the dev stack also starts a local OIDC provider (on :4000) and MSW mock API (on :9090). The `/signin` page initiates the OIDC flow and redirects back to `/catalog` on success.
 
-### Available Commands
+### Available commands
 
-#### Development Commands (pnpm)
+#### Development commands (pnpm)
 
 ```bash
 # Full development environment (recommended)
@@ -87,7 +86,7 @@ pnpm generate-client         # Fetch swagger.json and regenerate client
 pnpm generate-client:nofetch # Regenerate client without fetching
 ```
 
-#### Make Commands
+#### Make commands
 
 For convenience, common pnpm commands are also available as Make targets:
 
@@ -114,9 +113,9 @@ make kind-deploy     # Deploy to Kind
 # ... (see Kubernetes section)
 ```
 
-### Development Workflow
+### Development workflow
 
-#### 1. Initial Setup
+#### 1. Initial setup
 
 ```bash
 # Clone repository
@@ -130,7 +129,7 @@ pnpm install
 cp .env.example .env.local
 ```
 
-#### 2. Start Development Server
+#### 2. Start development server
 
 ```bash
 # Full environment (recommended)
@@ -145,7 +144,7 @@ This starts:
 
 **Note**: For other development modes (different combinations of mock/real services), see the [Development Modes](#development-modes) section below.
 
-#### 3. Code Quality Checks
+#### 3. Code quality checks
 
 Before committing:
 
@@ -159,7 +158,7 @@ pnpm test            # Run test suite
 
 Git hooks (via Husky) automatically run linting on staged files.
 
-#### 4. API Client Updates
+#### 4. API client updates
 
 When the backend API changes:
 
@@ -174,11 +173,11 @@ pnpm generate-client
 
 **Note**: Never edit files in `src/generated/` manually - they are auto-generated.
 
-### Development Modes
+### Development modes
 
 Choose the mode that best fits your development needs:
 
-#### Mode 1: Full Stack Development (Default - Recommended)
+#### Mode 1: Full stack development (default - recommended)
 
 ```bash
 pnpm dev
@@ -194,7 +193,7 @@ pnpm dev
 
 ---
 
-#### Mode 2: Mock OIDC + Real Backend API
+#### Mode 2: Mock OIDC + real backend API
 
 ```bash
 pnpm dev:mock-oidc
@@ -216,7 +215,7 @@ API_BASE_URL=https://your-backend-api.com  # Real backend API URL
 
 ---
 
-#### Mode 3: Mock Backend API + Real OIDC
+#### Mode 3: Mock backend API + real OIDC
 
 ```bash
 pnpm dev:mock-server
@@ -243,7 +242,7 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ---
 
-#### Mode 4: Real Services Only
+#### Mode 4: Real services only
 
 ```bash
 pnpm dev:next
@@ -276,7 +275,7 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ### Testing
 
-#### Unit/Component Tests
+#### Unit/component tests
 
 ```bash
 pnpm test              # Run all tests
@@ -286,7 +285,7 @@ pnpm test --coverage   # With coverage
 
 Uses Vitest + Testing Library + MSW.
 
-#### E2E Tests (Playwright)
+#### E2E tests (Playwright)
 
 ```bash
 pnpm exec playwright install   # One-time browser install
@@ -297,7 +296,7 @@ pnpm test:e2e:debug            # With Playwright Inspector
 
 Tests automatically start the dev stack if it's not already running. If you prefer to start it manually first, run `pnpm dev` before the tests.
 
-### Mock Server
+### Mock server
 
 The project includes a standalone MSW mock server for development:
 
@@ -315,9 +314,9 @@ Features:
 
 See [`docs/mocks.md`](./docs/mocks.md) for details.
 
-## Environment Variables
+## Environment variables
 
-### Required for Production
+### Required for production
 
 | Variable             | Description                 | Example                                 |
 | -------------------- | --------------------------- | --------------------------------------- |
@@ -338,7 +337,7 @@ See [`docs/mocks.md`](./docs/mocks.md) for details.
 
 > **Note**: The AI Assistant feature requires an OpenRouter API key. See the [Assistant documentation](./src/features/assistant/README.md) for setup instructions.
 
-### Development (Auto-configured)
+### Development (auto-configured)
 
 When running `pnpm dev`, these are automatically configured:
 
@@ -352,7 +351,7 @@ BETTER_AUTH_URL=http://localhost:3000
 API_BASE_URL=http://localhost:9090
 ```
 
-### Configuration File
+### Configuration file
 
 Copy `.env.example` to `.env.local` and fill in your values:
 
@@ -366,7 +365,7 @@ cp .env.example .env.local
 
 This project includes Docker support for containerized deployments.
 
-### Using Makefile (Recommended)
+### Using Makefile (recommended)
 
 ```bash
 # Show all available commands
@@ -393,7 +392,7 @@ make rebuild
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
-## Docker Compose (Full Stack)
+## Docker Compose (full stack)
 
 Run the complete stack (UI + Registry Server + PostgreSQL) with Docker Compose.
 
@@ -405,23 +404,23 @@ Clone the registry-server repo in the same parent directory:
 git clone https://github.com/stacklok/toolhive-registry-server.git ../toolhive-registry-server
 ```
 
-### With Okta Authentication
+### With Okta authentication
 
 1. Create a `.env` file with your Okta credentials:
 
-```bash
-OIDC_ISSUER_URL=https://your-org.okta.com
-OIDC_CLIENT_ID=your-client-id
-OIDC_CLIENT_SECRET=your-client-secret
-```
+   ```bash
+   OIDC_ISSUER_URL=https://your-org.okta.com
+   OIDC_CLIENT_ID=your-client-id
+   OIDC_CLIENT_SECRET=your-client-secret
+   ```
 
 2. Start the stack:
 
-```bash
-make compose-up
-```
+   ```bash
+   make compose-up
+   ```
 
-### With Mock OIDC (Development)
+### With mock OIDC (development)
 
 No `.env` file needed:
 
@@ -431,9 +430,9 @@ make compose-up-mock
 
 ### Access
 
-- **UI**: http://localhost:3000
-- **API**: http://localhost:8080
-- **OIDC Mock** (if using mock): http://localhost:4000
+- **UI**: `http://localhost:3000`
+- **API**: `http://localhost:8080`
+- **OIDC Mock** (if using mock): `http://localhost:4000`
 
 ### Commands
 
@@ -445,11 +444,11 @@ make compose-logs     # View logs
 make compose-build    # Rebuild images
 ```
 
-## Kubernetes / Kind Deployment
+## Kubernetes / Kind deployment
 
 This project includes a complete Helm chart for deploying to Kubernetes (optimized for Kind).
 
-### Quick Start with Kind
+### Quick start with kind
 
 ```bash
 # Create cluster and deploy (first time)
@@ -476,7 +475,7 @@ make kind-uninstall
 make kind-delete
 ```
 
-### Helm Chart
+### Helm chart
 
 The Helm chart is located in the `helm/` directory and includes:
 
@@ -494,7 +493,7 @@ The chart is automatically tested on every push using GitHub Actions with Kind:
 - **Helm Lint**: Validates chart syntax and best practices
 - **Integration Test**: Deploys to Kind cluster and verifies the app responds
 
-## Project Documentation
+## Project documentation
 
 For detailed information about the project:
 
@@ -504,22 +503,22 @@ For detailed information about the project:
 - **[AI Assistant](./src/features/assistant/README.md)** - AI Assistant feature documentation (requires OpenRouter API key)
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute
 
-### Technology Stack
+### Technology stack
 
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript (strict mode)
 - **UI**: React 19 + shadcn/ui + Tailwind CSS 4
 - **Auth**: Better Auth (OIDC)
-- **API Client**: hey-api
+- **API client**: hey-api
 - **Testing**: Vitest + Testing Library
 - **Linting**: Biome
 
-### Related Projects
+### Related projects
 
 - **[toolhive-registry-server](https://github.com/stacklok/toolhive-registry-server)** - Backend API implementing the official MCP Registry API
-- **[ToolHive Studio](https://github.com/stacklok/toolhive-studio)** - Desktop application for running and managing MCP servers locally
+- **[ToolHive Desktop UI](https://github.com/stacklok/toolhive-studio)** - Desktop application for running and managing MCP servers locally
 
-### External Resources
+### External resources
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Better Auth Documentation](https://www.better-auth.com)
@@ -549,3 +548,5 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](./LICEN
 [discord]: https://discord.gg/stacklok
 [coveralls-img]: https://coveralls.io/repos/github/stacklok/toolhive-cloud-ui/badge.svg?branch=main
 [coveralls]: https://coveralls.io/github/stacklok/toolhive-cloud-ui?branch=main
+
+<!-- markdownlint-disable-file first-line-heading no-duplicate-heading no-inline-html -->
