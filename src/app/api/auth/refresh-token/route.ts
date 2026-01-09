@@ -2,12 +2,8 @@ import { cookies, headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { auth, refreshAccessToken } from "@/lib/auth/auth";
-import {
-  BETTER_AUTH_SECRET,
-  OIDC_TOKEN_COOKIE_NAME,
-} from "@/lib/auth/constants";
-import type { OidcTokenData } from "@/lib/auth/types";
-import { decrypt } from "@/lib/auth/utils";
+import { OIDC_TOKEN_COOKIE_NAME } from "@/lib/auth/constants";
+import { readTokenCookie } from "@/lib/auth/cookie";
 
 /**
  * API Route Handler to refresh OIDC access token.
@@ -38,24 +34,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User ID mismatch" }, { status: 401 });
     }
 
-    const cookieStore = await cookies();
-    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
+    const tokenData = await readTokenCookie();
 
-    if (!encryptedCookie?.value) {
+    if (!tokenData) {
+      console.log("[Refresh API] No OIDC token cookie found, returning 401");
       return NextResponse.json({ error: "No token found" }, { status: 401 });
-    }
-
-    let tokenData: OidcTokenData;
-    try {
-      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
-    } catch (error) {
-      console.error("[Refresh API] Token decryption failed:", error);
-      cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     if (tokenData.userId !== userId) {
       console.error("[Refresh API] Token userId mismatch");
+      const cookieStore = await cookies();
       cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }

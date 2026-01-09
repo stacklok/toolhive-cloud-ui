@@ -1,8 +1,25 @@
 import type { Account } from "better-auth";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OidcTokenData } from "../types";
 
-// Mock jose library
+import { encrypt } from "../crypto";
+import type { OidcTokenData } from "../types";
+import {
+  getOidcIdToken,
+  getUserInfoFromIdToken,
+  saveAccountToken,
+} from "../utils";
+
+// Mock cookies store (hoisted for use in vi.mock)
+const mockCookies = vi.hoisted(() => ({
+  get: vi.fn(),
+  set: vi.fn(),
+  delete: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(() => mockCookies),
+}));
+
 vi.mock("jose", () => ({
   CompactEncrypt: class CompactEncrypt {
     constructor(private plaintext: Uint8Array) {}
@@ -27,31 +44,15 @@ vi.mock("jose", () => ({
   },
 }));
 
-// Mock next/headers
-const mockCookies = vi.hoisted(() => ({
-  get: vi.fn(),
-  set: vi.fn(),
-  delete: vi.fn(),
-}));
-
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(() => mockCookies),
-}));
-
-// Import after mocks
-import { encrypt } from "../crypto";
-import { getOidcIdToken, saveAccountToken } from "../utils";
-
 describe("utils", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    // Suppress console.log/warn during tests
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -82,7 +83,7 @@ describe("utils", () => {
 
       expect(token).toBeNull();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });
@@ -155,7 +156,7 @@ describe("utils", () => {
 
       expect(token).toBeNull();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Unexpected error reading OIDC ID token:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });
@@ -188,9 +189,6 @@ describe("utils", () => {
           path: "/",
         }),
       );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "[Save Token] Token cookie saved successfully",
-      );
     });
 
     it("uses default expiration when accessTokenExpiresAt is not provided", async () => {
@@ -211,12 +209,9 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).toHaveBeenCalled();
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "[Save Token] Token cookie saved successfully",
-      );
     });
 
-    it("warns when accessToken is missing", async () => {
+    it("does not save cookie when accessToken is missing", async () => {
       const account = {
         id: "account-id",
         userId: "user-123",
@@ -226,12 +221,9 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[Save Token] Missing accessToken or userId, not saving token",
-      );
     });
 
-    it("warns when userId is missing", async () => {
+    it("does not save cookie when userId is missing", async () => {
       const account = {
         id: "account-id",
         accessToken: "access-token",
@@ -241,8 +233,150 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[Save Token] Missing accessToken or userId, not saving token",
+    });
+  });
+
+  describe("getUserInfoFromIdToken", () => {
+    /**
+     * Helper to create a mock JWT with given payload
+     */
+    function createMockJwt(payload: Record<string, unknown>): string {
+      const header = Buffer.from(JSON.stringify({ alg: "RS256" })).toString(
+        "base64",
+      );
+      const body = Buffer.from(JSON.stringify(payload)).toString("base64");
+      const signature = "mock-signature";
+      return `${header}.${body}.${signature}`;
+    }
+
+    it("returns null when idToken is undefined", () => {
+      const result = getUserInfoFromIdToken(undefined);
+      expect(result).toBeNull();
+    });
+
+    it("returns null when idToken is empty string", () => {
+      const result = getUserInfoFromIdToken("");
+      expect(result).toBeNull();
+    });
+
+    it("extracts email from standard OIDC claim", () => {
+      const jwt = createMockJwt({
+        sub: "user-123",
+        email: "user@example.com",
+        name: "Test User",
+        picture: "https://example.com/photo.jpg",
+        email_verified: true,
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result).toEqual({
+        id: "user-123",
+        email: "user@example.com",
+        name: "Test User",
+        image: "https://example.com/photo.jpg",
+        emailVerified: true,
+      });
+    });
+
+    it("uses preferred_username as email fallback (Azure AD)", () => {
+      const jwt = createMockJwt({
+        sub: "user-123",
+        preferred_username: "user@company.onmicrosoft.com",
+        name: "Azure User",
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result).toEqual({
+        id: "user-123",
+        email: "user@company.onmicrosoft.com",
+        name: "Azure User",
+        image: undefined,
+        emailVerified: false,
+      });
+    });
+
+    it("uses upn as email fallback (Azure AD)", () => {
+      const jwt = createMockJwt({
+        sub: "user-123",
+        upn: "user@company.com",
+        given_name: "John",
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result).toEqual({
+        id: "user-123",
+        email: "user@company.com",
+        name: "John",
+        image: undefined,
+        emailVerified: false,
+      });
+    });
+
+    it("uses unique_name as email fallback (Azure AD legacy)", () => {
+      const jwt = createMockJwt({
+        sub: "user-123",
+        unique_name: "legacy@company.com",
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result).toEqual({
+        id: "user-123",
+        email: "legacy@company.com",
+        name: undefined,
+        image: undefined,
+        emailVerified: false,
+      });
+    });
+
+    it("uses oid as id fallback when sub is missing (Azure AD)", () => {
+      const jwt = createMockJwt({
+        oid: "azure-object-id",
+        email: "user@example.com",
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result?.id).toBe("azure-object-id");
+    });
+
+    it("returns null email when no email claims present", () => {
+      const jwt = createMockJwt({
+        sub: "user-123",
+        name: "No Email User",
+      });
+
+      const result = getUserInfoFromIdToken(jwt);
+
+      expect(result).toEqual({
+        id: "user-123",
+        email: null,
+        name: "No Email User",
+        image: undefined,
+        emailVerified: false,
+      });
+    });
+
+    it("returns null and logs error on invalid JWT format", () => {
+      const result = getUserInfoFromIdToken("not-a-valid-jwt");
+
+      expect(result).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[Auth] Failed to decode ID token:",
+        expect.any(Error),
+      );
+    });
+
+    it("returns null and logs error on malformed base64 payload", () => {
+      const result = getUserInfoFromIdToken("header.!!!invalid-base64!!!.sig");
+
+      expect(result).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[Auth] Failed to decode ID token:",
+        expect.any(Error),
       );
     });
   });

@@ -23,6 +23,9 @@ export const OIDC_SCOPES = process.env.OIDC_SCOPES?.split(",") ?? [
   "offline_access",
 ];
 
+// Database configuration (optional - for large OIDC tokens like Azure AD)
+export const DATABASE_URL = process.env.DATABASE_URL || "";
+
 // Token expiration constants (in milliseconds and seconds)
 export const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // 3,600,000 ms (1 hour)
 export const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // 604,800 seconds (7 days)

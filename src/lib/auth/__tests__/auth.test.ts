@@ -179,7 +179,7 @@ describe("auth", () => {
       // Cookie deletion is now handled in the refresh API route, not here
       expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });

@@ -1,9 +1,11 @@
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import { cookies } from "next/headers";
+import { Pool } from "pg";
 import {
   BASE_URL,
   BETTER_AUTH_SECRET,
+  DATABASE_URL,
   IS_PRODUCTION,
   OIDC_CLIENT_ID,
   OIDC_CLIENT_SECRET,
@@ -14,17 +16,64 @@ import {
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import { saveTokenCookie } from "./cookie";
+import { readTokenCookie, saveTokenCookie } from "./cookie";
 import type {
   OidcDiscovery,
   OidcDiscoveryResponse,
   OidcTokenData,
   TokenResponse,
 } from "./types";
-import { decrypt, saveAccountToken } from "./utils";
+import { getUserInfoFromIdToken, saveAccountToken } from "./utils";
 
 // Re-export saveTokenCookie for backwards compatibility
 export { saveTokenCookie } from "./cookie";
+
+/**
+ * Type declaration for the global pool singleton.
+ * This allows TypeScript to understand the custom property on globalThis.
+ */
+declare global {
+  // Using var is required for globalThis declarations
+  // eslint-disable-next-line no-var
+  var __authDbPool: Pool | null | undefined;
+}
+
+/**
+ * Creates or retrieves the database pool singleton.
+ * Uses globalThis to persist the pool across Next.js hot module reloads in development.
+ * This prevents connection exhaustion from creating new pools on each reload.
+ */
+function getPool(): Pool | null {
+  if (!DATABASE_URL) {
+    return null;
+  }
+
+  // In development, reuse the pool across hot reloads
+  if (globalThis.__authDbPool) {
+    return globalThis.__authDbPool;
+  }
+
+  const newPool = new Pool({ connectionString: DATABASE_URL });
+  globalThis.__authDbPool = newPool;
+  console.log("[Auth] Created PostgreSQL connection pool for session storage");
+
+  return newPool;
+}
+
+/**
+ * Database pool for session storage (optional).
+ * When DATABASE_URL is set (e.g., in docker-compose), sessions are stored in PostgreSQL.
+ * This allows handling large OIDC tokens (like Azure AD with many groups) that exceed
+ * the browser's 4KB cookie limit.
+ * When DATABASE_URL is empty (e.g., pnpm dev), stateless cookie-based sessions are used.
+ */
+const pool = getPool();
+
+if (pool) {
+  console.log("[Auth] Using PostgreSQL for session storage");
+} else {
+  console.log("[Auth] Using stateless cookie-based sessions");
+}
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
@@ -169,9 +218,14 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   debug: !IS_PRODUCTION,
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
+  // Use PostgreSQL if DATABASE_URL is set, otherwise stateless mode
+  ...(pool && { database: pool }),
   account: {
-    storeStateStrategy: "cookie",
-    storeAccountCookie: true,
+    // When using database, store OAuth state in DB; otherwise use cookies
+    storeStateStrategy: pool ? "database" : "cookie",
+    // When using database, account data is stored in DB (handles large OIDC tokens)
+    // When stateless (no DB), store in cookie (requires small OIDC tokens < 4KB)
+    storeAccountCookie: !pool,
   },
   trustedOrigins: TRUSTED_ORIGINS,
   session: {
@@ -196,6 +250,21 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           clientSecret: OIDC_CLIENT_SECRET,
           scopes: OIDC_SCOPES,
           pkce: true,
+          // Custom getUserInfo to extract claims from ID token
+          // Azure AD doesn't return email/upn from userinfo endpoint
+          getUserInfo: async (tokens) => {
+            const userInfo = getUserInfoFromIdToken(tokens.idToken);
+            if (userInfo) {
+              return userInfo;
+            }
+            // Fallback: return minimal info
+            return {
+              id: tokens.accessToken?.substring(0, 32) || "unknown",
+              email: null,
+              name: undefined,
+              emailVerified: false,
+            };
+          },
         },
       ],
     }),
@@ -221,18 +290,9 @@ export async function getOidcProviderAccessToken(
   userId: string,
 ): Promise<string | null> {
   try {
-    const cookieStore = await cookies();
-    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
+    const tokenData = await readTokenCookie();
 
-    if (!encryptedCookie?.value) {
-      return null;
-    }
-
-    let tokenData: OidcTokenData;
-    try {
-      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
-    } catch (error) {
-      console.error("[Auth] Token decryption failed:", error);
+    if (!tokenData) {
       return null;
     }
 
@@ -259,8 +319,13 @@ export async function getOidcProviderAccessToken(
 
 /**
  * Clears the OIDC token cookie (useful for logout).
+ * Also clears any chunked cookies.
  */
 export async function clearOidcProviderToken(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
+  // Also delete any chunked cookies
+  for (let i = 0; i < 10; i++) {
+    cookieStore.delete(`${OIDC_TOKEN_COOKIE_NAME}.${i}`);
+  }
 }
