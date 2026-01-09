@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
+import { encrypt } from "@/lib/auth/crypto";
+import { getOidcProviderAccessToken } from "../auth";
+import { clearOidcProviderToken } from "../cookie";
 import type { OidcTokenData } from "../types";
-import { encrypt } from "../utils";
 
 // Mock jose library to avoid Uint8Array issues in jsdom
 vi.mock("jose", () => ({
@@ -28,6 +29,7 @@ vi.mock("jose", () => ({
 // Mock next/headers
 const mockCookies = vi.hoisted(() => ({
   get: vi.fn(),
+  getAll: vi.fn(() => []),
   set: vi.fn(),
   delete: vi.fn(),
 }));
@@ -179,7 +181,7 @@ describe("auth", () => {
       // Cookie deletion is now handled in the refresh API route, not here
       expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });

@@ -1,6 +1,5 @@
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
-import { cookies } from "next/headers";
 import {
   BASE_URL,
   BETTER_AUTH_SECRET,
@@ -10,21 +9,21 @@ import {
   OIDC_DISCOVERY_URL,
   OIDC_PROVIDER_ID,
   OIDC_SCOPES,
-  OIDC_TOKEN_COOKIE_NAME,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import { saveTokenCookie } from "./cookie";
+import { readTokenCookie, saveTokenCookie } from "./cookie";
 import type {
   OidcDiscovery,
   OidcDiscoveryResponse,
   OidcTokenData,
   TokenResponse,
 } from "./types";
-import { decrypt, saveAccountToken } from "./utils";
-
-// Re-export saveTokenCookie for backwards compatibility
-export { saveTokenCookie } from "./cookie";
+import {
+  fetchUserInfoFromEndpoint,
+  getUserInfoFromIdToken,
+  saveAccountToken,
+} from "./utils";
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
@@ -196,6 +195,27 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           clientSecret: OIDC_CLIENT_SECRET,
           scopes: OIDC_SCOPES,
           pkce: true,
+          // Custom getUserInfo with fallback to userinfo endpoint
+          // 1. Try ID token first (Azure AD puts email in preferred_username/upn)
+          // 2. Fallback to userinfo endpoint (standard OIDC providers)
+          getUserInfo: async (tokens) => {
+            // Try ID token first (works for Azure AD)
+            const fromIdToken = getUserInfoFromIdToken(tokens.idToken);
+            if (fromIdToken?.email) {
+              return fromIdToken;
+            }
+
+            // Fallback to userinfo endpoint (standard OIDC)
+            const fromEndpoint = await fetchUserInfoFromEndpoint(
+              tokens.accessToken,
+              OIDC_DISCOVERY_URL,
+            );
+            if (fromEndpoint) {
+              return fromEndpoint;
+            }
+
+            return null;
+          },
         },
       ],
     }),
@@ -221,18 +241,9 @@ export async function getOidcProviderAccessToken(
   userId: string,
 ): Promise<string | null> {
   try {
-    const cookieStore = await cookies();
-    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
+    const tokenData = await readTokenCookie();
 
-    if (!encryptedCookie?.value) {
-      return null;
-    }
-
-    let tokenData: OidcTokenData;
-    try {
-      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
-    } catch (error) {
-      console.error("[Auth] Token decryption failed:", error);
+    if (!tokenData) {
       return null;
     }
 
@@ -255,12 +266,4 @@ export async function getOidcProviderAccessToken(
     console.error("[Auth] Unexpected error reading OIDC token:", error);
     return null;
   }
-}
-
-/**
- * Clears the OIDC token cookie (useful for logout).
- */
-export async function clearOidcProviderToken(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
 }

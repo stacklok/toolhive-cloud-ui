@@ -8,7 +8,7 @@
  * Server-side only - not exposed to the client.
  */
 export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
-const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
+export const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
 export const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
