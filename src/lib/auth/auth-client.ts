@@ -14,21 +14,22 @@ export const authClient = createAuthClient({
 export const { signIn, useSession } = authClient;
 
 /**
- * Signs out the user from both the local session and OIDC provider
- * Performs RP-Initiated Logout to terminate the SSO session at the provider
+ * Signs out the user from both the local session and OIDC provider.
+ * Performs RP-Initiated Logout to terminate the SSO session at the provider.
  */
 export const signOut = async () => {
   try {
     // 1. Get logout URL FIRST (while session still exists)
     const redirectUrl = await getOidcSignOutUrl();
 
-    // 2. Clear OIDC token cookie AFTER BA session is gone
+    // 2. Clear OIDC token cookie (only has effect in stateless mode)
     await clearOidcTokenAction();
 
-    // 3. Redirect to OIDC provider logout
-    window.location.replace(redirectUrl);
-    // 4. Sign out from Better Auth (invalidates session)
+    // 3. Sign out from Better Auth (invalidates session)
     await authClient.signOut();
+
+    // 4. Redirect to OIDC provider logout
+    window.location.replace(redirectUrl);
   } catch (error) {
     console.error("[Auth] Sign out error:", error);
     toast.error("Sign out failed", {
