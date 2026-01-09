@@ -69,3 +69,15 @@ export interface OidcDiscoveryResponse {
   tokenEndpoint: string | null;
   endSessionEndpoint: string | null;
 }
+
+/**
+ * User info extracted from OIDC ID token.
+ * Used by genericOAuth getUserInfo callback.
+ */
+export interface OidcUserInfo {
+  id: string;
+  email: string | null;
+  name: string | undefined;
+  image: string | undefined;
+  emailVerified: boolean;
+}
