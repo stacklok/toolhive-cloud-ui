@@ -1,6 +1,6 @@
+import type { Account } from "better-auth";
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
-import { cookies } from "next/headers";
 import {
   BASE_URL,
   BETTER_AUTH_SECRET,
@@ -10,31 +10,39 @@ import {
   OIDC_DISCOVERY_URL,
   OIDC_PROVIDER_ID,
   OIDC_SCOPES,
-  OIDC_TOKEN_COOKIE_NAME,
+  TOKEN_ONE_HOUR_MS,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import { saveTokenCookie } from "./cookie";
+import {
+  clearTokenCookie,
+  getTokenFromCookie,
+  saveTokenCookie,
+} from "./cookie";
+import {
+  getIdTokenFromDatabase,
+  getTokenFromDatabase,
+  isDatabaseMode,
+  pool,
+} from "./db";
 import type {
   OidcDiscovery,
   OidcDiscoveryResponse,
   OidcTokenData,
-  TokenResponse,
 } from "./types";
-import { decrypt, saveAccountToken } from "./utils";
+import { fetchUserInfoFromEndpoint, getUserInfoFromIdToken } from "./utils";
 
-// Re-export saveTokenCookie for backwards compatibility
-export { saveTokenCookie } from "./cookie";
+// Re-export for backward compatibility
+export { isDatabaseMode, pool } from "./db";
 
 /**
- * Cached token endpoint to avoid repeated discovery calls.
+ * Cached OIDC discovery endpoints.
  */
 let cachedTokenEndpoint: string | null = null;
 let cachedEndSessionEndpoint: string | null = null;
 
 /**
  * Discovers and caches the token and end_session endpoints from OIDC provider.
- * Exported for use in server actions and token refresh logic.
  */
 export async function getOidcDiscovery(): Promise<OidcDiscoveryResponse | null> {
   if (cachedTokenEndpoint) {
@@ -69,121 +77,120 @@ export async function getOidcDiscovery(): Promise<OidcDiscoveryResponse | null> 
   }
 }
 
+// ============================================================================
+// Token Access Functions
+// ============================================================================
+
 /**
- * Attempts to refresh the access token using the refresh token.
- * Returns new token data if successful, null otherwise.
+ * Retrieves the OIDC provider access token.
+ * Uses database if available, otherwise falls back to cookie.
  */
-export async function refreshAccessToken({
-  refreshToken,
-  userId,
-  idToken: initialIdToken,
-  refreshTokenExpiresAt: initialRefreshTokenExpiresAt,
-}: {
-  refreshToken: string;
-  userId: string;
-  refreshTokenExpiresAt?: number | undefined | null;
-  idToken?: string | undefined | null;
-}): Promise<OidcTokenData | null> {
-  try {
-    if (
-      initialRefreshTokenExpiresAt &&
-      initialRefreshTokenExpiresAt <= Date.now()
-    ) {
-      console.error("[Auth] Refresh token expired");
-      return null;
-    }
+export async function getOidcProviderAccessToken(
+  userId: string,
+): Promise<string | null> {
+  if (isDatabaseMode) {
+    return getTokenFromDatabase(userId);
+  }
+  return getTokenFromCookieMode(userId);
+}
 
-    const discovery = await getOidcDiscovery();
+/**
+ * Retrieves the OIDC ID token for logout.
+ * Uses database if available, otherwise falls back to cookie.
+ */
+export async function getOidcIdToken(userId: string): Promise<string | null> {
+  if (isDatabaseMode) {
+    return getIdTokenFromDatabase(userId);
+  }
+  return getIdTokenFromCookie(userId);
+}
 
-    if (!discovery) {
-      console.error("[Auth] OIDC discovery not available");
-      return null;
-    }
-
-    const { tokenEndpoint } = discovery;
-
-    if (!tokenEndpoint) {
-      console.error("[Auth] Token endpoint not available");
-      return null;
-    }
-
-    const params = new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: refreshToken,
-      client_id: OIDC_CLIENT_ID,
-      client_secret: OIDC_CLIENT_SECRET,
-    });
-
-    const response = await fetch(tokenEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
-    });
-
-    if (!response.ok) {
-      console.error(
-        "[Auth] Token refresh failed:",
-        response.status,
-        response.statusText,
-      );
-      return null;
-    }
-
-    const tokenResponse: TokenResponse = await response.json();
-
-    const accessTokenExpiresAt = Date.now() + tokenResponse.expires_in * 1000;
-    const refreshTokenExpiresAt = tokenResponse.refresh_expires_in
-      ? Date.now() + tokenResponse.refresh_expires_in * 1000
-      : undefined;
-    const idToken = tokenResponse.id_token ?? initialIdToken;
-    const newRefreshToken = tokenResponse.refresh_token || refreshToken;
-    if (!tokenResponse.refresh_token) {
-      console.warn(
-        "[Auth] Provider did not return new refresh token, reusing existing",
-      );
-    }
-
-    const newTokenData: OidcTokenData = {
-      accessToken: tokenResponse.access_token,
-      refreshToken: newRefreshToken,
-      accessTokenExpiresAt,
-      refreshTokenExpiresAt,
-      userId,
-      idToken,
-    };
-
-    // Save the new token data in the cookie
-    await saveTokenCookie(newTokenData);
-
-    console.log("[Auth] Token refreshed successfully");
-    return newTokenData;
-  } catch (error) {
-    console.error("[Auth] Token refresh error:", error);
-    return null;
+/**
+ * Clears OIDC tokens (for logout in cookie mode).
+ */
+export async function clearOidcProviderToken(): Promise<void> {
+  if (!isDatabaseMode) {
+    await clearTokenCookie();
   }
 }
+
+// Cookie mode helpers
+async function getTokenFromCookieMode(userId: string): Promise<string | null> {
+  const tokenData = await getTokenFromCookie(userId);
+  if (!tokenData?.accessToken) {
+    return null;
+  }
+
+  if (
+    tokenData.accessTokenExpiresAt &&
+    tokenData.accessTokenExpiresAt <= Date.now()
+  ) {
+    console.log("[Auth] Access token expired (cookie mode)");
+    return null;
+  }
+
+  return tokenData.accessToken;
+}
+
+async function getIdTokenFromCookie(userId: string): Promise<string | null> {
+  const tokenData = await getTokenFromCookie(userId);
+  return tokenData?.idToken || null;
+}
+
+// ============================================================================
+// Database Hook for Cookie Mode
+// ============================================================================
+
+async function saveAccountTokenToCookie(account: Account) {
+  if (pool) {
+    return;
+  }
+
+  if (account.accessToken && account.userId) {
+    const accessTokenExpiresAt = account.accessTokenExpiresAt
+      ? new Date(account.accessTokenExpiresAt).getTime()
+      : Date.now() + TOKEN_ONE_HOUR_MS;
+
+    const refreshTokenExpiresAt = account.refreshTokenExpiresAt
+      ? new Date(account.refreshTokenExpiresAt).getTime()
+      : undefined;
+
+    const tokenData: OidcTokenData = {
+      accessToken: account.accessToken,
+      refreshToken: account.refreshToken || undefined,
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+      userId: account.userId,
+      idToken: account.idToken || undefined,
+    };
+
+    await saveTokenCookie(tokenData);
+    console.log("[Auth] Token saved to cookie (stateless mode)");
+  }
+}
+
+// ============================================================================
+// Better Auth Configuration
+// ============================================================================
 
 export const auth: Auth<BetterAuthOptions> = betterAuth({
   debug: !IS_PRODUCTION,
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
+  ...(pool && { database: pool }),
   account: {
-    storeStateStrategy: "cookie",
-    storeAccountCookie: true,
+    storeStateStrategy: pool ? "database" : "cookie",
+    storeAccountCookie: !pool,
   },
   trustedOrigins: TRUSTED_ORIGINS,
   session: {
     cookieCache: {
       enabled: true,
       strategy: "jwe",
-      maxAge: TOKEN_SEVEN_DAYS_SECONDS, // 7 days - match session duration!
+      maxAge: TOKEN_SEVEN_DAYS_SECONDS,
     },
-    // Session duration should match or exceed refresh token lifetime
-    // This prevents Better Auth from logging out users before OIDC token refresh
-    expiresIn: TOKEN_SEVEN_DAYS_SECONDS, // 7 days in seconds
-    updateAge: 60 * 60 * 24, // Update session every 24 hours (in seconds)
+    expiresIn: TOKEN_SEVEN_DAYS_SECONDS,
+    updateAge: 60 * 60 * 24,
   },
   plugins: [
     genericOAuth({
@@ -196,71 +203,39 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           clientSecret: OIDC_CLIENT_SECRET,
           scopes: OIDC_SCOPES,
           pkce: true,
+          // Custom getUserInfo with fallback to userinfo endpoint
+          // 1. Try ID token first (Azure AD puts email in preferred_username/upn)
+          // 2. Fallback to userinfo endpoint (standard OIDC providers)
+          getUserInfo: async (tokens) => {
+            // Try ID token first (works for Azure AD)
+            const fromIdToken = getUserInfoFromIdToken(tokens.idToken);
+            if (fromIdToken?.email) {
+              return fromIdToken;
+            }
+
+            // Fallback to userinfo endpoint (standard OIDC)
+            const fromEndpoint = await fetchUserInfoFromEndpoint(
+              tokens.accessToken,
+              OIDC_DISCOVERY_URL,
+            );
+            if (fromEndpoint) {
+              return fromEndpoint;
+            }
+
+            return null;
+          },
         },
       ],
     }),
   ],
-  // Use databaseHooks to save tokens in HTTP-only cookie after account creation/update
   databaseHooks: {
     account: {
       create: {
-        after: saveAccountToken,
+        after: saveAccountTokenToCookie,
       },
       update: {
-        after: saveAccountToken,
+        after: saveAccountTokenToCookie,
       },
     },
   },
 });
-
-/**
- * Retrieves the OIDC provider access token from HTTP-only cookie.
- * Returns null if token not found, expired, or belongs to different user.
- */
-export async function getOidcProviderAccessToken(
-  userId: string,
-): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const encryptedCookie = cookieStore.get(OIDC_TOKEN_COOKIE_NAME);
-
-    if (!encryptedCookie?.value) {
-      return null;
-    }
-
-    let tokenData: OidcTokenData;
-    try {
-      tokenData = await decrypt(encryptedCookie.value, BETTER_AUTH_SECRET);
-    } catch (error) {
-      console.error("[Auth] Token decryption failed:", error);
-      return null;
-    }
-
-    if (tokenData.userId !== userId) {
-      console.error("[Auth] Token userId mismatch");
-      return null;
-    }
-
-    const now = Date.now();
-
-    if (
-      tokenData.accessTokenExpiresAt &&
-      tokenData.accessTokenExpiresAt <= now
-    ) {
-      return null;
-    }
-
-    return tokenData.accessToken || null;
-  } catch (error) {
-    console.error("[Auth] Unexpected error reading OIDC token:", error);
-    return null;
-  }
-}
-
-/**
- * Clears the OIDC token cookie (useful for logout).
- */
-export async function clearOidcProviderToken(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
-}
