@@ -7,7 +7,7 @@ import type { OidcTokenData } from "../types";
 // Mock cookies store (hoisted for use in vi.mock)
 const mockCookies = vi.hoisted(() => ({
   get: vi.fn(),
-  getAll: vi.fn(),
+  getAll: vi.fn((): Array<{ name: string; value: string }> => []),
   set: vi.fn(),
   delete: vi.fn(),
 }));
@@ -93,11 +93,8 @@ describe("cookie", () => {
 
       await saveTokenCookie(tokenData);
 
-      // Should delete existing chunks first
+      // Should delete main cookie first
       expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
-      for (let i = 0; i < 10; i++) {
-        expect(mockCookies.delete).toHaveBeenCalledWith(`oidc_token.${i}`);
-      }
 
       // Should create chunked cookies
       const setCalls = mockCookies.set.mock.calls;
@@ -113,7 +110,15 @@ describe("cookie", () => {
       expect(mainCookieCalls).toHaveLength(0);
     });
 
-    it("cleans up old chunks before saving new data", async () => {
+    it("cleans up old chunks dynamically before saving new data", async () => {
+      // Simulate existing chunks
+      mockCookies.getAll.mockReturnValue([
+        { name: "oidc_token.0", value: "chunk0" },
+        { name: "oidc_token.1", value: "chunk1" },
+        { name: "oidc_token.2", value: "chunk2" },
+        { name: "some_other_cookie", value: "other" },
+      ]);
+
       const tokenData: OidcTokenData = {
         accessToken: "token",
         userId: "user-123",
@@ -122,10 +127,14 @@ describe("cookie", () => {
 
       await saveTokenCookie(tokenData);
 
-      // Should delete main cookie and all potential chunks (0-9)
+      // Should delete main cookie
       expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      // Should delete all existing chunks dynamically
       expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token.0");
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token.9");
+      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token.1");
+      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token.2");
+      // Should not delete unrelated cookies
+      expect(mockCookies.delete).not.toHaveBeenCalledWith("some_other_cookie");
     });
   });
 

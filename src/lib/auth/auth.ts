@@ -1,6 +1,5 @@
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
-import { cookies } from "next/headers";
 import {
   BASE_URL,
   BETTER_AUTH_SECRET,
@@ -10,7 +9,6 @@ import {
   OIDC_DISCOVERY_URL,
   OIDC_PROVIDER_ID,
   OIDC_SCOPES,
-  OIDC_TOKEN_COOKIE_NAME,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
@@ -22,11 +20,6 @@ import type {
   TokenResponse,
 } from "./types";
 import { getUserInfoFromIdToken, saveAccountToken } from "./utils";
-
-// Re-export saveTokenCookie for backwards compatibility
-export { saveTokenCookie } from "./cookie";
-
-console.log("[Auth] Using stateless cookie-based sessions");
 
 /**
  * Cached token endpoint to avoid repeated discovery calls.
@@ -262,18 +255,5 @@ export async function getOidcProviderAccessToken(
   } catch (error) {
     console.error("[Auth] Unexpected error reading OIDC token:", error);
     return null;
-  }
-}
-
-/**
- * Clears the OIDC token cookie (useful for logout).
- * Also clears any chunked cookies.
- */
-export async function clearOidcProviderToken(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
-  // Also delete any chunked cookies
-  for (let i = 0; i < 10; i++) {
-    cookieStore.delete(`${OIDC_TOKEN_COOKIE_NAME}.${i}`);
   }
 }

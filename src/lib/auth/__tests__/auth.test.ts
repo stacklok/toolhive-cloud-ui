@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
+import { getOidcProviderAccessToken } from "../auth";
+import { clearOidcProviderToken } from "../cookie";
 import type { OidcTokenData } from "../types";
 import { encrypt } from "../utils";
 
@@ -28,6 +29,7 @@ vi.mock("jose", () => ({
 // Mock next/headers
 const mockCookies = vi.hoisted(() => ({
   get: vi.fn(),
+  getAll: vi.fn(() => []),
   set: vi.fn(),
   delete: vi.fn(),
 }));

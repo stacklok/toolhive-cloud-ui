@@ -1,9 +1,8 @@
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { auth, refreshAccessToken } from "@/lib/auth/auth";
-import { OIDC_TOKEN_COOKIE_NAME } from "@/lib/auth/constants";
-import { readTokenCookie } from "@/lib/auth/cookie";
+import { clearOidcProviderToken, readTokenCookie } from "@/lib/auth/cookie";
 
 /**
  * API Route Handler to refresh OIDC access token.
@@ -43,14 +42,13 @@ export async function POST(request: NextRequest) {
 
     if (tokenData.userId !== userId) {
       console.error("[Refresh API] Token userId mismatch");
-      const cookieStore = await cookies();
-      cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
+      await clearOidcProviderToken();
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     if (!tokenData.refreshToken) {
       console.error("[Refresh API] No refresh token available");
-      cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
+      await clearOidcProviderToken();
       return NextResponse.json({ error: "No refresh token" }, { status: 401 });
     }
 
@@ -64,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (!refreshedData) {
       console.error("[Refresh API] Token refresh failed");
-      cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
+      await clearOidcProviderToken();
       return NextResponse.json(
         { error: "[Refresh API] Refresh failed" },
         { status: 401 },

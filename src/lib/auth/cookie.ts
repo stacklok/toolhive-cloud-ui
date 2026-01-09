@@ -1,7 +1,6 @@
 /**
  * Cookie utilities for OIDC token storage.
  * Aligned with Better Auth's cookie chunking implementation.
- * @see https://github.com/better-auth/better-auth/blob/main/packages/better-auth/src/cookies/session-store.ts
  */
 
 import { cookies } from "next/headers";
@@ -30,6 +29,22 @@ function getChunkIndex(cookieName: string): number {
 }
 
 /**
+ * Clears the OIDC token cookie and all chunked cookies.
+ * Used for logout and cleanup before saving new tokens.
+ */
+export async function clearOidcProviderToken(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
+
+  const allCookies = cookieStore.getAll();
+  for (const cookie of allCookies) {
+    if (cookie.name.startsWith(`${OIDC_TOKEN_COOKIE_NAME}.`)) {
+      cookieStore.delete(cookie.name);
+    }
+  }
+}
+
+/**
  * Saves encrypted token data in HTTP-only cookies.
  * Automatically chunks data across multiple cookies if too large.
  * Uses same chunking pattern as Better Auth: cookie_name.0, cookie_name.1, etc.
@@ -48,11 +63,8 @@ export async function saveTokenCookie(tokenData: OidcTokenData): Promise<void> {
   };
 
   try {
-    // Clean up any existing chunks first (up to 10 chunks)
-    cookieStore.delete(OIDC_TOKEN_COOKIE_NAME);
-    for (let i = 0; i < 10; i++) {
-      cookieStore.delete(`${OIDC_TOKEN_COOKIE_NAME}.${i}`);
-    }
+    // Clean up any existing cookies (main + chunks)
+    await clearOidcProviderToken();
 
     const chunkCount = Math.ceil(encryptedSize / CHUNK_SIZE);
 

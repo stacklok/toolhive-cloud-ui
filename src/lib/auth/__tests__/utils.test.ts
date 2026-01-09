@@ -12,6 +12,7 @@ import {
 // Mock cookies store (hoisted for use in vi.mock)
 const mockCookies = vi.hoisted(() => ({
   get: vi.fn(),
+  getAll: vi.fn(() => []),
   set: vi.fn(),
   delete: vi.fn(),
 }));
