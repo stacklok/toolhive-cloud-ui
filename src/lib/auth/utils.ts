@@ -53,6 +53,62 @@ export function getUserInfoFromIdToken(
 }
 
 /**
+ * Fetches user info from the OIDC userinfo endpoint.
+ * Discovers the userinfo URL from the OIDC discovery document.
+ * Standard OIDC flow for providers that don't include claims in the ID token.
+ */
+export async function fetchUserInfoFromEndpoint(
+  accessToken: string | undefined,
+  discoveryUrl: string,
+): Promise<OidcUserInfo | null> {
+  if (!accessToken) {
+    return null;
+  }
+
+  try {
+    // First, discover the userinfo endpoint
+    const discoveryResponse = await fetch(discoveryUrl);
+    if (!discoveryResponse.ok) {
+      console.error("[Auth] Discovery fetch failed:", discoveryResponse.status);
+      return null;
+    }
+
+    const discovery = await discoveryResponse.json();
+    const userinfoUrl = discovery.userinfo_endpoint;
+
+    if (!userinfoUrl) {
+      console.error("[Auth] No userinfo_endpoint in discovery document");
+      return null;
+    }
+
+    // Then fetch user info
+    const response = await fetch(userinfoUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[Auth] Userinfo endpoint failed:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    return {
+      id: data.sub,
+      email: data.email || null,
+      name: data.name,
+      image: data.picture,
+      emailVerified: data.email_verified ?? false,
+    };
+  } catch (error) {
+    console.error("[Auth] Failed to fetch userinfo:", error);
+    return null;
+  }
+}
+
+/**
  * Retrieves the OIDC ID token from HTTP-only cookie.
  * Returns null if token not found or belongs to different user.
  * Used for OIDC logout (RP-Initiated Logout).
