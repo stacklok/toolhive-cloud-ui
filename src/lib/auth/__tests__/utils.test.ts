@@ -366,8 +366,7 @@ describe("utils", () => {
 
       expect(result).toBeNull();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Failed to decode ID token:",
-        expect.any(Error),
+        "[Auth] Invalid JWT format: expected 3 parts",
       );
     });
 

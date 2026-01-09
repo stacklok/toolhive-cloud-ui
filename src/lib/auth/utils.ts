@@ -7,9 +7,6 @@ import { TOKEN_ONE_HOUR_MS } from "./constants";
 import { readTokenCookie, saveTokenCookie } from "./cookie";
 import type { OidcTokenData, OidcUserInfo } from "./types";
 
-// Re-export crypto functions for backwards compatibility
-export { decrypt, encrypt, isOidcTokenData } from "./crypto";
-
 /**
  * Extracts user info from an OIDC ID token.
  * Decodes the JWT payload to get standard claims.
@@ -23,10 +20,15 @@ export function getUserInfoFromIdToken(
   }
 
   try {
-    // JWT format: header.payload.signature
-    const payload = idToken.split(".")[1];
+    // JWT format: header.payload.signature (must have exactly 3 parts)
+    const parts = idToken.split(".");
+    if (parts.length !== 3) {
+      console.error("[Auth] Invalid JWT format: expected 3 parts");
+      return null;
+    }
+
     const decoded = JSON.parse(
-      Buffer.from(payload, "base64").toString("utf-8"),
+      Buffer.from(parts[1], "base64").toString("utf-8"),
     );
 
     // Standard OIDC claim, with Azure AD fallbacks

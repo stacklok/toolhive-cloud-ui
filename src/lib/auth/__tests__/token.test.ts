@@ -1,8 +1,8 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { encrypt } from "@/lib/auth/crypto";
 import { server } from "@/mocks/node";
 import type { OidcTokenData } from "../types";
-import { encrypt } from "../utils";
 
 // Unmock @/lib/auth/token to test the real implementation
 // (overrides the global mock from vitest.setup.ts)

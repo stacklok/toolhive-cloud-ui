@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { encrypt } from "@/lib/auth/crypto";
 import { getOidcProviderAccessToken } from "../auth";
 import { clearOidcProviderToken } from "../cookie";
 import type { OidcTokenData } from "../types";
-import { encrypt } from "../utils";
 
 // Mock jose library to avoid Uint8Array issues in jsdom
 vi.mock("jose", () => ({
