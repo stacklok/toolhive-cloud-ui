@@ -44,16 +44,13 @@ describe("signOut", () => {
     server.resetHandlers();
   });
 
-  it("calls getOidcSignOutUrl, clearOidcTokenAction, redirect, and authClient.signOut", async () => {
+  it("calls getOidcSignOutUrl, authClient.signOut, and redirects", async () => {
     const oidcLogoutUrl = "https://okta.example.com/logout?id_token_hint=xxx";
 
     // Spy on server actions
     const getOidcSignOutUrlSpy = vi
       .spyOn(actions, "getOidcSignOutUrl")
       .mockResolvedValue(oidcLogoutUrl);
-    const clearOidcTokenActionSpy = vi
-      .spyOn(actions, "clearOidcTokenAction")
-      .mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
 
     const { signOut } = await import("../auth-client");
@@ -62,9 +59,8 @@ describe("signOut", () => {
 
     // Verify all functions were called
     expect(getOidcSignOutUrlSpy).toHaveBeenCalledTimes(1);
-    expect(clearOidcTokenActionSpy).toHaveBeenCalledTimes(1);
-    expect(mockLocationReplace).toHaveBeenCalledWith(oidcLogoutUrl);
     expect(mockAuthClientSignOut).toHaveBeenCalledTimes(1);
+    expect(mockLocationReplace).toHaveBeenCalledWith(oidcLogoutUrl);
   });
 
   it("calls functions in correct order", async () => {
@@ -75,27 +71,23 @@ describe("signOut", () => {
       return "https://okta.example.com/logout";
     });
 
-    vi.spyOn(actions, "clearOidcTokenAction").mockImplementation(async () => {
-      callOrder.push("clearOidcTokenAction");
+    mockAuthClientSignOut.mockImplementation(async () => {
+      callOrder.push("authClient.signOut");
     });
 
     mockLocationReplace.mockImplementation(() => {
       callOrder.push("window.location.replace");
     });
 
-    mockAuthClientSignOut.mockImplementation(async () => {
-      callOrder.push("authClient.signOut");
-    });
-
     const { signOut } = await import("../auth-client");
 
     await signOut();
 
+    // Order: get URL first, then sign out from Better Auth, then redirect to OIDC
     expect(callOrder).toEqual([
       "getOidcSignOutUrl",
-      "clearOidcTokenAction",
-      "window.location.replace",
       "authClient.signOut",
+      "window.location.replace",
     ]);
   });
 
@@ -121,7 +113,6 @@ describe("signOut", () => {
 
   it("uses /signin as fallback when no OIDC URL", async () => {
     vi.spyOn(actions, "getOidcSignOutUrl").mockResolvedValue("/signin");
-    vi.spyOn(actions, "clearOidcTokenAction").mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
 
     const { signOut } = await import("../auth-client");
