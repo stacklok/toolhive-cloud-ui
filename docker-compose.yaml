@@ -28,6 +28,30 @@ include:
   - path: ../toolhive-registry-server/docker-compose.yaml
 
 services:
+  # PostgreSQL for session storage (handles large OIDC tokens like Azure AD)
+  # SECURITY NOTE: Credentials below are for LOCAL DEVELOPMENT ONLY.
+  auth-db:
+    image: postgres:16-alpine
+    container_name: toolhive-auth-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+      # Initialize Better Auth schema on first startup
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - registry-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth -d auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # Optional: OIDC mock for local development (use --profile mock)
   oidc-mock:
     profiles:
@@ -53,13 +77,14 @@ services:
     container_name: toolhive-cloud-ui
     depends_on:
       - registry-api
+      - auth-db
     ports:
       - "3000:3000"
     extra_hosts:
       - "localhost:host-gateway"
     environment:
       # Backend API URL (internal Docker network)
-      - API_BASE_URL=http://toolhive-registry-api:8080
+      - API_BASE_URL=${API_BASE_URL:-http://toolhive-registry-api:8080}
       #
       # SECURITY NOTE: Default values below are for LOCAL DEVELOPMENT ONLY.
       # For production, always provide these via .env file with secure values.
@@ -74,6 +99,11 @@ services:
       - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-better-auth-dev}
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-dev-secret-change-in-production}
       - OIDC_PROVIDER_ID=${OIDC_PROVIDER_ID:-okta}
+      # Database for session storage (handles large OIDC tokens like Azure AD)
+      - DATABASE_URL=postgresql://auth:auth@toolhive-auth-db:5432/auth
     networks:
       - registry-network
     restart: unless-stopped
+
+volumes:
+  auth-db-data:
