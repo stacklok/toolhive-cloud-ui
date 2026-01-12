@@ -28,9 +28,6 @@ import type {
 } from "./types";
 import { fetchUserInfoFromEndpoint, getUserInfoFromIdToken } from "./utils";
 
-// Re-export for backward compatibility
-export { isDatabaseMode, pool } from "./db";
-
 /**
  * Cached OIDC discovery endpoints.
  */
