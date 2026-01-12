@@ -1,13 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearRecordedRequests, server } from "@/mocks/node";
-import * as actions from "../actions";
 
 // Remove global mock of auth-client from vitest.setup.ts
 vi.unmock("@/lib/auth/auth-client");
 
+// Import after mocks are defined (vi.mock is hoisted)
+import { signOut } from "../auth-client";
+
 // Hoist mocks
 const mockAuthClientSignOut = vi.hoisted(() => vi.fn());
 const mockLocationReplace = vi.hoisted(() => vi.fn());
+const mockGetOidcSignOutUrl = vi.hoisted(() => vi.fn<() => Promise<string>>());
+const mockClearOidcTokenAction = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
 // Mock Better Auth client
 vi.mock("better-auth/client/plugins", () => ({
@@ -20,6 +24,11 @@ vi.mock("better-auth/react", () => ({
     useSession: vi.fn(),
     signOut: mockAuthClientSignOut,
   })),
+}));
+
+vi.mock("../actions", () => ({
+  getOidcSignOutUrl: mockGetOidcSignOutUrl,
+  clearOidcTokenAction: mockClearOidcTokenAction,
 }));
 
 // Mock window.location globally
@@ -47,18 +56,15 @@ describe("signOut", () => {
   it("calls getOidcSignOutUrl, authClient.signOut, and redirects", async () => {
     const oidcLogoutUrl = "https://okta.example.com/logout?id_token_hint=xxx";
 
-    // Spy on server actions
-    const getOidcSignOutUrlSpy = vi
-      .spyOn(actions, "getOidcSignOutUrl")
-      .mockResolvedValue(oidcLogoutUrl);
+    mockGetOidcSignOutUrl.mockResolvedValue(oidcLogoutUrl);
+    mockClearOidcTokenAction.mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
-
-    const { signOut } = await import("../auth-client");
 
     await signOut();
 
     // Verify all functions were called
-    expect(getOidcSignOutUrlSpy).toHaveBeenCalledTimes(1);
+    expect(mockGetOidcSignOutUrl).toHaveBeenCalledTimes(1);
+    expect(mockClearOidcTokenAction).toHaveBeenCalledTimes(1);
     expect(mockAuthClientSignOut).toHaveBeenCalledTimes(1);
     expect(mockLocationReplace).toHaveBeenCalledWith(oidcLogoutUrl);
   });
@@ -66,9 +72,13 @@ describe("signOut", () => {
   it("calls functions in correct order", async () => {
     const callOrder: string[] = [];
 
-    vi.spyOn(actions, "getOidcSignOutUrl").mockImplementation(async () => {
+    mockGetOidcSignOutUrl.mockImplementation(async () => {
       callOrder.push("getOidcSignOutUrl");
       return "https://okta.example.com/logout";
+    });
+
+    mockClearOidcTokenAction.mockImplementation(async () => {
+      callOrder.push("clearOidcTokenAction");
     });
 
     mockAuthClientSignOut.mockImplementation(async () => {
@@ -79,13 +89,12 @@ describe("signOut", () => {
       callOrder.push("window.location.replace");
     });
 
-    const { signOut } = await import("../auth-client");
-
     await signOut();
 
-    // Order: get URL first, then sign out from Better Auth, then redirect to OIDC
+    // Order: get URL first (while session still exists), then clear token cookie, then sign out, then redirect.
     expect(callOrder).toEqual([
       "getOidcSignOutUrl",
+      "clearOidcTokenAction",
       "authClient.signOut",
       "window.location.replace",
     ]);
@@ -96,11 +105,7 @@ describe("signOut", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    vi.spyOn(actions, "getOidcSignOutUrl").mockRejectedValue(
-      new Error("Network error"),
-    );
-
-    const { signOut } = await import("../auth-client");
+    mockGetOidcSignOutUrl.mockRejectedValue(new Error("Network error"));
 
     await signOut();
 
@@ -112,10 +117,9 @@ describe("signOut", () => {
   });
 
   it("uses /signin as fallback when no OIDC URL", async () => {
-    vi.spyOn(actions, "getOidcSignOutUrl").mockResolvedValue("/signin");
+    mockGetOidcSignOutUrl.mockResolvedValue("/signin");
+    mockClearOidcTokenAction.mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
-
-    const { signOut } = await import("../auth-client");
 
     await signOut();
 

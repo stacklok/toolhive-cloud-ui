@@ -13,11 +13,10 @@ export interface McpRemote {
  * Creates the appropriate transport for an MCP server based on its type.
  */
 export function createMcpTransport(
-  _remoteUrl: string, // TODO: Use when backend is ready
+  remoteUrl: string,
   remoteType?: string,
 ): SSEClientTransport | StreamableHTTPClientTransport {
-  // MOCK LOCAL MCP SERVER cause the remote one is not working
-  const url = new URL("http://127.0.0.1:13942/mcp");
+  const url = new URL(remoteUrl);
 
   return remoteType === "sse"
     ? new SSEClientTransport(url)
