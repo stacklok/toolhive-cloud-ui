@@ -8,7 +8,11 @@
 "use server";
 
 import { getOidcDiscovery, getOidcProviderAccessToken } from "./auth";
-import { OIDC_CLIENT_ID, OIDC_CLIENT_SECRET } from "./constants";
+import {
+  CLOCK_SKEW_BUFFER_MS,
+  OIDC_CLIENT_ID,
+  OIDC_CLIENT_SECRET,
+} from "./constants";
 import {
   clearTokenCookie,
   getTokenFromCookie,
@@ -109,10 +113,14 @@ async function refreshTokenFromDatabase(
     const tokenResponse: TokenResponse = await response.json();
 
     const accessTokenExpiresAt = new Date(
-      Date.now() + tokenResponse.expires_in * 1000,
+      Date.now() + tokenResponse.expires_in * 1000 - CLOCK_SKEW_BUFFER_MS,
     );
     const refreshTokenExpiresAt = tokenResponse.refresh_expires_in
-      ? new Date(Date.now() + tokenResponse.refresh_expires_in * 1000)
+      ? new Date(
+          Date.now() +
+            tokenResponse.refresh_expires_in * 1000 -
+            CLOCK_SKEW_BUFFER_MS,
+        )
       : null;
     const idToken = tokenResponse.id_token ?? account.idToken;
     const newRefreshToken = tokenResponse.refresh_token || account.refreshToken;
@@ -193,9 +201,12 @@ async function refreshTokenFromCookie(userId: string): Promise<string | null> {
       accessToken: tokenResponse.access_token,
       refreshToken: tokenResponse.refresh_token || tokenData.refreshToken,
       idToken: tokenResponse.id_token ?? tokenData.idToken,
-      accessTokenExpiresAt: Date.now() + tokenResponse.expires_in * 1000,
+      accessTokenExpiresAt:
+        Date.now() + tokenResponse.expires_in * 1000 - CLOCK_SKEW_BUFFER_MS,
       refreshTokenExpiresAt: tokenResponse.refresh_expires_in
-        ? Date.now() + tokenResponse.refresh_expires_in * 1000
+        ? Date.now() +
+          tokenResponse.refresh_expires_in * 1000 -
+          CLOCK_SKEW_BUFFER_MS
         : tokenData.refreshTokenExpiresAt,
     };
 

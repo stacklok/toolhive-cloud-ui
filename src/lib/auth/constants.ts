@@ -27,6 +27,13 @@ export const OIDC_SCOPES = process.env.OIDC_SCOPES?.split(",") ?? [
 export const TOKEN_ONE_HOUR_MS = 60 * 60 * 1000; // 3,600,000 ms (1 hour)
 export const TOKEN_SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60; // 604,800 seconds (7 days)
 
+/**
+ * Buffer time subtracted from token expiration to account for clock skew
+ * between our server and the OIDC provider. Prevents edge cases where
+ * tokens appear valid locally but are rejected by the provider.
+ */
+export const CLOCK_SKEW_BUFFER_MS = 60 * 1000; // 60 seconds
+
 // Cookie configuration (used for stateless mode when DATABASE_URL is not set)
 export const OIDC_TOKEN_COOKIE_NAME = "oidc_token" as const;
 
