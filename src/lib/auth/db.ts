@@ -25,16 +25,6 @@ export const pool = DATABASE_URL
  */
 export const isDatabaseMode = !!pool;
 
-/**
- * Closes the database connection pool.
- * Call this during graceful shutdown to release database connections.
- */
-export async function closePool(): Promise<void> {
-  if (pool) {
-    await pool.end();
-  }
-}
-
 // ============================================================================
 // Types
 // ============================================================================
