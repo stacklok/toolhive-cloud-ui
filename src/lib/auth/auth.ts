@@ -26,7 +26,7 @@ import type {
   OidcDiscoveryResponse,
   OidcTokenData,
 } from "./types";
-import { fetchUserInfoFromEndpoint, getUserInfoFromIdToken } from "./utils";
+import { getUserInfoFromTokens } from "./utils";
 
 /**
  * Cached OIDC discovery endpoints.
@@ -187,27 +187,8 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           clientSecret: OIDC_CLIENT_SECRET,
           scopes: OIDC_SCOPES,
           pkce: true,
-          // Custom getUserInfo with fallback to userinfo endpoint
-          // 1. Try ID token first (Azure AD puts email in preferred_username/upn)
-          // 2. Fallback to userinfo endpoint (standard OIDC providers)
-          getUserInfo: async (tokens) => {
-            // Try ID token first (works for Azure AD)
-            const fromIdToken = getUserInfoFromIdToken(tokens.idToken);
-            if (fromIdToken?.email) {
-              return fromIdToken;
-            }
-
-            // Fallback to userinfo endpoint (standard OIDC)
-            const fromEndpoint = await fetchUserInfoFromEndpoint(
-              tokens.accessToken,
-              OIDC_DISCOVERY_URL,
-            );
-            if (fromEndpoint) {
-              return fromEndpoint;
-            }
-
-            return null;
-          },
+          getUserInfo: (tokens) =>
+            getUserInfoFromTokens(tokens, OIDC_DISCOVERY_URL),
         },
       ],
     }),

@@ -59,18 +59,21 @@ flowchart TD
 
 ### Core Authentication
 
-- **`auth.ts`** - Better Auth configuration, token storage, refresh logic
+- **`auth.ts`** - Better Auth configuration with genericOAuth plugin
+- **`utils.ts`** - User info extraction from OIDC tokens (Azure AD compatible)
 - **`token.ts`** - Token retrieval and refresh orchestration
 - **`constants.ts`** - Token lifetimes and configuration
 
-### API Integration
+### Token Storage
 
-- **`api-client.ts`** - Authenticated API client setup
+- **`cookie.ts`** - Encrypted HTTP-only cookie storage (stateless mode)
+- **`db.ts`** - PostgreSQL database storage (when DATABASE_URL is set)
+- **`crypto.ts`** - AES-256-GCM encryption for cookie tokens
 
 ### Client-side
 
 - **`auth-client.ts`** - Client-side auth utilities
-- **`auth-actions.ts`** - Server actions for auth operations
+- **`actions.ts`** - Server actions for auth operations
 
 ## Token Lifetimes examples
 

@@ -60,7 +60,7 @@ export function getUserInfoFromIdToken(
  * Discovers the userinfo URL from the OIDC discovery document.
  * Standard OIDC flow for providers that don't include claims in the ID token.
  */
-export async function fetchUserInfoFromEndpoint(
+async function fetchUserInfoFromEndpoint(
   accessToken: string | undefined,
   discoveryUrl: string,
 ): Promise<OidcUserInfo | null> {
@@ -107,6 +107,31 @@ export async function fetchUserInfoFromEndpoint(
     console.error("[Auth] Failed to fetch userinfo:", error);
     return null;
   }
+}
+
+/**
+ * Gets user info from OIDC tokens with fallback strategy.
+ * 1. Try ID token first (works for Azure AD)
+ * 2. Fallback to userinfo endpoint (standard OIDC)
+ */
+export async function getUserInfoFromTokens(
+  tokens: { idToken?: string; accessToken?: string },
+  discoveryUrl: string,
+): Promise<OidcUserInfo | null> {
+  const fromIdToken = getUserInfoFromIdToken(tokens.idToken);
+  if (fromIdToken?.email) {
+    return fromIdToken;
+  }
+
+  const fromEndpoint = await fetchUserInfoFromEndpoint(
+    tokens.accessToken,
+    discoveryUrl,
+  );
+  if (fromEndpoint) {
+    return fromEndpoint;
+  }
+
+  return null;
 }
 
 // ============================================================================
