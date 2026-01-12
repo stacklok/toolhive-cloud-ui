@@ -44,9 +44,6 @@ export async function clearOidcProviderToken(): Promise<void> {
   }
 }
 
-// Alias for backwards compatibility
-export const clearTokenCookie = clearOidcProviderToken;
-
 /**
  * Saves encrypted token data in HTTP-only cookies.
  * Automatically chunks data across multiple cookies if too large.

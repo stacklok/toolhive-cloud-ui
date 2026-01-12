@@ -14,7 +14,7 @@ import {
   OIDC_CLIENT_SECRET,
 } from "./constants";
 import {
-  clearTokenCookie,
+  clearOidcProviderToken,
   getTokenFromCookie,
   saveTokenCookie,
 } from "./cookie";
@@ -164,7 +164,7 @@ async function refreshTokenFromCookie(userId: string): Promise<string | null> {
     tokenData.refreshTokenExpiresAt <= Date.now()
   ) {
     console.error("[Token] Refresh token expired (cookie mode)");
-    await clearTokenCookie();
+    await clearOidcProviderToken();
     return null;
   }
 
@@ -190,7 +190,7 @@ async function refreshTokenFromCookie(userId: string): Promise<string | null> {
 
     if (!response.ok) {
       console.error("[Token] Refresh failed:", response.status);
-      await clearTokenCookie();
+      await clearOidcProviderToken();
       return null;
     }
 

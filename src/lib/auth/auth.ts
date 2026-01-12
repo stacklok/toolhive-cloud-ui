@@ -15,7 +15,7 @@ import {
   TRUSTED_ORIGINS,
 } from "./constants";
 import {
-  clearTokenCookie,
+  clearOidcProviderToken as clearOidcProviderTokenCookie,
   getTokenFromCookie,
   saveTokenCookie,
 } from "./cookie";
@@ -110,7 +110,7 @@ export async function getOidcIdToken(userId: string): Promise<string | null> {
  */
 export async function clearOidcProviderToken(): Promise<void> {
   if (!isDatabaseMode) {
-    await clearTokenCookie();
+    await clearOidcProviderTokenCookie();
   }
 }
 

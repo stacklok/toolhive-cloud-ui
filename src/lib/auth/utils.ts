@@ -165,7 +165,7 @@ export async function saveAccountToken(account: Account) {
 }
 
 export {
-  clearTokenCookie,
+  clearOidcProviderToken,
   getTokenFromCookie,
   readTokenCookie,
   saveTokenCookie,
