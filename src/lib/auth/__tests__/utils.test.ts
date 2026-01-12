@@ -30,6 +30,7 @@ vi.mock("jose", () => ({
 // Mock next/headers
 const mockCookies = vi.hoisted(() => ({
   get: vi.fn(),
+  getAll: vi.fn().mockReturnValue([]),
   set: vi.fn(),
   delete: vi.fn(),
 }));
@@ -44,14 +45,10 @@ import { getOidcIdToken, saveAccountToken } from "../utils";
 
 describe("utils", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -82,7 +79,7 @@ describe("utils", () => {
 
       expect(token).toBeNull();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });
@@ -155,7 +152,7 @@ describe("utils", () => {
 
       expect(token).toBeNull();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Unexpected error reading OIDC ID token:",
+        "[Cookie] Error reading token cookie:",
         expect.any(Error),
       );
     });
@@ -188,9 +185,6 @@ describe("utils", () => {
           path: "/",
         }),
       );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "[Save Token] Token cookie saved successfully",
-      );
     });
 
     it("uses default expiration when accessTokenExpiresAt is not provided", async () => {
@@ -211,12 +205,9 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).toHaveBeenCalled();
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "[Save Token] Token cookie saved successfully",
-      );
     });
 
-    it("warns when accessToken is missing", async () => {
+    it("does not save token when accessToken is missing", async () => {
       const account = {
         id: "account-id",
         userId: "user-123",
@@ -226,12 +217,9 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[Save Token] Missing accessToken or userId, not saving token",
-      );
     });
 
-    it("warns when userId is missing", async () => {
+    it("does not save token when userId is missing", async () => {
       const account = {
         id: "account-id",
         accessToken: "access-token",
@@ -241,9 +229,6 @@ describe("utils", () => {
       await saveAccountToken(account);
 
       expect(mockCookies.set).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[Save Token] Missing accessToken or userId, not saving token",
-      );
     });
   });
 });
