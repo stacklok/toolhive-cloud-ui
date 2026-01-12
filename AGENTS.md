@@ -249,6 +249,7 @@ export async function createServer(formData: FormData) {
 - Use shadcn/ui components
 - Handle errors with user-friendly messages
 - Add JSDoc for complex functions (explain why, not what)
+- Run `pnpm format` before committing
 - Check TypeScript and linter before committing
 - Follow existing patterns in codebase
 
@@ -499,6 +500,7 @@ When implementing features:
 
 Before marking a task complete:
 
+- [ ] Run `pnpm format` before committing
 - [ ] No TypeScript errors
 - [ ] No linter errors
 - [ ] Uses hey-api hooks (no manual fetch)

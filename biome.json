@@ -17,6 +17,16 @@
       }
     },
     {
+      "includes": ["src/components/ui/sidebar.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDocumentCookie": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["src/mocks/**"],
       "linter": {
         "rules": {

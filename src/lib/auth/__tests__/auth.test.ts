@@ -1,39 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { clearOidcProviderToken, getOidcProviderAccessToken } from "../auth";
-import type { OidcTokenData } from "../types";
-import { encrypt } from "../utils";
 
-// Mock jose library to avoid Uint8Array issues in jsdom
-vi.mock("jose", () => ({
-  CompactEncrypt: class CompactEncrypt {
-    constructor(private plaintext: Uint8Array) {}
-    setProtectedHeader() {
-      return this;
-    }
-    async encrypt() {
-      return `mock-jwe-${Buffer.from(this.plaintext).toString("base64")}`;
-    }
+// Unmock token module to test the real implementation
+vi.unmock("@/lib/auth/token");
+
+// Mock pg Pool before importing auth
+const mockQuery = vi.hoisted(() => vi.fn());
+vi.mock("pg", () => ({
+  Pool: class MockPool {
+    query = mockQuery;
   },
-  compactDecrypt: vi.fn().mockImplementation(async (jwe: string) => {
-    const base64 = jwe.replace("mock-jwe-", "");
-    const plaintext = Buffer.from(base64, "base64");
-    return { plaintext };
-  }),
-  errors: {
-    JWEDecryptionFailed: class JWEDecryptionFailed extends Error {},
-    JWEInvalid: class JWEInvalid extends Error {},
-  },
-}));
-
-// Mock next/headers
-const mockCookies = vi.hoisted(() => ({
-  get: vi.fn(),
-  set: vi.fn(),
-  delete: vi.fn(),
-}));
-
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(() => mockCookies),
 }));
 
 // Mock better-auth
@@ -49,13 +24,23 @@ vi.mock("better-auth/plugins", () => ({
   genericOAuth: vi.fn(() => ({})),
 }));
 
+// Mock constants to ensure DATABASE_URL is set
+vi.mock("../constants", async (importOriginal) => {
+  const original = await importOriginal<typeof import("../constants")>();
+  return {
+    ...original,
+    DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+  };
+});
+
 describe("auth", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock console.error to verify error logging
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -63,172 +48,187 @@ describe("auth", () => {
   });
 
   describe("getOidcProviderAccessToken", () => {
-    it("should return null when cookie is not present", async () => {
-      mockCookies.get.mockReturnValue(undefined);
+    it("should return null when no account found", async () => {
+      mockQuery.mockResolvedValue({ rows: [] });
 
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      expect(mockCookies.get).toHaveBeenCalledWith("oidc_token");
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        "[DB] No account found for user:",
+        "user-123",
+      );
     });
 
-    it("should return null when cookie value is empty", async () => {
-      mockCookies.get.mockReturnValue({ value: "" });
+    it("should return null when access token is null", async () => {
+      mockQuery.mockResolvedValue({
+        rows: [{ accessToken: null, accessTokenExpiresAt: null }],
+      });
 
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        "[DB] No access token in account",
+      );
     });
 
     it("should return null when token is expired", async () => {
-      const expiredTokenData: OidcTokenData = {
-        id: "expired-token-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        providerId: "provider-id",
-        accountId: "account-id",
-        accessToken: "expired-token",
-        userId: "user-123",
-        accessTokenExpiresAt: Date.now() - 1000, // Expired 1 second ago
-      };
+      const expiredDate = new Date(Date.now() - 1000); // Expired 1 second ago
+      mockQuery.mockResolvedValue({
+        rows: [
+          {
+            accessToken: "expired-token",
+            accessTokenExpiresAt: expiredDate,
+          },
+        ],
+      });
 
-      const encryptedPayload = await encrypt(
-        expiredTokenData,
-        process.env.BETTER_AUTH_SECRET as string,
-      );
-      mockCookies.get.mockReturnValue({ value: encryptedPayload });
-
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      // Cookie deletion is now handled in the refresh API route, not here
-      expect(mockCookies.delete).not.toHaveBeenCalled();
-    });
-
-    it("should return null when token belongs to different user", async () => {
-      const tokenData: OidcTokenData = {
-        id: "valid-token-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        providerId: "provider-id",
-        accountId: "account-id",
-        accessToken: "valid-token",
-        userId: "user-456", // Different user
-        accessTokenExpiresAt: Date.now() + 3600000,
-      };
-
-      const encryptedPayload = await encrypt(
-        tokenData,
-        process.env.BETTER_AUTH_SECRET as string,
-      );
-      mockCookies.get.mockReturnValue({ value: encryptedPayload });
-
-      const token = await getOidcProviderAccessToken("user-123");
-
-      expect(token).toBeNull();
+      expect(consoleLogSpy).toHaveBeenCalledWith("[DB] Access token expired");
     });
 
     it("should return access token when valid", async () => {
-      const tokenData: OidcTokenData = {
-        id: "valid-token-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        providerId: "provider-id",
-        accountId: "account-id",
-        accessToken: "valid-access-token-123",
-        userId: "user-123",
-        accessTokenExpiresAt: Date.now() + 3600000, // Valid for 1 hour
-      };
+      const validDate = new Date(Date.now() + 3600000); // Valid for 1 hour
+      mockQuery.mockResolvedValue({
+        rows: [
+          {
+            accessToken: "valid-access-token-123",
+            accessTokenExpiresAt: validDate,
+          },
+        ],
+      });
 
-      const encryptedPayload = await encrypt(
-        tokenData,
-        process.env.BETTER_AUTH_SECRET as string,
-      );
-      mockCookies.get.mockReturnValue({ value: encryptedPayload });
-
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBe("valid-access-token-123");
     });
 
-    it("should return null when token data is invalid", async () => {
-      // Create invalid token data (missing required fields)
-      const invalidData = { accessToken: "token" }; // Missing userId and accessTokenExpiresAt
-      const invalidPayload = await encrypt(
-        invalidData as OidcTokenData,
-        process.env.BETTER_AUTH_SECRET as string,
-      );
+    it("should return access token when no expiration set", async () => {
+      mockQuery.mockResolvedValue({
+        rows: [
+          {
+            accessToken: "token-no-expiry",
+            accessTokenExpiresAt: null,
+          },
+        ],
+      });
 
-      mockCookies.get.mockReturnValue({ value: invalidPayload });
-
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
-      expect(token).toBeNull();
-      // Cookie deletion is now handled in the refresh API route, not here
-      expect(mockCookies.delete).not.toHaveBeenCalled();
-      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(token).toBe("token-no-expiry");
     });
 
-    it("should handle decryption errors gracefully", async () => {
-      // Use invalid JWE format that will cause decryption to fail
-      mockCookies.get.mockReturnValue({ value: "invalid-jwe-format" });
+    it("should handle database errors gracefully", async () => {
+      mockQuery.mockRejectedValue(new Error("Database connection failed"));
 
+      const { getOidcProviderAccessToken } = await import("../auth");
       const token = await getOidcProviderAccessToken("user-123");
 
       expect(token).toBeNull();
-      // Cookie deletion is now handled in the refresh API route, not here
-      expect(mockCookies.delete).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Auth] Token decryption failed:",
+        "[DB] Error reading token from database:",
         expect.any(Error),
       );
     });
   });
 
-  describe("clearOidcProviderToken", () => {
-    it("should delete the oidc_token cookie", async () => {
-      await clearOidcProviderToken();
+  describe("getOidcIdToken", () => {
+    it("should return null when no account found", async () => {
+      mockQuery.mockResolvedValue({ rows: [] });
 
-      expect(mockCookies.delete).toHaveBeenCalledWith("oidc_token");
+      const { getOidcIdToken } = await import("../auth");
+      const token = await getOidcIdToken("user-123");
+
+      expect(token).toBeNull();
+    });
+
+    it("should return id token when found", async () => {
+      mockQuery.mockResolvedValue({
+        rows: [{ idToken: "id-token-123" }],
+      });
+
+      const { getOidcIdToken } = await import("../auth");
+      const token = await getOidcIdToken("user-123");
+
+      expect(token).toBe("id-token-123");
+    });
+
+    it("should handle database errors gracefully", async () => {
+      mockQuery.mockRejectedValue(new Error("Database error"));
+
+      const { getOidcIdToken } = await import("../auth");
+      const token = await getOidcIdToken("user-123");
+
+      expect(token).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[DB] Error reading ID token from database:",
+        expect.any(Error),
+      );
     });
   });
 
-  describe("OidcTokenData Type Guard", () => {
-    it("should validate correct OidcTokenData structure", () => {
-      const validData: OidcTokenData = {
-        id: "valid-token-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        providerId: "provider-id",
-        accountId: "account-id",
-        accessToken: "token",
-        userId: "user-123",
-        accessTokenExpiresAt: Date.now() + 3600000,
-        refreshToken: "refresh-token",
-      };
+  describe("refreshAccessToken", () => {
+    it("should return null when no account found", async () => {
+      mockQuery.mockResolvedValue({ rows: [] });
 
-      // Type guard is private, so we test indirectly through getOidcProviderAccessToken
-      expect(validData).toHaveProperty("accessToken");
-      expect(validData).toHaveProperty("userId");
-      expect(validData).toHaveProperty("accessTokenExpiresAt");
-      expect(typeof validData.accessToken).toBe("string");
-      expect(typeof validData.userId).toBe("string");
-      expect(typeof validData.accessTokenExpiresAt).toBe("number");
+      const { refreshAccessToken } = await import("../token");
+      const token = await refreshAccessToken("user-123");
+
+      expect(token).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[DB] No account found for refresh",
+      );
     });
 
-    it("should handle optional refreshToken", () => {
-      const dataWithoutRefresh: OidcTokenData = {
-        id: "valid-token-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        providerId: "provider-id",
-        accountId: "account-id",
-        accessToken: "token",
-        userId: "user-123",
-        accessTokenExpiresAt: Date.now() + 3600000,
-      };
+    it("should return null when no refresh token available", async () => {
+      mockQuery.mockResolvedValue({
+        rows: [
+          {
+            id: "account-1",
+            refreshToken: null,
+            refreshTokenExpiresAt: null,
+            idToken: null,
+          },
+        ],
+      });
 
-      expect(dataWithoutRefresh.refreshToken).toBeUndefined();
+      const { refreshAccessToken } = await import("../token");
+      const token = await refreshAccessToken("user-123");
+
+      expect(token).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[Token] No refresh token available",
+      );
+    });
+
+    it("should return null when refresh token is expired", async () => {
+      const expiredDate = new Date(Date.now() - 1000);
+      mockQuery.mockResolvedValue({
+        rows: [
+          {
+            id: "account-1",
+            refreshToken: "expired-refresh",
+            refreshTokenExpiresAt: expiredDate,
+            idToken: null,
+          },
+        ],
+      });
+
+      const { refreshAccessToken } = await import("../token");
+      const token = await refreshAccessToken("user-123");
+
+      expect(token).toBeNull();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[Token] Refresh token expired",
+      );
     });
   });
 });

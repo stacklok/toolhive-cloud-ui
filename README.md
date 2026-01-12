@@ -330,10 +330,11 @@ See [`docs/mocks.md`](./docs/mocks.md) for details.
 
 ### Optional
 
-| Variable             | Description                             | Default                                                |
-| -------------------- | --------------------------------------- | ------------------------------------------------------ |
-| `TRUSTED_ORIGINS`    | Comma-separated list of trusted origins | `BASE_URL,http://localhost:3002,http://localhost:3003` |
-| `OPENROUTER_API_KEY` | OpenRouter API key for AI Assistant     | None (assistant disabled without it)                   |
+| Variable             | Description                               | Default                                                |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------ |
+| `DATABASE_URL`       | PostgreSQL connection for session storage | None (uses encrypted cookies instead)                  |
+| `TRUSTED_ORIGINS`    | Comma-separated list of trusted origins   | `BASE_URL,http://localhost:3002,http://localhost:3003` |
+| `OPENROUTER_API_KEY` | OpenRouter API key for AI Assistant       | None (assistant disabled without it)                   |
 
 > **Note**: The AI Assistant feature requires an OpenRouter API key. See the [Assistant documentation](./src/features/assistant/README.md) for setup instructions.
 
@@ -404,14 +405,27 @@ Clone the registry-server repo in the same parent directory:
 git clone https://github.com/stacklok/toolhive-registry-server.git ../toolhive-registry-server
 ```
 
-### With Okta authentication
+### Services
 
-1. Create a `.env` file with your Okta credentials:
+| Service               | Container                    | Port   | Description                            |
+| --------------------- | ---------------------------- | ------ | -------------------------------------- |
+| **cloud-ui**          | `toolhive-cloud-ui`          | `3000` | Next.js frontend                       |
+| **auth-db**           | `toolhive-auth-db`           | `5433` | PostgreSQL for session storage         |
+| **registry-api**      | `toolhive-registry-api`      | `8080` | Backend API (from registry-server)     |
+| **registry-postgres** | `toolhive-registry-postgres` | `5432` | PostgreSQL for registry                |
+| **oidc-mock**         | `toolhive-oidc-mock`         | `4000` | Mock OIDC (only with `--profile mock`) |
+
+> **Note**: The `auth-db` PostgreSQL schema is automatically initialized on first startup via `db/init.sql`.
+
+### With real OIDC provider (Okta, Azure AD, Auth0, etc.)
+
+1. Create a `.env` file with your OIDC credentials:
 
    ```bash
    OIDC_ISSUER_URL=https://your-org.okta.com
    OIDC_CLIENT_ID=your-client-id
    OIDC_CLIENT_SECRET=your-client-secret
+   OIDC_PROVIDER_ID=okta  # or: azure-ad, auth0, oidc
    ```
 
 2. Start the stack:
@@ -428,21 +442,49 @@ No `.env` file needed:
 make compose-up-mock
 ```
 
+### With external API
+
+To use an external backend API instead of the local registry-server, add `API_BASE_URL` to your `.env`:
+
+```bash
+# .env
+OIDC_ISSUER_URL=https://your-org.okta.com
+OIDC_CLIENT_ID=your-client-id
+OIDC_CLIENT_SECRET=your-client-secret
+OIDC_PROVIDER_ID=okta
+
+# Override local registry-server with external API
+API_BASE_URL=https://api.toolhive.example.com
+```
+
+> **Note**: The local `registry-api` container will still start but won't be used.
+
 ### Access
 
 - **UI**: `http://localhost:3000`
-- **API**: `http://localhost:8080`
-- **OIDC Mock** (if using mock): `http://localhost:4000`
+- **API**: `http://localhost:8080` (or your `API_BASE_URL`)
+- **Auth DB**: `localhost:5433` (PostgreSQL)
+- **OIDC Mock** (if using `--profile mock`): `http://localhost:4000`
 
 ### Commands
 
 ```bash
-make compose-up       # Start with Okta (requires .env)
-make compose-up-mock  # Start with mock OIDC
+make compose-up       # Start with real OIDC (requires .env) + rebuild
+make compose-up-dev   # Start without rebuild (uses existing images)
+make compose-up-mock  # Start with mock OIDC + rebuild
 make compose-down     # Stop all services
 make compose-logs     # View logs
 make compose-build    # Rebuild images
 ```
+
+### Configuration combinations
+
+| Command                            | OIDC               | Backend API           | Rebuild |
+| ---------------------------------- | ------------------ | --------------------- | ------- |
+| `make compose-up`                  | Real (from `.env`) | Local registry-server | Yes     |
+| `make compose-up-dev`              | Real (from `.env`) | Local registry-server | No      |
+| `make compose-up` + `API_BASE_URL` | Real (from `.env`) | External API          | Yes     |
+| `make compose-up-mock`             | Mock (`:4000`)     | Local registry-server | Yes     |
 
 ## Kubernetes / Kind deployment
 

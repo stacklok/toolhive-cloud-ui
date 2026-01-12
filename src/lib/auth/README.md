@@ -45,10 +45,10 @@ flowchart TD
     B -->|No| C[Redirect to /signin]
     B -->|Yes| D{Token expired?}
     D -->|No| E[Use existing token]
-    D -->|Yes| F[POST /api/auth/refresh-token]
-    F --> G[Endpoint reads refresh token from cookie]
-    G --> H[Call Okta token endpoint with refresh token]
-    H --> I{Okta response OK?}
+    D -->|Yes| F[refreshAccessToken]
+    F --> G[Read refresh token from cookie]
+    G --> H[Call OIDC token endpoint with refresh token]
+    H --> I{OIDC response OK?}
     I -->|Yes| J[Save new access token in cookie]
     I -->|No| C
     J --> E
@@ -59,19 +59,21 @@ flowchart TD
 
 ### Core Authentication
 
-- **`auth.ts`** - Better Auth configuration, token storage, refresh logic
+- **`auth.ts`** - Better Auth configuration with genericOAuth plugin
+- **`utils.ts`** - User info extraction from OIDC tokens (Azure AD compatible)
 - **`token.ts`** - Token retrieval and refresh orchestration
 - **`constants.ts`** - Token lifetimes and configuration
 
-### API Integration
+### Token Storage
 
-- **`/api/auth/refresh-token/route.ts`** - API endpoint for token refresh
-- **`api-client.ts`** - Authenticated API client setup
+- **`cookie.ts`** - Encrypted HTTP-only cookie storage (stateless mode)
+- **`db.ts`** - PostgreSQL database storage (when DATABASE_URL is set)
+- **`crypto.ts`** - AES-256-GCM encryption for cookie tokens
 
 ### Client-side
 
 - **`auth-client.ts`** - Client-side auth utilities
-- **`auth-actions.ts`** - Server actions for auth operations
+- **`actions.ts`** - Server actions for auth operations
 
 ## Token Lifetimes examples
 
@@ -105,8 +107,8 @@ When a user signs in again:
 When making an API call:
 
 1. `getValidOidcToken()` retrieves token from cookie
-2. If expired, calls `/api/auth/refresh-token` endpoint
-3. Endpoint uses refresh token to get new access token from Okta
+2. If expired, calls `refreshAccessToken()` server-side
+3. Uses refresh token to get new access token from OIDC provider
 4. New token saved in cookie and returned
 5. API request proceeds with valid token
 

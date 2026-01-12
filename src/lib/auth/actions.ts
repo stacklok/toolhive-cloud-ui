@@ -1,16 +1,13 @@
 "use server";
 
 import { headers } from "next/headers";
-import {
-  auth,
-  clearOidcProviderToken,
-  getOidcDiscovery,
-} from "@/lib/auth/auth";
+import { auth, getOidcDiscovery, getOidcIdToken } from "@/lib/auth/auth";
 import { BASE_URL } from "@/lib/auth/constants";
-import { getOidcIdToken } from "@/lib/auth/utils";
+import { clearOidcProviderToken } from "@/lib/auth/cookie";
 
 /**
  * Server action to clear OIDC token cookie on sign out.
+ * Only has effect in stateless (cookie) mode.
  */
 export async function clearOidcTokenAction(): Promise<void> {
   await clearOidcProviderToken();
