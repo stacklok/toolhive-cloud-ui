@@ -1,11 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+// Unmock token module to test the real implementation
+vi.unmock("@/lib/auth/token");
+
 // Mock pg Pool before importing auth
 const mockQuery = vi.hoisted(() => vi.fn());
 vi.mock("pg", () => ({
-  Pool: vi.fn(() => ({
-    query: mockQuery,
-  })),
+  Pool: class MockPool {
+    query = mockQuery;
+  },
 }));
 
 // Mock better-auth
