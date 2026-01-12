@@ -10,6 +10,7 @@ import { refreshAccessToken } from "@/lib/auth/token";
  */
 export async function POST(request: NextRequest) {
   try {
+    // Check if Better Auth session exists before attempting token refresh
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -22,9 +23,11 @@ export async function POST(request: NextRequest) {
     const { userId } = body;
 
     if (!userId) {
+      // No active session - skip token refresh (user is logged out)
       return NextResponse.json({ error: "Missing userId" }, { status: 400 });
     }
 
+    // Verify userId matches the session user id
     if (userId !== session.user.id) {
       return NextResponse.json({ error: "User ID mismatch" }, { status: 401 });
     }
