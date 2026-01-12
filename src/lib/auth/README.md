@@ -45,10 +45,10 @@ flowchart TD
     B -->|No| C[Redirect to /signin]
     B -->|Yes| D{Token expired?}
     D -->|No| E[Use existing token]
-    D -->|Yes| F[POST /api/auth/refresh-token]
-    F --> G[Endpoint reads refresh token from cookie]
-    G --> H[Call Okta token endpoint with refresh token]
-    H --> I{Okta response OK?}
+    D -->|Yes| F[refreshAccessToken]
+    F --> G[Read refresh token from cookie]
+    G --> H[Call OIDC token endpoint with refresh token]
+    H --> I{OIDC response OK?}
     I -->|Yes| J[Save new access token in cookie]
     I -->|No| C
     J --> E
@@ -65,7 +65,6 @@ flowchart TD
 
 ### API Integration
 
-- **`/api/auth/refresh-token/route.ts`** - API endpoint for token refresh
 - **`api-client.ts`** - Authenticated API client setup
 
 ### Client-side
@@ -105,8 +104,8 @@ When a user signs in again:
 When making an API call:
 
 1. `getValidOidcToken()` retrieves token from cookie
-2. If expired, calls `/api/auth/refresh-token` endpoint
-3. Endpoint uses refresh token to get new access token from Okta
+2. If expired, calls `refreshAccessToken()` server-side
+3. Uses refresh token to get new access token from OIDC provider
 4. New token saved in cookie and returned
 5. API request proceeds with valid token
 
