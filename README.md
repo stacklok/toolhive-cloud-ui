@@ -330,11 +330,11 @@ See [`docs/mocks.md`](./docs/mocks.md) for details.
 
 ### Optional
 
-| Variable             | Description                              | Default                                                |
-| -------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| `DATABASE_URL`       | PostgreSQL connection for session storage | None (uses encrypted cookies instead)                 |
-| `TRUSTED_ORIGINS`    | Comma-separated list of trusted origins  | `BASE_URL,http://localhost:3002,http://localhost:3003` |
-| `OPENROUTER_API_KEY` | OpenRouter API key for AI Assistant      | None (assistant disabled without it)                   |
+| Variable             | Description                               | Default                                                |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------ |
+| `DATABASE_URL`       | PostgreSQL connection for session storage | None (uses encrypted cookies instead)                  |
+| `TRUSTED_ORIGINS`    | Comma-separated list of trusted origins   | `BASE_URL,http://localhost:3002,http://localhost:3003` |
+| `OPENROUTER_API_KEY` | OpenRouter API key for AI Assistant       | None (assistant disabled without it)                   |
 
 > **Note**: The AI Assistant feature requires an OpenRouter API key. See the [Assistant documentation](./src/features/assistant/README.md) for setup instructions.
 
@@ -407,13 +407,13 @@ git clone https://github.com/stacklok/toolhive-registry-server.git ../toolhive-r
 
 ### Services
 
-| Service | Container | Port | Description |
-|---------|-----------|------|-------------|
-| **cloud-ui** | `toolhive-cloud-ui` | `3000` | Next.js frontend |
-| **auth-db** | `toolhive-auth-db` | `5433` | PostgreSQL for session storage |
-| **registry-api** | `toolhive-registry-api` | `8080` | Backend API (from registry-server) |
-| **registry-postgres** | `toolhive-registry-postgres` | `5432` | PostgreSQL for registry |
-| **oidc-mock** | `toolhive-oidc-mock` | `4000` | Mock OIDC (only with `--profile mock`) |
+| Service               | Container                    | Port   | Description                            |
+| --------------------- | ---------------------------- | ------ | -------------------------------------- |
+| **cloud-ui**          | `toolhive-cloud-ui`          | `3000` | Next.js frontend                       |
+| **auth-db**           | `toolhive-auth-db`           | `5433` | PostgreSQL for session storage         |
+| **registry-api**      | `toolhive-registry-api`      | `8080` | Backend API (from registry-server)     |
+| **registry-postgres** | `toolhive-registry-postgres` | `5432` | PostgreSQL for registry                |
+| **oidc-mock**         | `toolhive-oidc-mock`         | `4000` | Mock OIDC (only with `--profile mock`) |
 
 > **Note**: The `auth-db` PostgreSQL schema is automatically initialized on first startup via `db/init.sql`.
 
@@ -479,12 +479,12 @@ make compose-build    # Rebuild images
 
 ### Configuration combinations
 
-| Command | OIDC | Backend API | Rebuild |
-|---------|------|-------------|---------|
-| `make compose-up` | Real (from `.env`) | Local registry-server | Yes |
-| `make compose-up-dev` | Real (from `.env`) | Local registry-server | No |
-| `make compose-up` + `API_BASE_URL` | Real (from `.env`) | External API | Yes |
-| `make compose-up-mock` | Mock (`:4000`) | Local registry-server | Yes |
+| Command                            | OIDC               | Backend API           | Rebuild |
+| ---------------------------------- | ------------------ | --------------------- | ------- |
+| `make compose-up`                  | Real (from `.env`) | Local registry-server | Yes     |
+| `make compose-up-dev`              | Real (from `.env`) | Local registry-server | No      |
+| `make compose-up` + `API_BASE_URL` | Real (from `.env`) | External API          | Yes     |
+| `make compose-up-mock`             | Mock (`:4000`)     | Local registry-server | Yes     |
 
 ## Kubernetes / Kind deployment
 
