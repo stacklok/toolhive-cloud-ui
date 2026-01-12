@@ -170,5 +170,3 @@ export {
   readTokenCookie,
   saveTokenCookie,
 } from "./cookie";
-// Re-export for convenience
-export { decrypt, encrypt, isOidcTokenData } from "./crypto";
