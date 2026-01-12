@@ -188,10 +188,3 @@ export async function saveAccountToken(account: Account) {
     await saveTokenCookie(tokenData);
   }
 }
-
-export {
-  clearOidcProviderToken,
-  getTokenFromCookie,
-  readTokenCookie,
-  saveTokenCookie,
-} from "./cookie";
