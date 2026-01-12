@@ -1,4 +1,4 @@
-.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc compose-up compose-up-mock compose-down compose-logs compose-build
+.PHONY: help build start stop restart logs clean dev shell rebuild install lint format test type-check generate-client dev-mock-server dev-mock-oidc compose-up compose-up-dev compose-up-mock compose-down compose-logs compose-build
 
 # Variables
 IMAGE_NAME := toolhive-cloud-ui
@@ -25,6 +25,7 @@ help:
 	@echo ""
 	@echo "Docker Compose (Full Stack):"
 	@echo "  make compose-up     - Start full stack with Okta (set OIDC env vars first)"
+	@echo "  make compose-up-dev - Start full stack without rebuild (uses existing images)"
 	@echo "  make compose-up-mock - Start full stack with mock OIDC"
 	@echo "  make compose-down   - Stop all services"
 	@echo "  make compose-logs   - View all service logs"
@@ -197,6 +198,11 @@ compose-up:
 	@echo "Starting full stack (UI + Registry Server)..."
 	@echo "Using OIDC config from environment or .env file"
 	@docker compose up --build
+
+## Start full stack without rebuild (uses existing images)
+compose-up-dev:
+	@echo "Starting full stack (using existing images)..."
+	@docker compose up -d
 
 ## Start full stack with mock OIDC provider
 compose-up-mock:

@@ -469,8 +469,9 @@ API_BASE_URL=https://api.toolhive.example.com
 ### Commands
 
 ```bash
-make compose-up       # Start with real OIDC (requires .env)
-make compose-up-mock  # Start with mock OIDC
+make compose-up       # Start with real OIDC (requires .env) + rebuild
+make compose-up-dev   # Start without rebuild (uses existing images)
+make compose-up-mock  # Start with mock OIDC + rebuild
 make compose-down     # Stop all services
 make compose-logs     # View logs
 make compose-build    # Rebuild images
@@ -478,11 +479,12 @@ make compose-build    # Rebuild images
 
 ### Configuration combinations
 
-| Command | OIDC | Backend API |
-|---------|------|-------------|
-| `make compose-up` | Real (from `.env`) | Local registry-server |
-| `make compose-up` + `API_BASE_URL` | Real (from `.env`) | External API |
-| `make compose-up-mock` | Mock (`:4000`) | Local registry-server |
+| Command | OIDC | Backend API | Rebuild |
+|---------|------|-------------|---------|
+| `make compose-up` | Real (from `.env`) | Local registry-server | Yes |
+| `make compose-up-dev` | Real (from `.env`) | Local registry-server | No |
+| `make compose-up` + `API_BASE_URL` | Real (from `.env`) | External API | Yes |
+| `make compose-up-mock` | Mock (`:4000`) | Local registry-server | Yes |
 
 ## Kubernetes / Kind deployment
 
