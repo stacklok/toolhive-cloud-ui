@@ -14,11 +14,7 @@ import {
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import {
-  clearOidcProviderToken as clearOidcProviderTokenCookie,
-  getTokenFromCookie,
-  saveTokenCookie,
-} from "./cookie";
+import { getTokenFromCookie, saveTokenCookie } from "./cookie";
 import {
   getIdTokenFromDatabase,
   getTokenFromDatabase,
@@ -103,15 +99,6 @@ export async function getOidcIdToken(userId: string): Promise<string | null> {
     return getIdTokenFromDatabase(userId);
   }
   return getIdTokenFromCookie(userId);
-}
-
-/**
- * Clears OIDC tokens (for logout in cookie mode).
- */
-export async function clearOidcProviderToken(): Promise<void> {
-  if (!isDatabaseMode) {
-    await clearOidcProviderTokenCookie();
-  }
 }
 
 // Cookie mode helpers

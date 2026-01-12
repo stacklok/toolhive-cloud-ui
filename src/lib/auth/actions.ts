@@ -1,13 +1,9 @@
 "use server";
 
 import { headers } from "next/headers";
-import {
-  auth,
-  clearOidcProviderToken,
-  getOidcDiscovery,
-  getOidcIdToken,
-} from "@/lib/auth/auth";
+import { auth, getOidcDiscovery, getOidcIdToken } from "@/lib/auth/auth";
 import { BASE_URL } from "@/lib/auth/constants";
+import { clearOidcProviderToken } from "@/lib/auth/cookie";
 
 /**
  * Server action to clear OIDC token cookie on sign out.
