@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAddMcpToClient } from "@/hooks/use-add-mcp-to-client";
+import { MCP_CLIENTS } from "@/lib/mcp/client-configs";
 
 interface AddMcpClientDropdownProps {
   serverName: string;
@@ -41,7 +42,7 @@ export function AddMcpToClientDropdown({
           className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            openInClient("cursor");
+            openInClient(MCP_CLIENTS.cursor);
           }}
         >
           Cursor
@@ -50,7 +51,7 @@ export function AddMcpToClientDropdown({
           className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            copyCommand("vscode");
+            copyCommand(MCP_CLIENTS.vscode);
           }}
         >
           VS Code (copy CLI command)
@@ -59,7 +60,7 @@ export function AddMcpToClientDropdown({
           className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            copyJsonConfig("vscode");
+            copyJsonConfig(MCP_CLIENTS.vscode);
           }}
         >
           VS Code (copy MCP JSON config)
@@ -68,7 +69,7 @@ export function AddMcpToClientDropdown({
           className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            copyCommand("claude-code");
+            copyCommand(MCP_CLIENTS.claudeCode);
           }}
         >
           Claude Code (copy CLI command)
