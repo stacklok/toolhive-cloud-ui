@@ -27,7 +27,7 @@ export function AddMcpToClientDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           className="flex h-10 items-center justify-between gap-2"
         >
@@ -71,7 +71,7 @@ export function AddMcpToClientDropdown({
             copyCommand("claude-code");
           }}
         >
-          Claude Code (copy command)
+          Claude Code (copy CLI command)
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
