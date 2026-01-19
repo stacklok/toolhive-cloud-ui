@@ -1,5 +1,6 @@
 "use client";
 
+import { AddMcpToClientDropdown } from "@/components/add-mcp-to-client-dropdown";
 import { CopyUrlButton } from "@/components/copy-url-button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -53,7 +54,13 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
           {description || "No description available"}
         </p>
         {serverUrl && (
-          <CopyUrlButton url={serverUrl} className="w-fit cursor-pointer" />
+          <div className="flex items-center gap-2">
+            <CopyUrlButton url={serverUrl} className="w-fit cursor-pointer" />
+            <AddMcpToClientDropdown
+              serverName={name ?? ""}
+              serverUrl={serverUrl}
+            />
+          </div>
         )}
       </CardContent>
     </Card>
