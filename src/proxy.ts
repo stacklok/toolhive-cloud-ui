@@ -24,25 +24,12 @@ const BETTER_AUTH_SESSION_COOKIE = "better-auth.session";
 
 // Routes that don't need token refresh
 const PUBLIC_ROUTES = ["/signin", "/api/auth"];
-const STATIC_EXTENSIONS = [
-  ".ico",
-  ".png",
-  ".jpg",
-  ".jpeg",
-  ".svg",
-  ".css",
-  ".js",
-];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip public routes and static files
+  // Skip public routes
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-
-  if (STATIC_EXTENSIONS.some((ext) => pathname.endsWith(ext))) {
     return NextResponse.next();
   }
 
@@ -82,7 +69,16 @@ export async function proxy(request: NextRequest) {
   }
 
   // Encrypt and set the new token
-  const encrypted = await encryptTokenData(newTokenData);
+  let encrypted: string;
+  try {
+    encrypted = await encryptTokenData(newTokenData);
+  } catch (error) {
+    console.error("[Proxy] Token encryption failed:", error);
+    const response = NextResponse.next();
+    clearTokenCookiesOnResponse(response, request);
+    return response;
+  }
+
   const response = NextResponse.next();
 
   // Clear old chunked cookies first (if any)
