@@ -65,6 +65,12 @@ export async function refreshAccessToken(
 
 /**
  * Checks if the token needs refresh (expired or expiring soon).
+ *
+ * We use a threshold buffer (TOKEN_REFRESH_THRESHOLD_MS) to refresh the token
+ * BEFORE it actually expires. This prevents:
+ * - Race conditions: requests in-flight when the token expires
+ * - Network latency: refresh request taking longer than remaining validity
+ * - Clock skew: client/server time differences
  */
 export function needsRefresh(tokenData: OidcTokenData): boolean {
   const expiresAt = tokenData.accessTokenExpiresAt;
