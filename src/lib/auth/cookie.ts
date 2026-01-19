@@ -2,9 +2,14 @@
  * Cookie utilities for OIDC token storage in stateless mode.
  * Aligned with Better Auth's cookie chunking implementation.
  * Used when DATABASE_URL is not configured.
+ *
+ * Provides two sets of functions:
+ * - Server Component/Action functions using next/headers cookies()
+ * - Proxy functions using NextRequest/NextResponse for middleware-like operations
  */
 
 import { cookies } from "next/headers";
+import type { NextRequest, NextResponse } from "next/server";
 import {
   BETTER_AUTH_SECRET,
   COOKIE_SECURE,
@@ -146,4 +151,110 @@ export async function getTokenFromCookie(
   }
 
   return tokenData;
+}
+
+// ============================================================================
+// Proxy Functions (NextRequest/NextResponse)
+// Used by proxy.ts which runs before SSR and can modify response cookies
+// ============================================================================
+
+/**
+ * Reads and reassembles encrypted token from request cookies.
+ * Returns the raw encrypted JWE string for decryption.
+ */
+export function readTokenFromRequest(request: NextRequest): string | null {
+  // First, try to read single (non-chunked) cookie
+  const singleCookie = request.cookies.get(OIDC_TOKEN_COOKIE_NAME);
+  if (singleCookie?.value) {
+    return singleCookie.value;
+  }
+
+  // Look for chunked cookies: cookie_name.0, cookie_name.1, etc.
+  const chunks: Array<{ index: number; value: string }> = [];
+
+  for (const cookie of request.cookies.getAll()) {
+    if (cookie.name.startsWith(`${OIDC_TOKEN_COOKIE_NAME}.`)) {
+      const index = getChunkIndex(cookie.name);
+      chunks.push({ index, value: cookie.value });
+    }
+  }
+
+  if (chunks.length === 0) {
+    return null;
+  }
+
+  // Sort by index and join
+  chunks.sort((a, b) => a.index - b.index);
+  return chunks.map((c) => c.value).join("");
+}
+
+/**
+ * Sets encrypted token cookie(s) on the response, chunking if necessary.
+ */
+export function setTokenCookiesOnResponse(
+  response: NextResponse,
+  encrypted: string,
+): void {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: COOKIE_SECURE,
+    sameSite: "lax" as const,
+    maxAge: TOKEN_SEVEN_DAYS_SECONDS,
+    path: "/",
+  };
+
+  const chunkCount = Math.ceil(encrypted.length / CHUNK_SIZE);
+
+  if (chunkCount === 1) {
+    response.cookies.set(OIDC_TOKEN_COOKIE_NAME, encrypted, cookieOptions);
+  } else {
+    // Split into chunks
+    for (let i = 0; i < chunkCount; i++) {
+      const start = i * CHUNK_SIZE;
+      const chunkValue = encrypted.substring(start, start + CHUNK_SIZE);
+      response.cookies.set(
+        `${OIDC_TOKEN_COOKIE_NAME}.${i}`,
+        chunkValue,
+        cookieOptions,
+      );
+    }
+  }
+}
+
+/**
+ * Clears all OIDC token cookies from the response.
+ */
+export function clearTokenCookiesOnResponse(
+  response: NextResponse,
+  request: NextRequest,
+): void {
+  response.cookies.delete(OIDC_TOKEN_COOKIE_NAME);
+
+  // Clear any chunked cookies
+  for (const cookie of request.cookies.getAll()) {
+    if (cookie.name.startsWith(`${OIDC_TOKEN_COOKIE_NAME}.`)) {
+      response.cookies.delete(cookie.name);
+    }
+  }
+}
+
+/**
+ * Decrypts token data from encrypted JWE string.
+ * Returns null if decryption fails.
+ */
+export async function decryptTokenData(
+  encrypted: string,
+): Promise<OidcTokenData | null> {
+  try {
+    return await decrypt(encrypted, BETTER_AUTH_SECRET);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Encrypts token data to JWE string for cookie storage.
+ */
+export async function encryptTokenData(data: OidcTokenData): Promise<string> {
+  return await encrypt(data, BETTER_AUTH_SECRET);
 }
