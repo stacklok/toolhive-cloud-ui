@@ -21,10 +21,6 @@ describe("AddMcpToClientDropdown", () => {
     serverUrl: "https://example.com/mcp",
   };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("renders the dropdown trigger button", () => {
     render(<AddMcpToClientDropdown {...defaultProps} />);
 
