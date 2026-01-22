@@ -34,13 +34,13 @@ jobs:
 
       - name: Cache Ollama binary
         id: cache-ollama
-        uses: actions/cache@v4
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: /usr/local/bin/ollama
           key: ollama-binary-v0.13.5
 
       - name: Cache Ollama models
-        uses: actions/cache@v4
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: /home/runner/.ollama/models
           key: ollama-qwen2.5-1.5b-v3
