@@ -22,7 +22,10 @@
 #   helm install toolhive-cloud-ui oci://ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui --version 0.0.7
 #
 # Verify signature:
-#   cosign verify ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui:0.0.7
+#   cosign verify \
+#     --certificate-identity-regexp='https://github.com/stacklok/toolhive-cloud-ui/.*' \
+#     --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
+#     ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui:0.0.7
 
 name: Publish Helm Chart to OCI
 
