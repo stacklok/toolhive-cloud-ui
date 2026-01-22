@@ -47,7 +47,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+              uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
             - name: Set up Helm
               uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
@@ -85,15 +85,22 @@ jobs:
 
             - name: Push and Sign Helm Chart to OCI
               run: |
+                  set -euo pipefail
                   for chart in .helm-packages/*.tgz; do
                     echo "Pushing ${chart} to OCI registry..."
-                    helm push "${chart}" oci://${{ env.REGISTRY_PATH }} |& tee helm-push-output.log
-                    
+                    helm push "${chart}" oci://${{ env.REGISTRY_PATH }} 2>&1 | tee helm-push-output.log
+
                     # Extract chart name and digest for signing
                     file_name="${chart##*/}"
                     chart_name="${file_name%-*}"
-                    digest=$(awk -F "[, ]+" '/Digest/{print $NF}' < helm-push-output.log)
-                    
+                    digest=$(grep -oP 'Digest: \K\S+' helm-push-output.log)
+
+                    if [[ -z "$digest" ]]; then
+                      echo "ERROR: Failed to extract digest from helm push output"
+                      cat helm-push-output.log
+                      exit 1
+                    fi
+
                     echo "Signing chart: ${{ env.REGISTRY_PATH }}/${chart_name}@${digest}"
                     cosign sign -y "${{ env.REGISTRY_PATH }}/${chart_name}@${digest}"
                   done
