@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import {
   buildClaudeCodeCommand,
   buildCursorDeeplink,
-  buildVSCodeCommand,
-  buildVSCodeMcpJson,
+  buildVSCodeDeeplink,
   CLIENT_METADATA,
   MCP_CLIENTS,
   type McpClientType,
@@ -19,19 +18,16 @@ interface UseAddToClientOptions {
 }
 
 interface ClientConfig {
-  deeplink?: string | null;
+  deeplink?: string;
   command?: string;
-  jsonConfig?: object | null;
   metadata: (typeof CLIENT_METADATA)[McpClientType];
 }
 
 interface UseAddToClientReturn {
-  /** Open deeplink (Cursor only) */
+  /** Open deeplink in client (Cursor, VS Code) */
   openInClient: (client: McpClientType) => void;
-  /** Copy command to clipboard */
+  /** Copy command to clipboard (Claude Code) */
   copyCommand: (client: McpClientType) => Promise<void>;
-  /** Copy JSON config to clipboard (VS Code only) */
-  copyJsonConfig: (client: McpClientType) => Promise<void>;
 }
 
 async function copyToClipboard(text: string, successMessage: string) {
@@ -43,39 +39,35 @@ async function copyToClipboard(text: string, successMessage: string) {
   }
 }
 
-const buildClientConfigs = (
-  serverName: string,
-  config: McpTransportConfig,
-): Record<McpClientType, ClientConfig> => {
-  return {
-    [MCP_CLIENTS.cursor]: {
-      deeplink: buildCursorDeeplink(serverName, config),
-      metadata: CLIENT_METADATA[MCP_CLIENTS.cursor],
-    },
-    [MCP_CLIENTS.vscode]: {
-      command: buildVSCodeCommand(serverName, config),
-      jsonConfig: buildVSCodeMcpJson(serverName, config),
-      metadata: CLIENT_METADATA[MCP_CLIENTS.vscode],
-    },
-    [MCP_CLIENTS.claudeCode]: {
-      command: buildClaudeCodeCommand(serverName, config),
-      metadata: CLIENT_METADATA[MCP_CLIENTS.claudeCode],
-    },
-  };
-};
-
 /**
  * Hook for adding MCP servers to different clients.
- * Exposes helper actions to open/copy client-specific MCP install artifacts (Cursor deeplink,
- * VS Code/Claude Code commands, VS Code JSON config). Artifacts are generated on demand.
+ * Provides actions to open deeplinks (Cursor, VS Code) or copy CLI commands (Claude Code).
  */
 export function useAddMcpToClient({
   serverName,
   config,
 }: UseAddToClientOptions): UseAddToClientReturn {
+  const clientConfigs = useMemo<Record<McpClientType, ClientConfig>>(
+    () => ({
+      [MCP_CLIENTS.cursor]: {
+        deeplink: buildCursorDeeplink(serverName, config),
+        metadata: CLIENT_METADATA[MCP_CLIENTS.cursor],
+      },
+      [MCP_CLIENTS.vscode]: {
+        deeplink: buildVSCodeDeeplink(serverName, config),
+        metadata: CLIENT_METADATA[MCP_CLIENTS.vscode],
+      },
+      [MCP_CLIENTS.claudeCode]: {
+        command: buildClaudeCodeCommand(serverName, config),
+        metadata: CLIENT_METADATA[MCP_CLIENTS.claudeCode],
+      },
+    }),
+    [serverName, config],
+  );
+
   const openInClient = useCallback(
     (client: McpClientType) => {
-      const clientConfig = buildClientConfigs(serverName, config)[client];
+      const clientConfig = clientConfigs[client];
 
       if (clientConfig.deeplink) {
         window.open(clientConfig.deeplink, "_self");
@@ -85,12 +77,12 @@ export function useAddMcpToClient({
         );
       }
     },
-    [serverName, config],
+    [clientConfigs],
   );
 
   const copyCommand = useCallback(
     async (client: McpClientType) => {
-      const clientConfig = buildClientConfigs(serverName, config)[client];
+      const clientConfig = clientConfigs[client];
       if (!clientConfig.command) {
         toast.error(`No command available for ${clientConfig.metadata.name}`);
         return;
@@ -100,30 +92,11 @@ export function useAddMcpToClient({
         `${clientConfig.metadata.name} command copied!`,
       );
     },
-    [serverName, config],
-  );
-
-  const copyJsonConfig = useCallback(
-    async (client: McpClientType) => {
-      const clientConfig = buildClientConfigs(serverName, config)[client];
-      if (!clientConfig.jsonConfig) {
-        toast.error(
-          `No JSON config available for ${clientConfig.metadata.name}`,
-        );
-        return;
-      }
-      const clientJsonConfig = JSON.stringify(clientConfig.jsonConfig, null, 2);
-      await copyToClipboard(
-        clientJsonConfig,
-        `${clientConfig.metadata.name} config copied!`,
-      );
-    },
-    [serverName, config],
+    [clientConfigs],
   );
 
   return {
     openInClient,
     copyCommand,
-    copyJsonConfig,
   };
 }

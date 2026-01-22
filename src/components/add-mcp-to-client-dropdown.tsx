@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAddMcpToClient } from "@/hooks/use-add-mcp-to-client";
-import { MCP_CLIENTS } from "@/lib/mcp/client-configs";
+import { MCP_CLIENT_LIST } from "@/lib/mcp/client-configs";
 
 interface AddMcpClientDropdownProps {
   serverName: string;
@@ -19,7 +19,7 @@ export function AddMcpToClientDropdown({
   serverName,
   serverUrl,
 }: AddMcpClientDropdownProps) {
-  const { openInClient, copyCommand, copyJsonConfig } = useAddMcpToClient({
+  const { openInClient, copyCommand } = useAddMcpToClient({
     serverName,
     config: { url: serverUrl },
   });
@@ -38,42 +38,22 @@ export function AddMcpToClientDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" side="bottom" className="w-64">
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            openInClient(MCP_CLIENTS.cursor);
-          }}
-        >
-          Cursor
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            copyCommand(MCP_CLIENTS.vscode);
-          }}
-        >
-          VS Code (copy CLI command)
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            copyJsonConfig(MCP_CLIENTS.vscode);
-          }}
-        >
-          VS Code (copy MCP JSON config)
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            copyCommand(MCP_CLIENTS.claudeCode);
-          }}
-        >
-          Claude Code (copy CLI command)
-        </DropdownMenuItem>
+        {MCP_CLIENT_LIST.map(({ client, label, action }) => (
+          <DropdownMenuItem
+            key={client}
+            className="cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (action === "open") {
+                openInClient(client);
+              } else {
+                copyCommand(client);
+              }
+            }}
+          >
+            {label}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

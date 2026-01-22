@@ -58,8 +58,8 @@ export function buildCursorDeeplink(
   return `cursor://anysphere.cursor-deeplink/mcp/install?name=${encodedName}&config=${encodedConfig}`;
 }
 
-/** Generate VS Code CLI command for MCP installation */
-export function buildVSCodeCommand(
+/** Generate VS Code deeplink for MCP installation */
+export function buildVSCodeDeeplink(
   serverName: string,
   config: McpTransportConfig,
 ): string {
@@ -68,39 +68,7 @@ export function buildVSCodeCommand(
     ...config,
   };
   const configJson = JSON.stringify(mcpConfig);
-  // Escape single quotes for shell
-  const escapedJson = configJson.replace(/'/g, "'\\''");
-  return `code --add-mcp '${escapedJson}'`;
-}
-
-/** Generate VS Code mcp.json configuration object */
-export function buildVSCodeMcpJson(
-  serverName: string,
-  config: McpTransportConfig,
-): object {
-  if (isRemoteConfig(config)) {
-    return {
-      servers: {
-        [serverName]: {
-          type: "http",
-          url: config.url,
-          ...(config.headers && { headers: config.headers }),
-        },
-      },
-    };
-  }
-
-  // stdio config
-  return {
-    servers: {
-      [serverName]: {
-        type: "stdio",
-        command: config.command,
-        ...(config.args && { args: config.args }),
-        ...(config.env && { env: config.env }),
-      },
-    },
-  };
+  return `vscode:mcp/install?${encodeURIComponent(configJson)}`;
 }
 
 /** Generate Claude Code CLI command for MCP installation */
@@ -129,23 +97,31 @@ export const CLIENT_METADATA: Record<
   {
     name: string;
     hasDeeplink: boolean;
-    instructions: string;
+    menuLabel: string;
   }
 > = {
   [MCP_CLIENTS.cursor]: {
     name: "Cursor",
     hasDeeplink: true,
-    instructions: "Click to open Cursor and install the MCP server.",
+    menuLabel: "Cursor",
   },
   [MCP_CLIENTS.vscode]: {
     name: "VS Code",
-    hasDeeplink: false,
-    instructions:
-      "Copy the command and run it in your terminal, or add the config to your mcp.json file.",
+    hasDeeplink: true,
+    menuLabel: "VS Code",
   },
   [MCP_CLIENTS.claudeCode]: {
     name: "Claude Code",
     hasDeeplink: false,
-    instructions: "Copy the command and run it in your terminal.",
+    menuLabel: "Claude Code (copy CLI command)",
   },
 };
+
+/** List of MCP clients for dropdown menus */
+export const MCP_CLIENT_LIST = Object.entries(CLIENT_METADATA).map(
+  ([client, metadata]) => ({
+    client: client as McpClientType,
+    label: metadata.menuLabel,
+    action: metadata.hasDeeplink ? ("open" as const) : ("copy" as const),
+  }),
+);

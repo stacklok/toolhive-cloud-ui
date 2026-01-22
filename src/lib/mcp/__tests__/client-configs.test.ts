@@ -2,8 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildClaudeCodeCommand,
   buildCursorDeeplink,
-  buildVSCodeCommand,
-  buildVSCodeMcpJson,
+  buildVSCodeDeeplink,
   type McpRemoteConfig,
   type McpStdioConfig,
 } from "../client-configs";
@@ -35,49 +34,18 @@ describe("client-configs", () => {
       expect(decodedConfig).toEqual(stdioConfig);
     });
 
-    it("buildVSCodeCommand generates correct CLI command for stdio", () => {
-      const command = buildVSCodeCommand("fs-server", stdioConfig);
+    it("buildVSCodeDeeplink generates correct deeplink for stdio", () => {
+      const deeplink = buildVSCodeDeeplink("fs-server", stdioConfig);
 
-      expect(command).toContain("code --add-mcp");
-      expect(command).toContain('"name":"fs-server"');
-      expect(command).toContain('"command":"npx"');
-      expect(command).toContain(
-        '"args":["-y","@modelcontextprotocol/server-filesystem","/tmp"]',
-      );
-    });
+      expect(deeplink).toContain("vscode:mcp/install?");
 
-    it("buildVSCodeMcpJson generates correct JSON structure for stdio", () => {
-      const json = buildVSCodeMcpJson("fs-server", stdioConfig);
+      // Decode and verify the config
+      const encodedConfig = deeplink.replace("vscode:mcp/install?", "");
+      const decodedConfig = JSON.parse(decodeURIComponent(encodedConfig));
 
-      expect(json).toEqual({
-        servers: {
-          "fs-server": {
-            type: "stdio",
-            command: "npx",
-            args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
-          },
-        },
-      });
-    });
-
-    it("buildVSCodeMcpJson includes env when provided", () => {
-      const configWithEnv: McpStdioConfig = {
-        command: "node",
-        args: ["server.js"],
-        env: { NODE_ENV: "production", DEBUG: "true" },
-      };
-
-      const json = buildVSCodeMcpJson("my-server", configWithEnv);
-
-      expect(json).toEqual({
-        servers: {
-          "my-server": {
-            type: "stdio",
-            command: "node",
-            args: ["server.js"],
-            env: { NODE_ENV: "production", DEBUG: "true" },
-          },
-        },
+      expect(decodedConfig).toEqual({
+        name: "fs-server",
+        ...stdioConfig,
       });
     });
 
@@ -119,20 +87,21 @@ describe("client-configs", () => {
       expect(command).toContain('--header "X-Custom-Header: custom-value"');
     });
 
-    it("buildVSCodeMcpJson includes headers in config", () => {
-      const json = buildVSCodeMcpJson("api-server", remoteConfigWithHeaders);
+    it("buildVSCodeDeeplink generates correct deeplink for remote config", () => {
+      const deeplink = buildVSCodeDeeplink(
+        "api-server",
+        remoteConfigWithHeaders,
+      );
 
-      expect(json).toEqual({
-        servers: {
-          "api-server": {
-            type: "http",
-            url: "https://api.example.com/mcp",
-            headers: {
-              Authorization: "Bearer token123",
-              "X-Custom-Header": "custom-value",
-            },
-          },
-        },
+      expect(deeplink).toContain("vscode:mcp/install?");
+
+      // Decode and verify the config
+      const encodedConfig = deeplink.replace("vscode:mcp/install?", "");
+      const decodedConfig = JSON.parse(decodeURIComponent(encodedConfig));
+
+      expect(decodedConfig).toEqual({
+        name: "api-server",
+        ...remoteConfigWithHeaders,
       });
     });
   });
