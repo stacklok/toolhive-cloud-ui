@@ -90,9 +90,8 @@ jobs:
                     echo "Pushing ${chart} to OCI registry..."
                     helm push "${chart}" oci://${{ env.REGISTRY_PATH }} 2>&1 | tee helm-push-output.log
 
-                    # Extract chart name and digest for signing
-                    file_name="${chart##*/}"
-                    chart_name="${file_name%-*}"
+                    # Extract chart name from the packaged chart and digest for signing
+                    chart_name=$(helm show chart "${chart}" | grep '^name:' | awk '{print $2}')
                     digest=$(grep -oP 'Digest: \K\S+' helm-push-output.log)
 
                     if [[ -z "$digest" ]]; then
