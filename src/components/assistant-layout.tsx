@@ -26,7 +26,7 @@ export async function AssistantLayout({ children }: AssistantLayoutProps) {
           <SidebarProvider defaultOpen={false}>
             {children}
             <ErrorBoundary>
-              <AssistantSidebar />
+              <AssistantSidebar models={models} />
             </ErrorBoundary>
           </SidebarProvider>
         </ChatProvider>

@@ -47,7 +47,9 @@ const FALLBACK_OPENROUTER_MODELS = [
 function createOpenRouterClient(): OpenRouter {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    throw new Error("OPENROUTER_API_KEY environment variable is not set");
+    throw new Error("OPENROUTER_API_KEY environment variable is not set", {
+      cause: { missingOpenRouterApiKey: true },
+    });
   }
   return new OpenRouter({ apiKey });
 }
@@ -99,8 +101,16 @@ export async function getOpenRouterModels(): Promise<string[]> {
       })
       .map((model) => model.id);
 
-    return models.length > 0 ? models : [...FALLBACK_OPENROUTER_MODELS];
+    return models;
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.cause as { missingOpenRouterApiKey?: boolean })
+        ?.missingOpenRouterApiKey
+    ) {
+      console.error("No OpenRouter API key found");
+      return [];
+    }
     console.error("Error fetching OpenRouter models:", error);
     return [...FALLBACK_OPENROUTER_MODELS];
   }
