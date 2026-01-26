@@ -84,8 +84,17 @@ function supportsTools(supportedParameters: string[]): boolean {
  * Fetches available OpenRouter models that support tool/function calling.
  * Uses the official OpenRouter SDK.
  * Falls back to a hardcoded list if the API is unavailable.
+ * In E2E test mode, returns a testing model to bypass OpenRouter requirement.
  */
 export async function getOpenRouterModels(): Promise<string[]> {
+  // In E2E test mode, return a testing model to bypass OpenRouter requirement
+  const useTestingModel = process.env.USE_E2E_MODEL === "true";
+
+  const testModel = process.env.E2E_MODEL_NAME;
+  if (useTestingModel && testModel) {
+    return [testModel];
+  }
+
   try {
     const client = createOpenRouterClient();
     const response = await client.models.list();
