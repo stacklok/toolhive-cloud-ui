@@ -31,7 +31,7 @@ services:
   # PostgreSQL for session storage (handles large OIDC tokens like Azure AD)
   # SECURITY NOTE: Credentials below are for LOCAL DEVELOPMENT ONLY.
   auth-db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: toolhive-auth-db
     ports:
       - "5433:5432"
