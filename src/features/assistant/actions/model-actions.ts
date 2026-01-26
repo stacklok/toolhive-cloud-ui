@@ -47,7 +47,9 @@ const FALLBACK_OPENROUTER_MODELS = [
 function createOpenRouterClient(): OpenRouter {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    throw new Error("OPENROUTER_API_KEY environment variable is not set");
+    throw new Error("OPENROUTER_API_KEY environment variable is not set", {
+      cause: { missingOpenRouterApiKey: true },
+    });
   }
   return new OpenRouter({ apiKey });
 }
@@ -82,8 +84,17 @@ function supportsTools(supportedParameters: string[]): boolean {
  * Fetches available OpenRouter models that support tool/function calling.
  * Uses the official OpenRouter SDK.
  * Falls back to a hardcoded list if the API is unavailable.
+ * In E2E test mode, returns a testing model to bypass OpenRouter requirement.
  */
 export async function getOpenRouterModels(): Promise<string[]> {
+  // In E2E test mode, return a testing model to bypass OpenRouter requirement
+  const useTestingModel = process.env.USE_E2E_MODEL === "true";
+
+  const testModel = process.env.E2E_MODEL_NAME;
+  if (useTestingModel && testModel) {
+    return [testModel];
+  }
+
   try {
     const client = createOpenRouterClient();
     const response = await client.models.list();
@@ -99,8 +110,16 @@ export async function getOpenRouterModels(): Promise<string[]> {
       })
       .map((model) => model.id);
 
-    return models.length > 0 ? models : [...FALLBACK_OPENROUTER_MODELS];
+    return models;
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.cause as { missingOpenRouterApiKey?: boolean })
+        ?.missingOpenRouterApiKey
+    ) {
+      console.error("No OpenRouter API key found");
+      return [];
+    }
     console.error("Error fetching OpenRouter models:", error);
     return [...FALLBACK_OPENROUTER_MODELS];
   }
