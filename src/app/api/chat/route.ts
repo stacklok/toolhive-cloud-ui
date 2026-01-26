@@ -243,10 +243,11 @@ export async function POST(req: Request) {
   }
 
   const startTime = Date.now();
+  const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
     model,
-    messages: convertToModelMessages(messages),
+    messages: modelMessages,
     tools,
     toolChoice: "auto",
     stopWhen: stepCountIs(5), // Allow multiple steps for tool execution and response generation
