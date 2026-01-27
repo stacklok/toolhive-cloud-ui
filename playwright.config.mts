@@ -17,9 +17,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 2,
-  // Use 1 worker - the dev OIDC mock can't handle parallel auth flows reliably
-  workers: 1,
+  retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
   timeout: 30_000,
   use: {
@@ -45,14 +43,14 @@ export default defineConfig({
         env: {
           API_BASE_URL: "http://localhost:9090",
           OIDC_ISSUER_URL: "http://localhost:4000",
-          // Use longer token TTL for E2E tests (default 15s is too short)
-          OIDC_ACCESS_TOKEN_TTL: "300",
           OIDC_CLIENT_ID: "better-auth-dev",
           OIDC_CLIENT_SECRET: "dev-secret-change-in-production",
           OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
-          // Increase rate limit for E2E tests (default is 3 per 10s for sign-in)
+          // Better Auth rate limits sign-in to 3 requests per 10 seconds by default.
+          // E2E tests with multiple authenticatedPage fixtures exceed this limit,
+          // causing 429 errors. Set to 100 to allow rapid sequential logins.
           BETTER_AUTH_RATE_LIMIT: "100",
           // Always use testing model for E2E tests to avoid needing OpenRouter API keys
           USE_E2E_MODEL: "true",

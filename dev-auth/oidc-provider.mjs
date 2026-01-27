@@ -19,9 +19,6 @@ const PORT = new URL(ISSUER).port || 4000;
 const CLIENT_ID = process.env.OIDC_CLIENT_ID || "better-auth-dev";
 const CLIENT_SECRET =
   process.env.OIDC_CLIENT_SECRET || "dev-secret-change-in-production";
-// Allow longer token TTL for E2E tests (default 15s is too short when proxy can only refresh at request start)
-const ACCESS_TOKEN_TTL = parseInt(process.env.OIDC_ACCESS_TOKEN_TTL || "15", 10);
-console.log(`[OIDC Config] Access token TTL: ${ACCESS_TOKEN_TTL}s`);
 
 // Simple in-memory account storage
 const accounts = {
@@ -110,11 +107,8 @@ const configuration = {
     profile: ["name"],
   },
   ttl: {
-    // Short-lived access tokens to force refresh during dev
-    // Can be overridden via OIDC_ACCESS_TOKEN_TTL for E2E tests
-    AccessToken: ACCESS_TOKEN_TTL, // seconds (default 15, use 300+ for E2E)
+    AccessToken: 15, // seconds - short-lived to exercise refresh flow
     RefreshToken: 86400 * 30, // 30 days
-    // Explicit TTLs to avoid default warnings and ensure stability
     Interaction: 3600, // 1 hour
     Session: 86400 * 14, // 14 days
     Grant: 86400 * 14, // 14 days
@@ -126,28 +120,10 @@ const configuration = {
 
 const oidc = new Provider(ISSUER, configuration);
 
-// Log all requests to help debug hanging issues
-oidc.use(async (ctx, next) => {
-  const start = Date.now();
-  console.log(`[OIDC] ${ctx.method} ${ctx.path} - started`);
-  try {
-    await next();
-  } finally {
-    console.log(`[OIDC] ${ctx.method} ${ctx.path} - completed in ${Date.now() - start}ms`);
-  }
-});
-
 // Simple interaction endpoint for dev - auto-login as test-user
 oidc.use(async (ctx, next) => {
   if (ctx.path.startsWith("/interaction/")) {
-    const uid = ctx.path.split("/")[2];
-    let interaction;
-    try {
-      interaction = await oidc.interactionDetails(ctx.req, ctx.res);
-    } catch (error) {
-      console.error(`[OIDC] Error getting interaction details for ${uid}:`, error);
-      throw error;
-    }
+    const interaction = await oidc.interactionDetails(ctx.req, ctx.res);
 
     if (interaction.prompt.name === "login") {
       // Auto-login as test-user for dev

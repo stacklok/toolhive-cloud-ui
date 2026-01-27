@@ -163,8 +163,11 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
   ...(pool && { database: pool }),
-  // Allow overriding rate limit via BETTER_AUTH_RATE_LIMIT env var (useful for E2E tests)
-  // Must use customRules to override the special sign-in path limit (default: 3 per 10s)
+  // Rate limit override for E2E tests.
+  // Better Auth's default rate limit for /sign-in/* is 3 requests per 10 seconds.
+  // This is too restrictive for E2E tests where multiple tests authenticate in
+  // quick succession. We use customRules because the default special rules for
+  // sign-in paths take precedence over the global max setting.
   ...(BETTER_AUTH_RATE_LIMIT && {
     rateLimit: {
       customRules: {

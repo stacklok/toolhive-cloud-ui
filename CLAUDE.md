@@ -234,6 +234,8 @@ pnpm generate-client:nofetch # Regenerate without fetching
 
 Tests use custom fixtures for authentication. The `authenticatedPage` fixture handles login automatically.
 
+**Note on rate limiting:** Better Auth has a default rate limit of 3 sign-in requests per 10 seconds. E2E tests override this via `BETTER_AUTH_RATE_LIMIT=100` to allow multiple tests to authenticate in quick succession without triggering 429 errors.
+
 ### Example Test
 
 ```typescript
