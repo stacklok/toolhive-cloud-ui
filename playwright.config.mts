@@ -45,11 +45,15 @@ export default defineConfig({
         env: {
           API_BASE_URL: "http://localhost:9090",
           OIDC_ISSUER_URL: "http://localhost:4000",
+          // Use longer token TTL for E2E tests (default 15s is too short)
+          OIDC_ACCESS_TOKEN_TTL: "300",
           OIDC_CLIENT_ID: "better-auth-dev",
           OIDC_CLIENT_SECRET: "dev-secret-change-in-production",
           OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
+          // Increase rate limit for E2E tests (default is 3 per 10s for sign-in)
+          BETTER_AUTH_RATE_LIMIT: "100",
           // Always use testing model for E2E tests to avoid needing OpenRouter API keys
           USE_E2E_MODEL: "true",
           E2E_MODEL_NAME: process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b",

@@ -50,6 +50,13 @@ export const COOKIE_SECURE =
 // Database configuration (optional - enables database mode for large OIDC tokens)
 export const DATABASE_URL = process.env.DATABASE_URL;
 
+// Rate limiting configuration
+// Default is 3 requests per 10 seconds for sign-in endpoints (Better Auth default)
+// Set BETTER_AUTH_RATE_LIMIT to a higher value (e.g., 100) for E2E tests
+export const BETTER_AUTH_RATE_LIMIT = process.env.BETTER_AUTH_RATE_LIMIT
+  ? Number.parseInt(process.env.BETTER_AUTH_RATE_LIMIT, 10)
+  : undefined;
+
 // Trusted origins for Better Auth
 const trustedOriginsFromEnv = process.env.TRUSTED_ORIGINS
   ? process.env.TRUSTED_ORIGINS.split(",").map((s) => s.trim())

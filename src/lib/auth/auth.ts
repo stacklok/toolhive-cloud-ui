@@ -3,6 +3,7 @@ import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import {
   BASE_URL,
+  BETTER_AUTH_RATE_LIMIT,
   BETTER_AUTH_SECRET,
   IS_PRODUCTION,
   OIDC_CLIENT_ID,
@@ -162,6 +163,18 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
   ...(pool && { database: pool }),
+  // Allow overriding rate limit via BETTER_AUTH_RATE_LIMIT env var (useful for E2E tests)
+  // Must use customRules to override the special sign-in path limit (default: 3 per 10s)
+  ...(BETTER_AUTH_RATE_LIMIT && {
+    rateLimit: {
+      customRules: {
+        "/sign-in/*": {
+          max: BETTER_AUTH_RATE_LIMIT,
+          window: 10,
+        },
+      },
+    },
+  }),
   account: {
     storeStateStrategy: pool ? "database" : "cookie",
     storeAccountCookie: !pool,

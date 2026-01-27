@@ -19,6 +19,9 @@ const PORT = new URL(ISSUER).port || 4000;
 const CLIENT_ID = process.env.OIDC_CLIENT_ID || "better-auth-dev";
 const CLIENT_SECRET =
   process.env.OIDC_CLIENT_SECRET || "dev-secret-change-in-production";
+// Allow longer token TTL for E2E tests (default 15s is too short when proxy can only refresh at request start)
+const ACCESS_TOKEN_TTL = parseInt(process.env.OIDC_ACCESS_TOKEN_TTL || "15", 10);
+console.log(`[OIDC Config] Access token TTL: ${ACCESS_TOKEN_TTL}s`);
 
 // Simple in-memory account storage
 const accounts = {
@@ -108,7 +111,8 @@ const configuration = {
   },
   ttl: {
     // Short-lived access tokens to force refresh during dev
-    AccessToken: 15, // seconds
+    // Can be overridden via OIDC_ACCESS_TOKEN_TTL for E2E tests
+    AccessToken: ACCESS_TOKEN_TTL, // seconds (default 15, use 300+ for E2E)
     RefreshToken: 86400 * 30, // 30 days
     // Explicit TTLs to avoid default warnings and ensure stability
     Interaction: 3600, // 1 hour
