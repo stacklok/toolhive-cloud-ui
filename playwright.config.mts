@@ -35,7 +35,8 @@ export default defineConfig({
   webServer: serverAlreadyRunning
     ? undefined
     : {
-        command: "pnpm dev",
+        // Run against production build - requires `pnpm build` to be run first
+        command: "pnpm start:e2e",
         url: BASE_URL,
         timeout: 120_000,
         stdout: "pipe",
