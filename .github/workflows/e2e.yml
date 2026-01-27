@@ -17,17 +17,6 @@ jobs:
     name: Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      API_BASE_URL: http://localhost:9090
-      OIDC_ISSUER_URL: http://localhost:4000
-      OIDC_CLIENT_ID: test-only-not-a-real-id
-      OIDC_CLIENT_SECRET: test-only-not-a-real-secret
-      OIDC_PROVIDER_ID: okta
-      BETTER_AUTH_URL: http://localhost:3000
-      BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
-      USE_E2E_MODEL: "true"
-      E2E_MODEL_NAME: qwen2.5:1.5b
-      OLLAMA_BASE_URL: http://localhost:11434
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
