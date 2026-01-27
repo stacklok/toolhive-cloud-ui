@@ -10,8 +10,9 @@
 import { config } from "dotenv";
 import Provider from "oidc-provider";
 
-config();
-config({ path: ".env.local" });
+// Load env files but don't override existing env vars (e.g., from playwright)
+config({ override: false });
+config({ path: ".env.local", override: false });
 
 const ISSUER = process.env.OIDC_ISSUER_URL || "http://localhost:4000";
 const PORT = new URL(ISSUER).port || 4000;
@@ -109,6 +110,11 @@ const configuration = {
     // Short-lived access tokens to force refresh during dev
     AccessToken: 15, // seconds
     RefreshToken: 86400 * 30, // 30 days
+    // Explicit TTLs to avoid default warnings and ensure stability
+    Interaction: 3600, // 1 hour
+    Session: 86400 * 14, // 14 days
+    Grant: 86400 * 14, // 14 days
+    IdToken: 3600, // 1 hour
   },
   // Dev-only: always issue refresh tokens to make the flow reliable locally
   issueRefreshToken: async () => true,
@@ -116,11 +122,28 @@ const configuration = {
 
 const oidc = new Provider(ISSUER, configuration);
 
+// Log all requests to help debug hanging issues
+oidc.use(async (ctx, next) => {
+  const start = Date.now();
+  console.log(`[OIDC] ${ctx.method} ${ctx.path} - started`);
+  try {
+    await next();
+  } finally {
+    console.log(`[OIDC] ${ctx.method} ${ctx.path} - completed in ${Date.now() - start}ms`);
+  }
+});
+
 // Simple interaction endpoint for dev - auto-login as test-user
 oidc.use(async (ctx, next) => {
   if (ctx.path.startsWith("/interaction/")) {
-    const _uid = ctx.path.split("/")[2];
-    const interaction = await oidc.interactionDetails(ctx.req, ctx.res);
+    const uid = ctx.path.split("/")[2];
+    let interaction;
+    try {
+      interaction = await oidc.interactionDetails(ctx.req, ctx.res);
+    } catch (error) {
+      console.error(`[OIDC] Error getting interaction details for ${uid}:`, error);
+      throw error;
+    }
 
     if (interaction.prompt.name === "login") {
       // Auto-login as test-user for dev

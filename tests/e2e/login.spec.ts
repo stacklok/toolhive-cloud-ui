@@ -3,7 +3,13 @@ import { expect, test } from "./fixtures";
 test.describe("Login flow", () => {
   test("sign in and land on Catalog", async ({ page }) => {
     await page.goto("/signin");
-    await page.getByRole("button", { name: /oidc|okta/i }).click();
+    const signInButton = page.getByRole("button", { name: /oidc|okta/i });
+    await expect(signInButton).toBeVisible({ timeout: 5000 });
+    await signInButton.click();
+    // Wait for redirect away from signin (same as authenticatedPage fixture)
+    await page.waitForURL((url) => !url.pathname.startsWith("/signin"), {
+      timeout: 30000,
+    });
     await expect(page).toHaveURL(/\/catalog$/);
     await expect(
       page.getByRole("heading", { name: "MCP Server Catalog" }),
