@@ -226,10 +226,9 @@ pnpm generate-client:nofetch # Regenerate without fetching
 
 - End-to-end tests live under `tests/e2e` and run against a **production build**.
 - Commands:
-  - `pnpm test:e2e:build` – builds the app and runs E2E tests (recommended for local testing)
-  - `pnpm build && pnpm test:e2e` – manual alternative: build first, then run tests
-  - `pnpm test:e2e:ui` – opens Playwright UI mode for interactive debugging (requires prior `pnpm build`)
-  - `pnpm test:e2e:debug` – runs with Playwright Inspector (requires prior `pnpm build`)
+  - `pnpm test:e2e` – builds the app and runs E2E tests
+  - `pnpm test:e2e:ui` – builds and opens Playwright UI mode for interactive debugging
+  - `pnpm test:e2e:debug` – builds and runs with Playwright Inspector
 - CI runs E2E tests via `.github/workflows/e2e.yml` (builds first, then tests)
 - Install browsers locally once: `pnpm exec playwright install`
 

@@ -46,7 +46,7 @@ export default defineConfig({
           OIDC_ISSUER_URL: "http://localhost:4000",
           OIDC_CLIENT_ID: "better-auth-dev",
           OIDC_CLIENT_SECRET: "dev-secret-change-in-production",
-          NEXT_PUBLIC_OIDC_PROVIDER_ID: "okta",
+          OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
           // Always use testing model for E2E tests to avoid needing OpenRouter API keys

@@ -22,7 +22,7 @@ jobs:
       OIDC_ISSUER_URL: http://localhost:4000
       OIDC_CLIENT_ID: test-only-not-a-real-id
       OIDC_CLIENT_SECRET: test-only-not-a-real-secret
-      NEXT_PUBLIC_OIDC_PROVIDER_ID: oidc
+      OIDC_PROVIDER_ID: oidc
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
       USE_OLLAMA: "true"
@@ -66,6 +66,10 @@ jobs:
 
       - name: Build production app
         run: pnpm build
+        env:
+          # These env vars must match the runtime values for token encryption/decryption to work
+          BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
+          OIDC_PROVIDER_ID: oidc
 
       - name: Run Playwright tests
         run: pnpm test:e2e
