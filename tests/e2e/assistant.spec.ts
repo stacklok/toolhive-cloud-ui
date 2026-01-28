@@ -29,7 +29,7 @@ async function warmupTestingModel(): Promise<void> {
   console.log(`Warmup response: ${result.response?.substring(0, 50)}...`);
 }
 
-test.skip("Assistant chat", () => {
+test.describe("Assistant chat", () => {
   // Run tests serially to avoid race conditions with route compilation
   // Triple all timeouts for this describe block since LLM operations are slow
   test.slow();
@@ -48,7 +48,7 @@ test.skip("Assistant chat", () => {
     }
   });
 
-  test.skip("responds to user message with expected content", async ({
+  test("responds to user message with expected content", async ({
     authenticatedPage,
   }) => {
     // Use a unique identifier that we expect to appear in the response
@@ -89,7 +89,7 @@ test.skip("Assistant chat", () => {
     });
   });
 
-  test.skip("displays streaming response", async ({ authenticatedPage }) => {
+  test("displays streaming response", async ({ authenticatedPage }) => {
     // Navigate to catalog page which has the assistant sidebar
     await authenticatedPage.goto("/catalog");
 
