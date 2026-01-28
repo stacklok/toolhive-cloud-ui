@@ -224,13 +224,12 @@ pnpm generate-client:nofetch # Regenerate without fetching
 
 ### E2E Tests (Playwright)
 
-- End-to-end tests live under `tests/e2e` and run against a live dev stack.
+- End-to-end tests live under `tests/e2e` and run against a **production build**.
 - Commands:
-  - `pnpm dev` – starts Next.js (3000), mock OIDC (4000), and MSW mock API (9090)
-  - `pnpm run test:e2e` – runs Playwright tests (headless)
-  - `pnpm run test:e2e:ui` – opens Playwright UI mode for interactive debugging
-  - `pnpm run test:e2e:debug` – runs with Playwright Inspector
-- CI runs E2E tests via `.github/workflows/bdd.yml` and installs Playwright browsers.
+  - `pnpm test:e2e` – builds the app and runs E2E tests
+  - `pnpm test:e2e:ui` – builds and opens Playwright UI mode for interactive debugging
+  - `pnpm test:e2e:debug` – builds and runs with Playwright Inspector
+- CI runs E2E tests via `.github/workflows/e2e.yml` (builds first, then tests)
 - Install browsers locally once: `pnpm exec playwright install`
 
 Tests use custom fixtures for authentication. The `authenticatedPage` fixture handles login automatically.

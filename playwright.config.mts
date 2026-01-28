@@ -18,7 +18,6 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "list",
   timeout: 30_000,
   use: {
@@ -35,7 +34,8 @@ export default defineConfig({
   webServer: serverAlreadyRunning
     ? undefined
     : {
-        command: "pnpm dev",
+        // Run against production build - requires `pnpm build` to be run first
+        command: "pnpm start:e2e",
         url: BASE_URL,
         timeout: 120_000,
         stdout: "pipe",
@@ -45,9 +45,13 @@ export default defineConfig({
           OIDC_ISSUER_URL: "http://localhost:4000",
           OIDC_CLIENT_ID: "better-auth-dev",
           OIDC_CLIENT_SECRET: "dev-secret-change-in-production",
-          NEXT_PUBLIC_OIDC_PROVIDER_ID: "okta",
+          OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
+          // Better Auth rate limits sign-in to 3 requests per 10 seconds by default.
+          // E2E tests with multiple authenticatedPage fixtures exceed this limit,
+          // causing 429 errors. Set to 100 to allow rapid sequential logins.
+          BETTER_AUTH_RATE_LIMIT: "100",
           // Always use testing model for E2E tests to avoid needing OpenRouter API keys
           USE_E2E_MODEL: "true",
           E2E_MODEL_NAME: process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b",

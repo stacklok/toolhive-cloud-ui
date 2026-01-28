@@ -22,3 +22,4 @@ export const test = base.extend<{ authenticatedPage: Page }>({
 });
 
 export { expect } from "@playwright/test";
+export { login };

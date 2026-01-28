@@ -22,11 +22,11 @@ jobs:
       OIDC_ISSUER_URL: http://localhost:4000
       OIDC_CLIENT_ID: test-only-not-a-real-id
       OIDC_CLIENT_SECRET: test-only-not-a-real-secret
-      NEXT_PUBLIC_OIDC_PROVIDER_ID: oidc
+      OIDC_PROVIDER_ID: oidc
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
-      USE_OLLAMA: "true"
-      OLLAMA_MODEL: qwen2.5:1.5b
+      USE_E2E_MODEL: "true"
+      E2E_MODEL_NAME: qwen2.5:1.5b
       OLLAMA_BASE_URL: http://localhost:11434
     steps:
       - name: Checkout
@@ -63,6 +63,13 @@ jobs:
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build production app
+        run: pnpm build
+        env:
+          # These env vars must match the runtime values for token encryption/decryption to work
+          BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
+          OIDC_PROVIDER_ID: oidc
 
       - name: Run Playwright tests
         run: pnpm test:e2e

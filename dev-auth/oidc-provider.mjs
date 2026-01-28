@@ -10,8 +10,9 @@
 import { config } from "dotenv";
 import Provider from "oidc-provider";
 
-config();
-config({ path: ".env.local" });
+// Load env files but don't override existing env vars (e.g., from playwright)
+config({ override: false });
+config({ path: ".env.local", override: false });
 
 const ISSUER = process.env.OIDC_ISSUER_URL || "http://localhost:4000";
 const PORT = new URL(ISSUER).port || 4000;
@@ -106,9 +107,12 @@ const configuration = {
     profile: ["name"],
   },
   ttl: {
-    // Short-lived access tokens to force refresh during dev
-    AccessToken: 15, // seconds
+    AccessToken: 15, // seconds - short-lived to exercise refresh flow
     RefreshToken: 86400 * 30, // 30 days
+    Interaction: 3600, // 1 hour
+    Session: 86400 * 14, // 14 days
+    Grant: 86400 * 14, // 14 days
+    IdToken: 3600, // 1 hour
   },
   // Dev-only: always issue refresh tokens to make the flow reliable locally
   issueRefreshToken: async () => true,
@@ -119,7 +123,6 @@ const oidc = new Provider(ISSUER, configuration);
 // Simple interaction endpoint for dev - auto-login as test-user
 oidc.use(async (ctx, next) => {
   if (ctx.path.startsWith("/interaction/")) {
-    const _uid = ctx.path.split("/")[2];
     const interaction = await oidc.interactionDetails(ctx.req, ctx.res);
 
     if (interaction.prompt.name === "login") {
