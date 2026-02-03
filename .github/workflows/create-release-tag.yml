@@ -4,9 +4,9 @@
 # This workflow:
 # 1. Validates the VERSION file contains valid semver
 # 2. Verifies the commit message matches release pattern (to prevent accidental tags)
-# 3. Creates a git tag and GitHub Release
+# 3. Creates a git tag (v*) and GitHub Release
 #
-# The GitHub Release then triggers:
+# The tag push then triggers (via `on: push: tags: ["v*"]`):
 # - docker-publish.yml (builds and pushes Docker image)
 # - releaser-helm-chart.yml (packages and publishes Helm chart)
 #
