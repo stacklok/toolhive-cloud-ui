@@ -1,0 +1,57 @@
+# Create Release PR workflow using releaseo
+#
+# This workflow creates a release PR that bumps the version in:
+# - VERSION file (single source of truth)
+# - helm/Chart.yaml (version and appVersion)
+# - helm/values.yaml (image.tag with v prefix)
+#
+
+name: Create Release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create Release PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Create Release PR
+        id: release
+        uses: stacklok/releaseo@b7022753f832cac36a9e07769a679a7c1ca72fe2 # v0.0.3
+        with:
+          releaseo_version: v0.0.3
+          bump_type: ${{ inputs.bump_type }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+          version_files: |
+            - file: helm/Chart.yaml
+              path: version
+            - file: helm/Chart.yaml
+              path: appVersion
+            - file: helm/values.yaml
+              path: image.tag
+              prefix: "v"
+
+      - name: Summary
+        run: |
+          echo "## Release PR Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **PR**: #${{ steps.release.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.release.outputs.pr_url }}" >> $GITHUB_STEP_SUMMARY
