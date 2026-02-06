@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: /usr/local/bin/ollama
-          key: ollama-binary-v0.13.5
+          key: ollama-binary-v0.15.4
 
       - name: Cache Ollama models
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
@@ -47,7 +47,9 @@ jobs:
 
       - name: Install Ollama
         if: steps.cache-ollama.outputs.cache-hit != 'true'
-        run: curl -fsSL https://ollama.com/install.sh | sh
+        run: |
+          curl -fsSL https://github.com/ollama/ollama/releases/download/v0.15.4/ollama-linux-amd64 -o /usr/local/bin/ollama
+          chmod +x /usr/local/bin/ollama
 
       - name: Start Ollama server
         run: |
