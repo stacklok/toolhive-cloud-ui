@@ -49,7 +49,7 @@ jobs:
         if: steps.cache-ollama.outputs.cache-hit != 'true'
         run: |
           curl -fsSL https://github.com/ollama/ollama/releases/download/v0.15.4/ollama-linux-amd64.tar.zst -o /tmp/ollama.tar.zst
-          tar --use-compress-program=unzstd -xf /tmp/ollama.tar.zst -C /usr/local/bin ollama
+          tar --use-compress-program=unzstd -xf /tmp/ollama.tar.zst --strip-components=1 -C /usr/local/bin bin/ollama
           chmod +x /usr/local/bin/ollama
           rm /tmp/ollama.tar.zst
 
