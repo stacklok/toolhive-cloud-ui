@@ -32,35 +32,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
-      - name: Cache Ollama binary
-        id: cache-ollama
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
-        with:
-          path: /usr/local/bin/ollama
-          key: ollama-binary-v0.15.4
-
       - name: Cache Ollama models
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: /home/runner/.ollama/models
           key: ollama-qwen2.5-1.5b-v3
 
-      - name: Install Ollama
-        if: steps.cache-ollama.outputs.cache-hit != 'true'
+      - name: Start Ollama via Docker
         run: |
-          curl -fsSL https://github.com/ollama/ollama/releases/download/v0.15.4/ollama-linux-amd64.tar.zst -o /tmp/ollama.tar.zst
-          tar --use-compress-program=unzstd -xf /tmp/ollama.tar.zst --strip-components=1 -C /usr/local/bin bin/ollama
-          chmod +x /usr/local/bin/ollama
-          rm /tmp/ollama.tar.zst
-
-      - name: Start Ollama server
-        run: |
-          sudo systemctl stop ollama 2>/dev/null || true
-          OLLAMA_MODELS=/home/runner/.ollama/models ollama serve &
-          sleep 3
+          mkdir -p /home/runner/.ollama/models
+          docker run -d \
+            -v /home/runner/.ollama/models:/root/.ollama/models \
+            -p 11434:11434 \
+            --name ollama \
+            ollama/ollama:0.15.4
+          # Wait for Ollama to be ready
+          for i in {1..30}; do
+            curl -sf http://localhost:11434/api/tags && break
+            sleep 1
+          done
 
       - name: Pull Ollama model
-        run: OLLAMA_MODELS=/home/runner/.ollama/models ollama pull qwen2.5:1.5b
+        run: docker exec ollama ollama pull qwen2.5:1.5b
 
       - name: Setup
         uses: ./.github/actions/setup
