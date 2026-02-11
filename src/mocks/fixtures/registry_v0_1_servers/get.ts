@@ -33,8 +33,6 @@ export const mockedGetRegistryV01Servers =
               environmentVariables: [
                 {
                   name: "AWS_ACCESS_KEY_ID",
-                  description: "AWS Access Key ID",
-                  format: "string",
                 },
               ],
             },

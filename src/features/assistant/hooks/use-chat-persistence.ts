@@ -37,9 +37,15 @@ export function useChatPersistence({
   const isLoadingConversationRef = useRef(false);
   const previousStatusRef = useRef(status);
 
+  const {
+    isLoading: isChatHistoryLoading,
+    conversations,
+    loadConversation,
+  } = chatHistory;
+
   // Auto-load last conversation on mount
   useEffect(() => {
-    if (chatHistory.isLoading || hasLoadedInitialConversation.current) {
+    if (isChatHistoryLoading || hasLoadedInitialConversation.current) {
       return;
     }
 
@@ -48,12 +54,11 @@ export function useChatPersistence({
       return;
     }
 
-    if (chatHistory.conversations.length > 0) {
-      const lastConversation = chatHistory.conversations[0];
+    if (conversations.length > 0) {
+      const lastConversation = conversations[0];
       isLoadingConversationRef.current = true;
 
-      chatHistory
-        .loadConversation(lastConversation.id)
+      loadConversation(lastConversation.id)
         .then((loadedMessages) => {
           if (loadedMessages.length > 0) {
             setMessages(loadedMessages);
@@ -72,9 +77,9 @@ export function useChatPersistence({
 
     hasLoadedInitialConversation.current = true;
   }, [
-    chatHistory.isLoading,
-    chatHistory.conversations,
-    chatHistory.loadConversation,
+    isChatHistoryLoading,
+    conversations,
+    loadConversation,
     messages.length,
     setMessages,
     setSelectedModel,

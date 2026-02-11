@@ -28,13 +28,9 @@ export const mockedGetRegistryV01ServersByServerNameVersionsByVersion =
           environmentVariables: [
             {
               name: "AWS_ACCESS_KEY_ID",
-              description: "AWS Access Key ID",
-              format: "string",
             },
             {
               name: "AWS_SECRET_ACCESS_KEY",
-              description: "AWS Secret Access Key",
-              format: "string",
             },
           ],
         },
