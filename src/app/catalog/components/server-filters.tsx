@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo } from "@/generated/types.gen";
-
-const ALL_REGISTRIES_VALUE = "all";
+import { ALL_REGISTRIES_VALUE } from "../hooks/use-catalog-filters";
 
 interface ServerFiltersProps {
   registries: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[];
@@ -60,15 +59,16 @@ export function ServerFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL_REGISTRIES_VALUE}>All registries</SelectItem>
-          {registries.map((registry) => (
-            <SelectItem
-              key={registry.name}
-              value={registry.name ?? ""}
-              disabled={!registry.name}
-            >
-              {registry.name}
-            </SelectItem>
-          ))}
+          {registries
+            .filter(
+              (registry): registry is typeof registry & { name: string } =>
+                !!registry.name,
+            )
+            .map((registry) => (
+              <SelectItem key={registry.name} value={registry.name}>
+                {registry.name}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 

@@ -20,6 +20,10 @@ export async function getRegistries(): Promise<
     throw registries.error;
   }
 
+  if (!registries.data) {
+    return [];
+  }
+
   return registries.data.registries ?? [];
 }
 
