@@ -5,6 +5,9 @@ import { ServerFilters } from "../server-filters";
 
 describe("ServerFilters", () => {
   const defaultProps = {
+    registries: [{ name: "default-registry" }, { name: "custom-registry" }],
+    selectedRegistry: "all",
+    onRegistryChange: vi.fn(),
     viewMode: "grid" as const,
     onViewModeChange: vi.fn(),
     searchQuery: "",
@@ -72,5 +75,11 @@ describe("ServerFilters", () => {
 
     const listButton = screen.getByLabelText("List view");
     expect(listButton).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("renders registry selector", () => {
+    render(<ServerFilters {...defaultProps} />);
+
+    expect(screen.getByLabelText("Select registry")).toBeVisible();
   });
 });
