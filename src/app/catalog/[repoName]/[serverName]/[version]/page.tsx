@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { getTools } from "@/lib/utils";
 import { getServerDetails } from "./actions";
 import { ServerDetail } from "./components/server-detail";
+import { ServerDetailTabs } from "./components/server-detail-tabs";
 import { ServerDetailTitle } from "./components/server-detail-title";
 
 interface CatalogDetailPageProps {
@@ -27,16 +29,20 @@ export default async function CatalogDetailPage({
   }
 
   const server = serverResponse?.server ?? {};
+  const remote = server.remotes?.[0];
+  const tools = getTools(server);
 
   return (
-    <div className="flex flex-col gap-2 pb-8 px-4">
+    <div className="flex flex-col gap-5 px-4">
       <ServerDetailTitle server={server} version={version} />
 
-      <ServerDetail
-        description={server.description}
-        serverUrl={server.remotes?.[0]?.url}
-        repositoryUrl={server.repository?.url}
-      />
+      <ServerDetailTabs tools={tools}>
+        <ServerDetail
+          description={server.description}
+          serverUrl={remote?.url}
+          repositoryUrl={server.repository?.url}
+        />
+      </ServerDetailTabs>
     </div>
   );
 }

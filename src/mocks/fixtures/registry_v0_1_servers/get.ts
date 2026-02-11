@@ -55,6 +55,77 @@ export const mockedGetRegistryV01Servers =
       },
       {
         server: {
+          name: "com.toolhive.k8s.toolhive-system/osv",
+          title: "OSV Vulnerabilities",
+          version: "1.0.0",
+          description:
+            "OSV (Open Source Vulnerabilities) database access for querying package and commit vulnerabilities",
+          remotes: [
+            {
+              type: "streamable-http",
+              url: "https://mcp.stacklok.dev/osv/mcp",
+            },
+          ],
+          _meta: {
+            "io.modelcontextprotocol.registry/publisher-provided": {
+              "io.github.stacklok": {
+                "https://mcp.stacklok.dev/osv/mcp": {
+                  metadata: {
+                    kubernetes_image:
+                      "781189302813.dkr.ecr.us-east-1.amazonaws.com/stackloklabs/osv-mcp/server",
+                    kubernetes_kind: "MCPServer",
+                    kubernetes_name: "osv",
+                    kubernetes_namespace: "toolhive-system",
+                    kubernetes_transport: "streamable-http",
+                    kubernetes_uid: "a47c2d8d-b15a-4d2e-a7ff-b1e0b5ce410f",
+                  },
+                  tool_definitions: [
+                    {
+                      name: "get_vulnerability",
+                      description:
+                        "Get details for a specific vulnerability by ID",
+                    },
+                    {
+                      name: "query_vulnerabilities_batch",
+                      description:
+                        "Query for vulnerabilities affecting multiple packages or commits at once",
+                    },
+                    {
+                      name: "query_vulnerability",
+                      description:
+                        "Query for vulnerabilities affecting a specific package version or commit",
+                    },
+                  ],
+                  tools: [
+                    "query_vulnerability",
+                    "query_vulnerabilities_batch",
+                    "get_vulnerability",
+                  ],
+                },
+              },
+            },
+          },
+          icons: [],
+          packages: [
+            {
+              registryType: "oci",
+              identifier:
+                "781189302813.dkr.ecr.us-east-1.amazonaws.com/stackloklabs/osv-mcp/server",
+              version: "latest",
+            },
+          ],
+        },
+        _meta: {
+          "io.modelcontextprotocol.registry/official": {
+            status: "active",
+            isLatest: true,
+            publishedAt: "2025-12-15T10:30:00Z",
+            updatedAt: "2025-12-15T10:30:00Z",
+          },
+        },
+      },
+      {
+        server: {
           name: "com.toolhive.k8s.production/my-vmcp-server",
           title: "Virtual MCP Server",
           version: "1.0.0",
@@ -520,7 +591,7 @@ export const mockedGetRegistryV01Servers =
       },
     ],
     metadata: {
-      count: 16,
+      count: 17,
       nextCursor: "next-page",
     },
   })
