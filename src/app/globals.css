@@ -23,7 +23,13 @@
   --input: 240 5.9% 90%;
   --ring: 240 5.9% 10%;
   --radius: 0.5rem;
-  --sidebar: hsl(0 0% 98%);
+  --avatar-background: #9d9d9de5;
+  --nav-background: #265763;
+  --nav-border: #538b98;
+  --nav-button-active-bg: #064251;
+  --nav-button-active-text: #ffffff;
+  --success: #428d68;
+  --sidebar: hsl(40 20% 98.5%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
   --sidebar-primary: hsl(240 5.9% 10%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
@@ -34,7 +40,7 @@
 }
 
 .dark {
-  --background: 240 10% 3.9%;
+  --background: 0 0% 7.5%;
   --foreground: 0 0% 98%;
   --card: 240 10% 3.9%;
   --card-foreground: 0 0% 98%;
@@ -53,7 +59,13 @@
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
   --ring: 240 4.9% 83.9%;
-  --sidebar: hsl(240 5.9% 10%);
+  --avatar-background: #9d9d9de5;
+  --nav-background: #102930;
+  --nav-border: #1d4b57;
+  --nav-button-active-bg: #196a7c;
+  --nav-button-active-text: #fafafa;
+  --success: #61bb8f;
+  --sidebar: hsl(var(--background));
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
@@ -65,6 +77,7 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-merriweather);
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -93,6 +106,12 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-avatar-background: var(--avatar-background);
+  --color-nav-background: var(--nav-background);
+  --color-nav-border: var(--nav-border);
+  --color-nav-button-active-bg: var(--nav-button-active-bg);
+  --color-nav-button-active-text: var(--nav-button-active-text);
+  --color-success: var(--success);
 }
 
 * {
@@ -112,4 +131,20 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .text-page-title {
+    font-family: var(--font-merriweather), serif;
+    font-size: 34px;
+    line-height: 42px;
+    font-weight: 300;
+    letter-spacing: -0.85px;
+  }
+}
+
+[data-sonner-toaster] {
+  --normal-bg: hsl(var(--popover));
+  --normal-text: hsl(var(--popover-foreground));
+  --normal-border: hsl(var(--border));
 }
