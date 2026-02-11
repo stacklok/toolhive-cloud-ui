@@ -3,6 +3,7 @@
 import { ThemeProvider, useTheme } from "next-themes";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
+import type { Theme } from "./user-menu/theme-menu-items";
 
 interface ClientProvidersProps {
   children: ReactNode;
@@ -12,8 +13,7 @@ function ThemedToaster() {
   const { resolvedTheme } = useTheme();
   return (
     <Toaster
-      theme={resolvedTheme as "light" | "dark" | "system"}
-      richColors
+      theme={resolvedTheme as Theme}
       duration={2000}
       position="bottom-right"
       offset={{ top: 50 }}
