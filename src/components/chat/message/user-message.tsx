@@ -48,8 +48,8 @@ export function UserMessage({
             {formatDistanceToNow(createdAt, { addSuffix: true })}
           </div>
         </div>
-        <div className="bg-secondary flex size-8 shrink-0 items-center justify-center rounded-lg">
-          <User className="text-secondary-foreground size-4" />
+        <div className="bg-card flex size-8 shrink-0 items-center justify-center rounded-lg">
+          <User className="text-primary size-4" />
         </div>
       </div>
     </div>

@@ -133,6 +133,8 @@ function InputWithAttachments({
           onClick={handleSubmit}
           disabled={!text}
           status={status}
+          variant="action"
+          className="rounded-full"
         />
       </PromptInputToolbar>
     </>

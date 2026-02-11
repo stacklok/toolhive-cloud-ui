@@ -17,15 +17,15 @@ export function AssistantSidebar({ models }: { models: string[] }) {
 
   return (
     <Sidebar side="right" collapsible="offcanvas">
-      <SidebarHeader className="flex-row items-center justify-between border-b px-4 py-3 h-16">
-        <div className="flex items-center gap-2">
+      <SidebarHeader className="flex-row items-center justify-between border-b border-nav-border bg-nav-background px-4 py-3 h-16">
+        <div className="flex items-center gap-2 text-white">
           <MessageCircle className="size-5" />
           <span className="font-semibold">Assistant</span>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="size-7"
+          className="size-7 text-white hover:text-white"
           onClick={toggleSidebar}
           aria-label="Close sidebar"
         >

@@ -62,12 +62,12 @@ export function ChatHeader({
 
   return (
     <>
-      <div className="flex items-center justify-between border-b p-4">
+      <div className="flex items-center justify-between p-4">
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="h-auto gap-2 p-1">
-              <span className="text-2xl font-bold">Assistant</span>
-              <ChevronDown className="text-muted-foreground size-4" />
+            <Button variant="outline" size="sm" className="gap-2 rounded-full">
+              <span className="text-sm font-medium">Chat history</span>
+              <ChevronDown className="size-4" />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="p-0">
@@ -82,18 +82,15 @@ export function ChatHeader({
           </PopoverContent>
         </Popover>
 
-        <p className="text-muted-foreground flex-1 pl-2 text-sm">
-          Chat with AI using MCP servers
-        </p>
-
         <Button
           onClick={handleNewConversation}
-          variant="secondary"
+          variant="outline"
           size="sm"
+          className="rounded-full"
           disabled={!hasMessages}
         >
-          <Plus className="mr-2 size-4" />
-          New Conversation
+          <Plus className="mr-1 size-4" />
+          New conversation
         </Button>
       </div>
       {ConfirmDialog}
