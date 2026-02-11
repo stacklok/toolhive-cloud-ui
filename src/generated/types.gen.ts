@@ -59,9 +59,26 @@ export type GithubComStacklokToolhiveRegistryServerInternalConfigFilterConfig =
   };
 
 /**
+ * Auth contains optional authentication for private repositories
+ */
+export type GithubComStacklokToolhiveRegistryServerInternalConfigGitAuthConfig =
+  {
+    /**
+     * PasswordFile is the path to a file containing the Git password/token
+     * Must be an absolute path; whitespace is trimmed from the content
+     */
+    passwordFile?: string;
+    /**
+     * Username is the Git username for HTTP Basic authentication
+     */
+    username?: string;
+  };
+
+/**
  * Git repository source
  */
 export type GithubComStacklokToolhiveRegistryServerInternalConfigGitConfig = {
+  auth?: GithubComStacklokToolhiveRegistryServerInternalConfigGitAuthConfig;
   /**
    * Branch is the Git branch to use (mutually exclusive with Tag and Commit)
    */
@@ -110,7 +127,11 @@ export type GithubComStacklokToolhiveRegistryServerInternalConfigNameFilterConfi
  * git, api, file, managed, kubernetes
  */
 export type GithubComStacklokToolhiveRegistryServerInternalConfigSourceType =
-  string;
+  | "git"
+  | "api"
+  | "file"
+  | "managed"
+  | "kubernetes";
 
 /**
  * Sync schedule configuration
@@ -130,7 +151,8 @@ export type GithubComStacklokToolhiveRegistryServerInternalConfigTagFilterConfig
  * API or CONFIG
  */
 export type GithubComStacklokToolhiveRegistryServerInternalServiceCreationType =
-  string;
+  | "API"
+  | "CONFIG";
 
 export type GithubComStacklokToolhiveRegistryServerInternalServiceRegistryCreateRequest =
   {
@@ -224,26 +246,15 @@ export type InternalApiVersionResponse = {
 };
 
 export type ModelArgument = {
-  choices?: Array<string>;
-  default?: string;
-  description?: string;
-  format?: ModelFormat;
   isRepeated?: boolean;
-  isRequired?: boolean;
-  isSecret?: boolean;
   name?: string;
-  placeholder?: string;
   type?: ModelArgumentType;
-  value?: string;
   valueHint?: string;
-  variables?: {
-    [key: string]: ModelInput;
-  };
 };
 
-export type ModelArgumentType = string;
+export type ModelArgumentType = "positional" | "named";
 
-export type ModelFormat = string;
+export type ModelFormat = "string" | "number" | "boolean" | "filepath";
 
 export type ModelIcon = {
   mimeType?: string;
@@ -264,18 +275,7 @@ export type ModelInput = {
 };
 
 export type ModelKeyValueInput = {
-  choices?: Array<string>;
-  default?: string;
-  description?: string;
-  format?: ModelFormat;
-  isRequired?: boolean;
-  isSecret?: boolean;
   name?: string;
-  placeholder?: string;
-  value?: string;
-  variables?: {
-    [key: string]: ModelInput;
-  };
 };
 
 export type ModelPackage = {
@@ -328,7 +328,7 @@ export type ModelRepository = {
   url?: string;
 };
 
-export type ModelStatus = string;
+export type ModelStatus = "active" | "deprecated" | "deleted";
 
 /**
  * Transport is required and specifies the transport protocol configuration
@@ -555,7 +555,11 @@ export type PutExtensionV0RegistriesByRegistryNameData = {
   /**
    * Registry configuration
    */
-  body: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryCreateRequest;
+  body:
+    | {
+        [key: string]: unknown;
+      }
+    | GithubComStacklokToolhiveRegistryServerInternalServiceRegistryCreateRequest;
   path: {
     /**
      * Registry Name
@@ -983,6 +987,77 @@ export type GetRegistryByRegistryNameV01ServersByServerNameVersionsResponses = {
 export type GetRegistryByRegistryNameV01ServersByServerNameVersionsResponse =
   GetRegistryByRegistryNameV01ServersByServerNameVersionsResponses[keyof GetRegistryByRegistryNameV01ServersByServerNameVersionsResponses];
 
+export type DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData =
+  {
+    body?: {
+      [key: string]: unknown;
+    };
+    path: {
+      /**
+       * Registry name
+       */
+      registryName: string;
+      /**
+       * Server name (URL-encoded)
+       */
+      serverName: string;
+      /**
+       * Version (URL-encoded)
+       */
+      version: string;
+    };
+    query?: never;
+    url: "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}";
+  };
+
+export type DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Unauthorized
+     */
+    401: {
+      [key: string]: string;
+    };
+    /**
+     * Not a managed registry
+     */
+    403: {
+      [key: string]: string;
+    };
+    /**
+     * Server version not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionError =
+  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors[keyof DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors];
+
+export type DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses =
+  {
+    /**
+     * No content
+     */
+    204: void;
+  };
+
+export type DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponse =
+  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses[keyof DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses];
+
 export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData =
   {
     body?: {
@@ -1062,7 +1137,11 @@ export type PostByRegistryNameV01PublishData = {
   /**
    * Server data
    */
-  body: V0ServerJson;
+  body:
+    | {
+        [key: string]: unknown;
+      }
+    | V0ServerJson;
   path: {
     /**
      * Registry name
@@ -1124,73 +1203,3 @@ export type PostByRegistryNameV01PublishResponses = {
 
 export type PostByRegistryNameV01PublishResponse =
   PostByRegistryNameV01PublishResponses[keyof PostByRegistryNameV01PublishResponses];
-
-export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData = {
-  body?: {
-    [key: string]: unknown;
-  };
-  path: {
-    /**
-     * Registry name
-     */
-    registryName: string;
-    /**
-     * Server name (URL-encoded)
-     */
-    serverName: string;
-    /**
-     * Version (URL-encoded)
-     */
-    version: string;
-  };
-  query?: never;
-  url: "/{registryName}/v0.1/servers/{serverName}/versions/{version}";
-};
-
-export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors =
-  {
-    /**
-     * Bad request
-     */
-    400: {
-      [key: string]: string;
-    };
-    /**
-     * Unauthorized
-     */
-    401: {
-      [key: string]: string;
-    };
-    /**
-     * Not a managed registry
-     */
-    403: {
-      [key: string]: string;
-    };
-    /**
-     * Server version not found
-     */
-    404: {
-      [key: string]: string;
-    };
-    /**
-     * Internal server error
-     */
-    500: {
-      [key: string]: string;
-    };
-  };
-
-export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionError =
-  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors[keyof DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors];
-
-export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses =
-  {
-    /**
-     * No content
-     */
-    204: void;
-  };
-
-export type DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponse =
-  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses[keyof DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses];

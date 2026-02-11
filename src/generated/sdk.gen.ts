@@ -3,12 +3,12 @@
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
 import type {
-  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
-  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
-  DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
   DeleteExtensionV0RegistriesByRegistryNameData,
   DeleteExtensionV0RegistriesByRegistryNameErrors,
   DeleteExtensionV0RegistriesByRegistryNameResponses,
+  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
+  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
+  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameResponses,
@@ -210,6 +210,8 @@ export const getReadiness = <ThrowOnError extends boolean = false>(
  *
  * Publish a server to the registry. This server does not support publishing via this endpoint.
  * Use the registry-specific endpoint /{registryName}/v0.1/publish instead.
+ *
+ * @deprecated
  */
 export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
   options?: Options<PostRegistryV01PublishData, ThrowOnError>,
@@ -232,6 +234,8 @@ export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
  * List servers (aggregated)
  *
  * Get a list of available servers from all registries (aggregated view)
+ *
+ * @deprecated
  */
 export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
   options?: Options<GetRegistryV01ServersData, ThrowOnError>,
@@ -254,6 +258,8 @@ export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
  * List all versions of an MCP server (aggregated)
  *
  * Returns all available versions for a specific MCP server from all registries (aggregated view)
+ *
+ * @deprecated
  */
 export const getRegistryV01ServersByServerNameVersions = <
   ThrowOnError extends boolean = false,
@@ -279,6 +285,8 @@ export const getRegistryV01ServersByServerNameVersions = <
  *
  * Returns detailed information about a specific version of an MCP server from all registries.
  * Use the special version `latest` to get the latest version.
+ *
+ * @deprecated
  */
 export const getRegistryV01ServersByServerNameVersionsByVersion = <
   ThrowOnError extends boolean = false,
@@ -354,6 +362,32 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
   });
 
 /**
+ * Delete server version from specific registry
+ *
+ * Delete a server version from a specific managed registry
+ */
+export const deleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
+      ThrowOnError
+    >,
+  ) =>
+    (options.client ?? client).delete<
+      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
+      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
+      ThrowOnError
+    >({
+      security: [{ name: "Authorization", type: "apiKey" }],
+      url: "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+/**
  * Get specific MCP server version in specific registry
  *
  * Returns detailed information about a specific version of an MCP server from a specific registry.
@@ -410,33 +444,6 @@ export const postByRegistryNameV01Publish = <
   >({
     security: [{ name: "Authorization", type: "apiKey" }],
     url: "/{registryName}/v0.1/publish",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Delete server version from specific registry
- *
- * Delete a server version from a specific managed registry
- */
-export const deleteByRegistryNameV01ServersByServerNameVersionsByVersion = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<
-    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionData,
-    ThrowOnError
-  >,
-) =>
-  (options.client ?? client).delete<
-    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
-    DeleteByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/{registryName}/v0.1/servers/{serverName}/versions/{version}",
     ...options,
     headers: {
       "Content-Type": "application/json",

@@ -45,9 +45,26 @@
         },
         "type": "object"
       },
+      "github_com_stacklok_toolhive-registry-server_internal_config.GitAuthConfig": {
+        "description": "Auth contains optional authentication for private repositories",
+        "properties": {
+          "passwordFile": {
+            "description": "PasswordFile is the path to a file containing the Git password/token\nMust be an absolute path; whitespace is trimmed from the content",
+            "type": "string"
+          },
+          "username": {
+            "description": "Username is the Git username for HTTP Basic authentication",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "github_com_stacklok_toolhive-registry-server_internal_config.GitConfig": {
         "description": "Git repository source",
         "properties": {
+          "auth": {
+            "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_config.GitAuthConfig"
+          },
           "branch": {
             "description": "Branch is the Git branch to use (mutually exclusive with Tag and Commit)",
             "type": "string"
@@ -82,12 +99,16 @@
       "github_com_stacklok_toolhive-registry-server_internal_config.NameFilterConfig": {
         "properties": {
           "exclude": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           },
           "include": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           }
@@ -96,6 +117,7 @@
       },
       "github_com_stacklok_toolhive-registry-server_internal_config.SourceType": {
         "description": "git, api, file, managed, kubernetes",
+        "enum": ["git", "api", "file", "managed", "kubernetes"],
         "type": "string",
         "x-enum-varnames": [
           "SourceTypeGit",
@@ -107,18 +129,26 @@
       },
       "github_com_stacklok_toolhive-registry-server_internal_config.SyncPolicyConfig": {
         "description": "Sync schedule configuration",
-        "properties": { "interval": { "type": "string" } },
+        "properties": {
+          "interval": {
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "github_com_stacklok_toolhive-registry-server_internal_config.TagFilterConfig": {
         "properties": {
           "exclude": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           },
           "include": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           }
@@ -127,6 +157,7 @@
       },
       "github_com_stacklok_toolhive-registry-server_internal_service.CreationType": {
         "description": "API or CONFIG",
+        "enum": ["API", "CONFIG"],
         "type": "string",
         "x-enum-varnames": ["CreationTypeAPI", "CreationTypeCONFIG"]
       },
@@ -162,15 +193,22 @@
       },
       "github_com_stacklok_toolhive-registry-server_internal_service.RegistryInfo": {
         "properties": {
-          "createdAt": { "type": "string" },
+          "createdAt": {
+            "type": "string"
+          },
           "creationType": {
             "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.CreationType"
           },
           "filterConfig": {
             "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_config.FilterConfig"
           },
-          "format": { "description": "toolhive or upstream", "type": "string" },
-          "name": { "type": "string" },
+          "format": {
+            "description": "toolhive or upstream",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
           "sourceConfig": {
             "description": "Type-specific source configuration"
           },
@@ -188,7 +226,9 @@
             "description": "MANAGED, FILE, REMOTE, KUBERNETES",
             "type": "string"
           },
-          "updatedAt": { "type": "string" }
+          "updatedAt": {
+            "type": "string"
+          }
         },
         "type": "object"
       },
@@ -234,56 +274,75 @@
         "type": "object"
       },
       "internal_api.HealthResponse": {
-        "properties": { "status": { "example": "healthy", "type": "string" } },
+        "properties": {
+          "status": {
+            "example": "healthy",
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "internal_api.ReadinessResponse": {
-        "properties": { "status": { "example": "ready", "type": "string" } },
+        "properties": {
+          "status": {
+            "example": "ready",
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "internal_api.VersionResponse": {
         "properties": {
-          "build_date": { "example": "2025-01-15T10:30:00Z", "type": "string" },
-          "commit": { "example": "abc123def", "type": "string" },
-          "go_version": { "example": "go1.21.5", "type": "string" },
-          "platform": { "example": "linux/amd64", "type": "string" },
-          "version": { "example": "v0.1.0", "type": "string" }
+          "build_date": {
+            "example": "2025-01-15T10:30:00Z",
+            "type": "string"
+          },
+          "commit": {
+            "example": "abc123def",
+            "type": "string"
+          },
+          "go_version": {
+            "example": "go1.21.5",
+            "type": "string"
+          },
+          "platform": {
+            "example": "linux/amd64",
+            "type": "string"
+          },
+          "version": {
+            "example": "v0.1.0",
+            "type": "string"
+          }
         },
         "type": "object"
       },
       "model.Argument": {
         "properties": {
-          "choices": {
-            "items": { "type": "string" },
-            "type": "array",
-            "uniqueItems": false
+          "isRepeated": {
+            "type": "boolean"
           },
-          "default": { "type": "string" },
-          "description": { "type": "string" },
-          "format": { "$ref": "#/components/schemas/model.Format" },
-          "isRepeated": { "type": "boolean" },
-          "isRequired": { "type": "boolean" },
-          "isSecret": { "type": "boolean" },
-          "name": { "example": "--port", "type": "string" },
-          "placeholder": { "type": "string" },
-          "type": { "$ref": "#/components/schemas/model.ArgumentType" },
-          "value": { "type": "string" },
-          "valueHint": { "example": "file_path", "type": "string" },
-          "variables": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/model.Input"
-            },
-            "type": "object"
+          "name": {
+            "example": "--port",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/model.ArgumentType"
+          },
+          "valueHint": {
+            "example": "file_path",
+            "type": "string"
           }
         },
         "type": "object"
       },
       "model.ArgumentType": {
+        "enum": ["positional", "named"],
         "example": "positional",
         "type": "string",
         "x-enum-varnames": ["ArgumentTypePositional", "ArgumentTypeNamed"]
       },
       "model.Format": {
+        "enum": ["string", "number", "boolean", "filepath"],
         "type": "string",
         "x-enum-varnames": [
           "FormatString",
@@ -294,9 +353,14 @@
       },
       "model.Icon": {
         "properties": {
-          "mimeType": { "example": "image/png", "type": "string" },
+          "mimeType": {
+            "example": "image/png",
+            "type": "string"
+          },
           "sizes": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           },
@@ -306,47 +370,50 @@
             "maxLength": 255,
             "type": "string"
           },
-          "theme": { "type": "string" }
+          "theme": {
+            "type": "string"
+          }
         },
         "type": "object"
       },
       "model.Input": {
         "properties": {
           "choices": {
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "uniqueItems": false
           },
-          "default": { "type": "string" },
-          "description": { "type": "string" },
-          "format": { "$ref": "#/components/schemas/model.Format" },
-          "isRequired": { "type": "boolean" },
-          "isSecret": { "type": "boolean" },
-          "placeholder": { "type": "string" },
-          "value": { "type": "string" }
+          "default": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "format": {
+            "$ref": "#/components/schemas/model.Format"
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "isSecret": {
+            "type": "boolean"
+          },
+          "placeholder": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
         },
         "type": "object"
       },
       "model.KeyValueInput": {
         "properties": {
-          "choices": {
-            "items": { "type": "string" },
-            "type": "array",
-            "uniqueItems": false
-          },
-          "default": { "type": "string" },
-          "description": { "type": "string" },
-          "format": { "$ref": "#/components/schemas/model.Format" },
-          "isRequired": { "type": "boolean" },
-          "isSecret": { "type": "boolean" },
-          "name": { "example": "SOME_VARIABLE", "type": "string" },
-          "placeholder": { "type": "string" },
-          "value": { "type": "string" },
-          "variables": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/model.Input"
-            },
-            "type": "object"
+          "name": {
+            "example": "SOME_VARIABLE",
+            "type": "string"
           }
         },
         "type": "object"
@@ -355,7 +422,9 @@
         "properties": {
           "environmentVariables": {
             "description": "EnvironmentVariables are set when running the package",
-            "items": { "$ref": "#/components/schemas/model.KeyValueInput" },
+            "items": {
+              "$ref": "#/components/schemas/model.KeyValueInput"
+            },
             "type": "array",
             "uniqueItems": false
           },
@@ -373,7 +442,9 @@
           },
           "packageArguments": {
             "description": "PackageArguments are passed to the package's binary",
-            "items": { "$ref": "#/components/schemas/model.Argument" },
+            "items": {
+              "$ref": "#/components/schemas/model.Argument"
+            },
             "type": "array",
             "uniqueItems": false
           },
@@ -391,7 +462,9 @@
           },
           "runtimeArguments": {
             "description": "RuntimeArguments are passed to the package's runtime command (e.g., docker, npx)",
-            "items": { "$ref": "#/components/schemas/model.Argument" },
+            "items": {
+              "$ref": "#/components/schemas/model.Argument"
+            },
             "type": "array",
             "uniqueItems": false
           },
@@ -400,7 +473,9 @@
             "example": "npx",
             "type": "string"
           },
-          "transport": { "$ref": "#/components/schemas/model.Transport" },
+          "transport": {
+            "$ref": "#/components/schemas/model.Transport"
+          },
           "version": {
             "description": "Version is the package version (required for npm, pypi, nuget; optional for mcpb; not used by oci where version is in the identifier)",
             "example": "1.0.2",
@@ -416,8 +491,14 @@
             "example": "b94b5f7e-c7c6-d760-2c78-a5e9b8a5b8c9",
             "type": "string"
           },
-          "source": { "example": "github", "type": "string" },
-          "subfolder": { "example": "src/everything", "type": "string" },
+          "source": {
+            "example": "github",
+            "type": "string"
+          },
+          "subfolder": {
+            "example": "src/everything",
+            "type": "string"
+          },
           "url": {
             "example": "https://github.com/modelcontextprotocol/servers",
             "format": "uri",
@@ -427,6 +508,7 @@
         "type": "object"
       },
       "model.Status": {
+        "enum": ["active", "deprecated", "deleted"],
         "type": "string",
         "x-enum-varnames": ["StatusActive", "StatusDeprecated", "StatusDeleted"]
       },
@@ -434,12 +516,20 @@
         "description": "Transport is required and specifies the transport protocol configuration",
         "properties": {
           "headers": {
-            "items": { "$ref": "#/components/schemas/model.KeyValueInput" },
+            "items": {
+              "$ref": "#/components/schemas/model.KeyValueInput"
+            },
             "type": "array",
             "uniqueItems": false
           },
-          "type": { "example": "stdio", "type": "string" },
-          "url": { "example": "https://api.example.com/mcp", "type": "string" },
+          "type": {
+            "example": "stdio",
+            "type": "string"
+          },
+          "url": {
+            "example": "https://api.example.com/mcp",
+            "type": "string"
+          },
           "variables": {
             "additionalProperties": {
               "$ref": "#/components/schemas/model.Input"
@@ -451,17 +541,31 @@
       },
       "v0.Metadata": {
         "properties": {
-          "count": { "type": "integer" },
-          "nextCursor": { "type": "string" }
+          "count": {
+            "type": "integer"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
         },
         "type": "object"
       },
       "v0.RegistryExtensions": {
         "properties": {
-          "isLatest": { "type": "boolean" },
-          "publishedAt": { "format": "date-time", "type": "string" },
-          "status": { "$ref": "#/components/schemas/model.Status" },
-          "updatedAt": { "format": "date-time", "type": "string" }
+          "isLatest": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/model.Status"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
         },
         "type": "object"
       },
@@ -481,7 +585,9 @@
             "minLength": 1,
             "type": "string"
           },
-          "_meta": { "$ref": "#/components/schemas/v0.ServerMeta" },
+          "_meta": {
+            "$ref": "#/components/schemas/v0.ServerMeta"
+          },
           "description": {
             "example": "MCP server providing weather data and forecasts via OpenWeatherMap API",
             "maxLength": 100,
@@ -489,7 +595,9 @@
             "type": "string"
           },
           "icons": {
-            "items": { "$ref": "#/components/schemas/model.Icon" },
+            "items": {
+              "$ref": "#/components/schemas/model.Icon"
+            },
             "type": "array",
             "uniqueItems": false
           },
@@ -501,23 +609,32 @@
             "type": "string"
           },
           "packages": {
-            "items": { "$ref": "#/components/schemas/model.Package" },
+            "items": {
+              "$ref": "#/components/schemas/model.Package"
+            },
             "type": "array",
             "uniqueItems": false
           },
           "remotes": {
-            "items": { "$ref": "#/components/schemas/model.Transport" },
+            "items": {
+              "$ref": "#/components/schemas/model.Transport"
+            },
             "type": "array",
             "uniqueItems": false
           },
-          "repository": { "$ref": "#/components/schemas/model.Repository" },
+          "repository": {
+            "$ref": "#/components/schemas/model.Repository"
+          },
           "title": {
             "example": "Weather API",
             "maxLength": 100,
             "minLength": 1,
             "type": "string"
           },
-          "version": { "example": "1.0.2", "type": "string" },
+          "version": {
+            "example": "1.0.2",
+            "type": "string"
+          },
           "websiteUrl": {
             "example": "https://modelcontextprotocol.io/examples",
             "format": "uri",
@@ -528,9 +645,13 @@
       },
       "v0.ServerListResponse": {
         "properties": {
-          "metadata": { "$ref": "#/components/schemas/v0.Metadata" },
+          "metadata": {
+            "$ref": "#/components/schemas/v0.Metadata"
+          },
           "servers": {
-            "items": { "$ref": "#/components/schemas/v0.ServerResponse" },
+            "items": {
+              "$ref": "#/components/schemas/v0.ServerResponse"
+            },
             "type": "array",
             "uniqueItems": false
           }
@@ -548,8 +669,12 @@
       },
       "v0.ServerResponse": {
         "properties": {
-          "_meta": { "$ref": "#/components/schemas/v0.ResponseMeta" },
-          "server": { "$ref": "#/components/schemas/v0.ServerJSON" }
+          "_meta": {
+            "$ref": "#/components/schemas/v0.ResponseMeta"
+          },
+          "server": {
+            "$ref": "#/components/schemas/v0.ServerJSON"
+          }
         },
         "type": "object"
       }
@@ -564,7 +689,9 @@
     }
   },
   "info": {
-    "contact": { "url": "https://github.com/stacklok/toolhive" },
+    "contact": {
+      "url": "https://github.com/stacklok/toolhive"
+    },
     "description": "API for accessing MCP server registry data and deployed server information\nThis API provides endpoints to query the MCP (Model Context Protocol) server registry,\nget information about available servers, and check the status of deployed servers.\n\nAuthentication is required by default. Use Bearer token authentication with a valid\nOAuth/OIDC access token. The /.well-known/oauth-protected-resource endpoint provides\nOAuth discovery metadata (RFC 9728).",
     "license": {
       "name": "Apache 2.0",
@@ -573,13 +700,22 @@
     "title": "ToolHive Registry API",
     "version": "0.1"
   },
-  "externalDocs": { "description": "", "url": "" },
+  "externalDocs": {
+    "description": "",
+    "url": ""
+  },
   "paths": {
     "/extension/v0/registries": {
       "get": {
         "description": "List all registries",
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -596,7 +732,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -607,7 +745,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -615,7 +755,11 @@
             "description": "Internal server error"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "List registries",
         "tags": ["extension"]
       }
@@ -629,19 +773,31 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
-          "204": { "description": "Registry deleted" },
+          "204": {
+            "description": "Registry deleted"
+          },
           "400": {
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -652,7 +808,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -663,7 +821,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -674,7 +834,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -685,7 +847,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -696,7 +860,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -704,7 +870,11 @@
             "description": "Not implemented"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Delete registry",
         "tags": ["extension"]
       },
@@ -716,11 +886,19 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -737,7 +915,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -748,7 +928,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -759,7 +941,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -770,7 +954,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -781,7 +967,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -789,7 +977,11 @@
             "description": "Not implemented"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Get registry",
         "tags": ["extension"]
       },
@@ -801,14 +993,25 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistryCreateRequest"
+                "oneOf": [
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "$ref": "#/components/schemas/github_com_stacklok_toolhive-registry-server_internal_service.RegistryCreateRequest",
+                    "summary": "body",
+                    "description": "Registry configuration"
+                  }
+                ]
               }
             }
           },
@@ -840,7 +1043,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -851,7 +1056,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -862,7 +1069,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -873,7 +1082,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -884,7 +1095,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -892,7 +1105,11 @@
             "description": "Not implemented"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Create or update registry",
         "tags": ["extension"]
       }
@@ -922,7 +1139,11 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": { "schema": { "type": "object" } }
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
             },
             "description": "OpenAPI 3.1.0 specification"
           },
@@ -930,7 +1151,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -960,7 +1183,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -974,16 +1199,25 @@
     },
     "/registry/v0.1/publish": {
       "post": {
+        "deprecated": true,
         "description": "Publish a server to the registry. This server does not support publishing via this endpoint.\nUse the registry-specific endpoint /{registryName}/v0.1/publish instead.",
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "401": {
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -994,7 +1228,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1002,42 +1238,61 @@
             "description": "Not implemented"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Publish server (not supported)",
         "tags": ["registry-aggregated"]
       }
     },
     "/registry/v0.1/servers": {
       "get": {
+        "deprecated": true,
         "description": "Get a list of available servers from all registries (aggregated view)",
         "parameters": [
           {
             "description": "Pagination cursor for retrieving next set of results",
             "in": "query",
             "name": "cursor",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "Maximum number of items to return",
             "in": "query",
             "name": "limit",
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "description": "Search servers by name (substring match)",
             "in": "query",
             "name": "search",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "Filter by version ('latest' for latest version, or an exact version like '1.2.3')",
             "in": "query",
             "name": "version",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -1054,7 +1309,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1065,7 +1322,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1073,13 +1332,18 @@
             "description": "Unauthorized"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "List servers (aggregated)",
         "tags": ["registry-aggregated"]
       }
     },
     "/registry/v0.1/servers/{serverName}/versions": {
       "get": {
+        "deprecated": true,
         "description": "Returns all available versions for a specific MCP server from all registries (aggregated view)",
         "parameters": [
           {
@@ -1087,11 +1351,19 @@
             "in": "path",
             "name": "serverName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -1108,7 +1380,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1119,7 +1393,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1130,7 +1406,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1138,13 +1416,18 @@
             "description": "Server not found"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "List all versions of an MCP server (aggregated)",
         "tags": ["registry-aggregated"]
       }
     },
     "/registry/v0.1/servers/{serverName}/versions/{version}": {
       "get": {
+        "deprecated": true,
         "description": "Returns detailed information about a specific version of an MCP server from all registries.\nUse the special version `latest` to get the latest version.",
         "parameters": [
           {
@@ -1152,24 +1435,36 @@
             "in": "path",
             "name": "serverName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "URL-encoded version to retrieve (e.g., \\",
             "in": "path",
             "name": "version",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/v0.ServerResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/v0.ServerResponse"
+                }
               }
             },
             "description": "Detailed server information"
@@ -1178,7 +1473,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1189,7 +1486,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1200,7 +1499,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1208,7 +1509,11 @@
             "description": "Server or version not found"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Get specific MCP server version (aggregated)",
         "tags": ["registry-aggregated"]
       }
@@ -1222,35 +1527,51 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "Pagination cursor for retrieving next set of results",
             "in": "query",
             "name": "cursor",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "Maximum number of items to return",
             "in": "query",
             "name": "limit",
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "description": "Search servers by name (substring match)",
             "in": "query",
             "name": "search",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "Filter by version ('latest' for latest version, or an exact version like '1.2.3')",
             "in": "query",
             "name": "version",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -1267,7 +1588,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1278,7 +1601,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1286,7 +1611,11 @@
             "description": "Unauthorized"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "List servers in specific registry",
         "tags": ["registry"]
       }
@@ -1300,18 +1629,28 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "URL-encoded server name (e.g., \\",
             "in": "path",
             "name": "serverName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -1328,7 +1667,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1339,7 +1680,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1350,7 +1693,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1358,12 +1703,134 @@
             "description": "Server not found"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "List all versions of an MCP server in specific registry",
         "tags": ["registry"]
       }
     },
     "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}": {
+      "delete": {
+        "description": "Delete a server version from a specific managed registry",
+        "parameters": [
+          {
+            "description": "Registry name",
+            "in": "path",
+            "name": "registryName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Server name (URL-encoded)",
+            "in": "path",
+            "name": "serverName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Version (URL-encoded)",
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not a managed registry"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Server version not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Delete server version from specific registry",
+        "tags": ["registry"]
+      },
       "get": {
         "description": "Returns detailed information about a specific version of an MCP server from a specific registry.\nUse the special version `latest` to get the latest version.",
         "parameters": [
@@ -1372,31 +1839,45 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "URL-encoded server name (e.g., \\",
             "in": "path",
             "name": "serverName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "description": "URL-encoded version to retrieve (e.g., \\",
             "in": "path",
             "name": "version",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/v0.ServerResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/v0.ServerResponse"
+                }
               }
             },
             "description": "Detailed server information"
@@ -1405,7 +1886,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1416,7 +1899,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1427,7 +1912,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1435,7 +1922,11 @@
             "description": "Server or version not found"
           }
         },
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Get specific MCP server version in specific registry",
         "tags": ["registry"]
       }
@@ -1468,13 +1959,26 @@
             "in": "path",
             "name": "registryName",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/v0.ServerJSON" }
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "$ref": "#/components/schemas/v0.ServerJSON",
+                    "summary": "server",
+                    "description": "Server data"
+                  }
+                ]
+              }
             }
           },
           "description": "Server data",
@@ -1484,7 +1988,9 @@
           "201": {
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/v0.ServerJSON" }
+                "schema": {
+                  "$ref": "#/components/schemas/v0.ServerJSON"
+                }
               }
             },
             "description": "Created"
@@ -1493,7 +1999,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1504,7 +2012,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1515,7 +2025,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1526,7 +2038,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1537,7 +2051,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1548,7 +2064,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "string"
+                  },
                   "type": "object"
                 }
               }
@@ -1556,100 +2074,12 @@
             "description": "Internal server error"
           }
         },
-        "security": [{ "BearerAuth": [] }],
-        "summary": "Publish server to specific registry",
-        "tags": ["registry"]
-      }
-    },
-    "/{registryName}/v0.1/servers/{serverName}/versions/{version}": {
-      "delete": {
-        "description": "Delete a server version from a specific managed registry",
-        "parameters": [
+        "security": [
           {
-            "description": "Registry name",
-            "in": "path",
-            "name": "registryName",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "description": "Server name (URL-encoded)",
-            "in": "path",
-            "name": "serverName",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "description": "Version (URL-encoded)",
-            "in": "path",
-            "name": "version",
-            "required": true,
-            "schema": { "type": "string" }
+            "BearerAuth": []
           }
         ],
-        "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
-        },
-        "responses": {
-          "204": { "description": "No content" },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Bad request"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Not a managed registry"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Server version not found"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": { "type": "string" },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Internal server error"
-          }
-        },
-        "security": [{ "BearerAuth": [] }],
-        "summary": "Delete server version from specific registry",
+        "summary": "Publish server to specific registry",
         "tags": ["registry"]
       }
     }
