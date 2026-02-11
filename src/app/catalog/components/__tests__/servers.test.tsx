@@ -176,7 +176,9 @@ describe("Servers", () => {
         />,
       );
 
-      const clearButton = screen.getByRole("button", { name: /clear search/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear search/i,
+      });
       expect(clearButton).toBeVisible();
 
       await user.click(clearButton);

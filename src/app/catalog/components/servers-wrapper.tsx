@@ -1,48 +1,40 @@
 "use client";
 
-import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { PageHeader } from "@/components/header-page";
-import type { V0ServerJson } from "@/generated/types.gen";
+import type {
+  GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo,
+  V0ServerJson,
+} from "@/generated/types.gen";
+import { useCatalogFilters } from "../hooks/use-catalog-filters";
 import { ServerFilters } from "./server-filters";
 import { Servers } from "./servers";
 
 interface ServersWrapperProps {
   servers: V0ServerJson[];
+  registries: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[];
 }
 
-const VIEW_MODES = ["grid", "list"] as const;
-
 /**
- * Wrapper that manages shared state between filters and view
- * State is persisted in URL query parameters for shareable links
+ * Wrapper that connects catalog filters to the server list view.
  */
-export function ServersWrapper({ servers }: ServersWrapperProps) {
-  const [{ viewMode, search }, setFilters] = useQueryStates(
-    {
-      viewMode: parseAsStringLiteral(VIEW_MODES).withDefault("grid"),
-      search: parseAsString.withDefault(""),
-    },
-    {
-      shallow: false,
-    },
-  );
-
-  const handleViewModeChange = (newViewMode: "grid" | "list") => {
-    setFilters((prev) => ({ ...prev, viewMode: newViewMode }));
-  };
-
-  const handleSearchChange = (newSearch: string) => {
-    setFilters((prev) => ({ ...prev, search: newSearch }));
-  };
-
-  const handleClearSearch = () => {
-    setFilters((prev) => ({ ...prev, search: "" }));
-  };
+export function ServersWrapper({ servers, registries }: ServersWrapperProps) {
+  const {
+    viewMode,
+    search,
+    selectedRegistry,
+    handleViewModeChange,
+    handleSearchChange,
+    handleClearSearch,
+    handleRegistryChange,
+  } = useCatalogFilters();
 
   return (
     <div className="flex flex-col h-full">
       <PageHeader title="MCP Server Catalog">
         <ServerFilters
+          registries={registries}
+          selectedRegistry={selectedRegistry}
+          onRegistryChange={handleRegistryChange}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
           searchQuery={search}

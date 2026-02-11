@@ -3,9 +3,22 @@
 import { LayoutGrid, List, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo } from "@/generated/types.gen";
+
+const ALL_REGISTRIES_VALUE = "all";
 
 interface ServerFiltersProps {
+  registries: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[];
+  selectedRegistry: string;
+  onRegistryChange: (registryName: string) => void;
   viewMode: "grid" | "list";
   onViewModeChange: (mode: "grid" | "list") => void;
   searchQuery: string;
@@ -13,9 +26,12 @@ interface ServerFiltersProps {
 }
 
 /**
- * Server filters component with view mode toggle and search functionality
+ * Server filters component with registry selector, view mode toggle, and search
  */
 export function ServerFilters({
+  registries,
+  selectedRegistry,
+  onRegistryChange,
   viewMode,
   onViewModeChange,
   searchQuery,
@@ -37,6 +53,24 @@ export function ServerFilters({
           <LayoutGrid className="size-4" />
         </ToggleGroupItem>
       </ToggleGroup>
+
+      <Select value={selectedRegistry} onValueChange={onRegistryChange}>
+        <SelectTrigger className="w-48 h-9" aria-label="Select registry">
+          <SelectValue placeholder="All registries" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL_REGISTRIES_VALUE}>All registries</SelectItem>
+          {registries.map((registry) => (
+            <SelectItem
+              key={registry.name}
+              value={registry.name ?? ""}
+              disabled={!registry.name}
+            >
+              {registry.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <div className="relative w-64">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

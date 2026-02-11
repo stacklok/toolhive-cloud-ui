@@ -2,7 +2,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { describe, expect, it } from "vitest";
-import type { V0ServerJson } from "@/generated/types.gen";
+import type {
+  GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo,
+  V0ServerJson,
+} from "@/generated/types.gen";
 import { ServersWrapper } from "../servers-wrapper";
 
 function renderWithNuqs(
@@ -13,6 +16,9 @@ function renderWithNuqs(
     <NuqsTestingAdapter searchParams={searchParams}>{ui}</NuqsTestingAdapter>,
   );
 }
+
+const mockRegistries: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[] =
+  [{ name: "default-registry" }, { name: "custom-registry" }];
 
 const mockServers: V0ServerJson[] = [
   {
@@ -31,21 +37,28 @@ const mockServers: V0ServerJson[] = [
 
 describe("ServersWrapper", () => {
   it("has header with title", () => {
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     expect(screen.getByText("MCP Server Catalog")).toBeVisible();
   });
 
   it("has catalog filters", () => {
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     expect(screen.getByLabelText("List view")).toBeVisible();
     expect(screen.getByLabelText("Grid view")).toBeVisible();
+    expect(screen.getByLabelText("Select registry")).toBeVisible();
     expect(screen.getByPlaceholderText("Search")).toBeVisible();
   });
 
   it("displays servers in grid mode by default", () => {
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     expect(screen.getByText("aws-nova-canvas")).toBeVisible();
     expect(screen.getByText("google-applications")).toBeVisible();
@@ -53,7 +66,9 @@ describe("ServersWrapper", () => {
 
   it("switches to list mode when list button is clicked", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     await user.click(screen.getByLabelText("List view"));
 
@@ -66,7 +81,9 @@ describe("ServersWrapper", () => {
 
   it("switches back to grid mode when grid button is clicked", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     await user.click(screen.getByLabelText("List view"));
     await user.click(screen.getByLabelText("Grid view"));
@@ -79,7 +96,9 @@ describe("ServersWrapper", () => {
 
   it("filters servers when typing in search", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "aws");
@@ -92,7 +111,9 @@ describe("ServersWrapper", () => {
 
   it("shows no results message when search has no matches", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     const searchInput = screen.getByPlaceholderText("Search");
     await user.type(searchInput, "nonexistent");
@@ -107,7 +128,9 @@ describe("ServersWrapper", () => {
 
   it("clears search when clear button in empty state is clicked", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     const searchInput = screen.getByPlaceholderText(
       "Search",
@@ -137,7 +160,9 @@ describe("ServersWrapper", () => {
 
   it("maintains search when switching view modes", async () => {
     const user = userEvent.setup();
-    renderWithNuqs(<ServersWrapper servers={mockServers} />);
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
     const searchInput = screen.getByPlaceholderText(
       "Search",
