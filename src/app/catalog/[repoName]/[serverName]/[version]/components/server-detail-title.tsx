@@ -18,13 +18,13 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
     <div className="flex flex-col gap-5">
       <NavigateBackButton
         href="/catalog"
-        variant="secondary"
+        variant="outline"
         size="sm"
         className="w-fit"
       />
 
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">{serverName}</h1>
+        <h1 className="text-page-title m-0 mb-0 p-0">{serverName}</h1>
         <div className="flex items-center gap-2">
           {isVirtualMCPServer(server) && (
             <Badge variant="secondary" className="text-xs font-semibold">

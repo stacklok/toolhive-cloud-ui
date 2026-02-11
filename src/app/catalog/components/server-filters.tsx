@@ -79,7 +79,7 @@ export function ServerFilters({
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-9 px-9"
+          className="h-9 px-9 bg-white dark:bg-card"
         />
         {searchQuery && (
           <Button
