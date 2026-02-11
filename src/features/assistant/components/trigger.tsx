@@ -27,7 +27,7 @@ export function AssistantTrigger() {
             variant={open ? "secondary" : "ghost"}
             size="icon"
             onClick={toggleSidebar}
-            className="size-9"
+            className="size-9 cursor-pointer hover:text-white focus:text-white"
             aria-label="Toggle Assistant"
           >
             <MessageCircle className="size-5" />
