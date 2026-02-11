@@ -4,46 +4,47 @@ import { SignInButton } from "./signin-button";
 
 export default function SignInPage() {
   return (
-    <div className="relative flex h-screen w-full bg-[#265763] dark:bg-[#102930] md:bg-transparent md:dark:bg-transparent">
+    <div className="relative flex h-screen w-full bg-nav-background md:bg-transparent">
       {/* Background pattern — visible on mobile full-screen, on desktop only left panel */}
       <Image
         src="/bg-pattern-light.png"
         alt=""
         fill
-        className="object-fill dark:hidden md:hidden"
-        priority
+        sizes="100vw"
+        className="pointer-events-none select-none object-fill dark:hidden md:hidden"
       />
       <Image
         src="/bg-pattern-dark.png"
         alt=""
         fill
-        className="hidden object-fill dark:block md:!hidden"
-        priority
+        sizes="100vw"
+        className="pointer-events-none select-none hidden object-fill dark:block md:!hidden"
       />
 
       {/* Left panel — desktop only */}
-      <div className="relative hidden md:flex w-1/2 bg-[#265763] dark:bg-[#102930] items-start p-10 overflow-hidden border-r border-border">
+      <div className="relative hidden md:flex w-1/2 bg-nav-background items-start p-10 overflow-hidden border-r border-border">
         <Image
           src="/bg-pattern-light.png"
           alt=""
           fill
-          className="object-fill dark:hidden"
-          priority
+          sizes="50vw"
+          className="pointer-events-none select-none object-fill dark:hidden"
         />
         <Image
           src="/bg-pattern-dark.png"
           alt=""
           fill
-          className="hidden object-fill dark:block"
-          priority
+          sizes="50vw"
+          className="pointer-events-none select-none hidden object-fill dark:block"
         />
         <Image
-          src="/toolhive-logo.png"
+          src="/toolhive-logo.svg"
           alt="ToolHive"
-          width={183}
-          height={38}
+          width={251}
+          height={53}
           className="relative z-10"
-          priority
+          loading="eager"
+          fetchPriority="high"
         />
       </div>
 
@@ -51,12 +52,13 @@ export default function SignInPage() {
       <div className="relative z-10 flex w-full md:w-1/2 flex-col items-center justify-center p-8 md:bg-background">
         {/* Mobile logo */}
         <Image
-          src="/toolhive-logo.png"
+          src="/toolhive-logo.svg"
           alt="ToolHive"
-          width={183}
-          height={38}
+          width={251}
+          height={53}
           className="absolute top-10 left-10 md:hidden"
-          priority
+          loading="eager"
+          fetchPriority="high"
         />
 
         <div className="flex flex-col items-center space-y-6 w-full max-w-[350px]">

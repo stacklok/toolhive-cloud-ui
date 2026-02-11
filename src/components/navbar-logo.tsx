@@ -5,7 +5,7 @@ export function NavbarLogo() {
   return (
     <Link href="/catalog" className="flex items-center">
       <Image
-        src="/toolhive-logo.png"
+        src="/toolhive-logo.svg"
         alt="ToolHive"
         width={145}
         height={31}

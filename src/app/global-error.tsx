@@ -22,7 +22,7 @@ export default function GlobalError({ reset }: GlobalErrorProps) {
       >
         <div className="flex flex-col items-center justify-center min-h-screen gap-6">
           <Image
-            src="/toolhive-logo.png"
+            src="/toolhive-logo.svg"
             alt="ToolHive"
             width={145}
             height={31}
