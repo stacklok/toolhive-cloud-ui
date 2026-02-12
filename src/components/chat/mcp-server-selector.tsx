@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Loader2, Settings2 } from "lucide-react";
+import { ChevronDown, Loader2, ServerIcon, Settings2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -81,13 +81,11 @@ export function McpServerSelector({
           <Button
             variant="ghost"
             size="sm"
-            className="flex h-10 items-center justify-between gap-2"
+            className="flex h-10 items-center justify-between gap-2 px-0"
             disabled={disabled}
           >
-            <span>MCP Servers</span>
-            <Badge variant="secondary">
-              {selectedServersCount} Enabled / {totalEnabledToolsCount} Tools
-            </Badge>
+            <ServerIcon className="size-4" /> {selectedServersCount} Servers /{" "}
+            {totalEnabledToolsCount} Tools
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>

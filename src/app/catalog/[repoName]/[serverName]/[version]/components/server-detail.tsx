@@ -45,7 +45,7 @@ function RepositoryLink({ repositoryUrl }: { repositoryUrl?: string }) {
   if (!repositoryUrl) return null;
 
   return (
-    <Button variant="secondary" size="sm" asChild>
+    <Button variant="action" size="sm" className="rounded-full" asChild>
       <Link
         href={repositoryUrl}
         target="_blank"

@@ -7,8 +7,8 @@ export function NavbarLogo() {
       <Image
         src="/toolhive-logo.svg"
         alt="ToolHive"
-        width={145}
-        height={31}
+        width={138}
+        height={30}
         className="shrink-0"
       />
     </Link>

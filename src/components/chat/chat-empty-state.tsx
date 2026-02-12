@@ -29,12 +29,9 @@ export function ChatEmptyState({
             size={80}
             className="text-muted-foreground mx-auto mb-4 scale-x-[-1]"
           />
-          <h2 className="text-foreground text-2xl font-bold">
+          <h2 className="text-page-title text-foreground">
             Test & evaluate your MCP Servers
           </h2>
-          <p className="text-muted-foreground mt-2">
-            Send a message to start chatting with the AI assistant
-          </p>
         </div>
 
         <div className="mx-auto max-w-3xl">

@@ -201,7 +201,7 @@ function Sidebar({
       {/* Overlay to close sidebar when clicking outside */}
       {state === "expanded" && (
         <div
-          className="fixed inset-0 z-[5] bg-transparent"
+          className="fixed inset-0 z-[5] bg-black/40"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />

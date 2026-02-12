@@ -26,6 +26,12 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
       <div className="flex flex-col gap-2">
         <h1 className="text-page-title m-0 mb-0 p-0">{serverName}</h1>
         <div className="flex items-center gap-2">
+          {publisher && (
+            <div className="flex items-center">
+              <span className="text-xs text-muted-foreground">{publisher}</span>
+            </div>
+          )}
+
           {isVirtualMCPServer(server) && (
             <Badge variant="secondary" className="text-xs font-semibold">
               Virtual MCP Server
@@ -40,11 +46,6 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
             <Badge variant="secondary" className="text-xs">
               v{version}
             </Badge>
-          )}
-        </div>
-        <div className="flex items-center">
-          {publisher && (
-            <span className="text-xs text-muted-foreground">{publisher}</span>
           )}
         </div>
       </div>

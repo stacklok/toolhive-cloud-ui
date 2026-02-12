@@ -30,10 +30,10 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
 
   return (
     <Card
-      className="flex h-full w-full flex-col shadow-none rounded-md gap-4"
+      className="flex h-full w-full flex-col shadow-none rounded-md gap-4 py-4"
       onClick={onClick ? () => onClick() : undefined}
     >
-      <CardHeader className="gap-2 pb-2 cursor-pointer">
+      <CardHeader className="cursor-pointer gap-1">
         <CardTitle className="text-xl font-semibold leading-7 tracking-tight">
           {name}
         </CardTitle>

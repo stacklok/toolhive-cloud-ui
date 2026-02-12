@@ -62,10 +62,10 @@ export function ChatHeader({
 
   return (
     <>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between py-4">
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2 rounded-full">
+            <Button variant="outline" size="sm" className="rounded-full">
               <span className="text-sm font-medium">Chat history</span>
               <ChevronDown className="size-4" />
             </Button>
