@@ -15,7 +15,7 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
   const type = server.remotes?.[0]?.type;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <NavigateBackButton
         href="/catalog"
         variant="outline"
@@ -23,7 +23,7 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
         className="w-fit"
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <h1 className="text-page-title m-0 mb-0 p-0">{serverName}</h1>
         <div className="flex items-center gap-2">
           {publisher && (
