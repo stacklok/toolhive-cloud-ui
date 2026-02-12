@@ -16,7 +16,7 @@
 # Workflow to publish Helm chart to OCI registry (ghcr.io)
 # with Cosign signing for supply chain security.
 #
-# Triggered on version tags (v*) - same as Docker image publish.
+# Triggered when a GitHub Release is published.
 #
 # Usage:
 #   helm install toolhive-cloud-ui oci://ghcr.io/stacklok/toolhive-cloud-ui/toolhive-cloud-ui --version 0.0.7
@@ -30,8 +30,7 @@
 name: Publish Helm Chart to OCI
 
 on:
-    push:
-        tags: ["v*"]
+    workflow_call:
 
 permissions:
     contents: read

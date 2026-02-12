@@ -1,0 +1,32 @@
+# Release orchestrator workflow
+#
+# Triggered when a GitHub Release is published.
+# Calls docker-publish and releaser-helm-chart workflows.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  docker:
+    name: Docker Build and Push
+    uses: ./.github/workflows/docker-publish.yml
+    permissions:
+      contents: read
+      packages: write
+
+  helm:
+    name: Publish Helm Chart
+    needs: docker
+    uses: ./.github/workflows/releaser-helm-chart.yml
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
