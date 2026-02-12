@@ -59,11 +59,11 @@ jobs:
           # Track verification status
           VERIFIED=true
 
-          # Check 1: Verify commit message matches release pattern
-          # Squash merge: "Release v1.0.0 (#123)"
+          # Check 1: Verify commit message contains release version pattern
+          # Squash merge: "Release v1.0.0 (#123)" or "feat: release v1.0.0 (#123)"
           # Merge commit: "Merge pull request #123 from user/release/v1.0.0"
           # Direct: "Release v1.0.0"
-          if [[ "$COMMIT_MSG" =~ ^Release\ v[0-9]+\.[0-9]+\.[0-9]+ ]] || \
+          if [[ "$COMMIT_MSG" =~ (^|[^a-zA-Z])[Rr]elease\ v[0-9]+\.[0-9]+\.[0-9]+ ]] || \
              [[ "$COMMIT_MSG" =~ release/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "✅ Commit message matches release pattern"
             echo "message_verified=true" >> $GITHUB_OUTPUT
