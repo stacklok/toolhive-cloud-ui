@@ -2,8 +2,8 @@
 replicaCount: 1
 
 image:
-  # -- Image repository
-  repository: toolhive-cloud-ui
+  # -- Image repository (ghcr.io/stacklok/toolhive-cloud-ui)
+  repository: ghcr.io/stacklok/toolhive-cloud-ui
   # -- Pull from registry if available, use local image if not
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
