@@ -43,7 +43,7 @@ export function ServerToolsTable({ tools }: ServerToolsTableProps) {
             <EmptyToolsTable />
           ) : (
             tools.map((tool) => (
-              <TableRow key={tool.name} className="h-12">
+              <TableRow key={tool.name} className="h-12 bg-background">
                 <TableCell className="p-3 font-medium">{tool.name}</TableCell>
                 <TableCell className="p-3 text-muted-foreground whitespace-normal">
                   {tool.description ?? "No description"}
