@@ -72,7 +72,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                   {url ? (
                     <CopyUrlButton
                       url={url}
-                      className="h-8 md:w-auto md:rounded-md md:px-3"
+                      className="h-8 md:w-auto md:px-3"
                       labelClassName="hidden md:inline"
                     />
                   ) : null}
