@@ -23,12 +23,12 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
     <div className="w-full overflow-hidden rounded-md border">
       <Table className="min-w-full">
         <TableHeader className="bg-muted/50">
-          <TableRow>
-            <TableHead className="w-full pl-4 sm:w-1/5">Server</TableHead>
-            <TableHead className="hidden sm:w-7/10 sm:table-cell">
+          <TableRow className="h-12">
+            <TableHead className="w-full p-3 pl-4 sm:w-1/5">Server</TableHead>
+            <TableHead className="hidden p-3 sm:w-7/10 sm:table-cell">
               About
             </TableHead>
-            <TableHead className="w-16 text-right sm:w-1/10" />
+            <TableHead className="w-16 p-3 text-right sm:w-1/10" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -42,10 +42,10 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
               <TableRow
                 key={server.name || `server-${index}`}
                 onClick={() => onServerClick?.(server)}
-                className={onServerClick ? "cursor-pointer" : undefined}
+                className={onServerClick ? "h-12 cursor-pointer" : "h-12"}
               >
                 <TableCell
-                  className="pl-4 align-middle sm:w-1/5 max-w-0"
+                  className="p-3 pl-4 align-middle sm:w-1/5 max-w-0"
                   title={serverName}
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -63,16 +63,16 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                   </div>
                 </TableCell>
                 <TableCell
-                  className="hidden pr-4 text-muted-foreground whitespace-normal wrap-break-word sm:table-cell sm:w-7/10"
+                  className="hidden p-3 pr-4 text-muted-foreground whitespace-normal wrap-break-word sm:table-cell sm:w-7/10"
                   title={description}
                 >
                   {description}
                 </TableCell>
-                <TableCell className="pr-3 text-right align-middle sm:w-1/10">
+                <TableCell className="px-3 py-1.5 text-right align-middle sm:w-1/10">
                   {url ? (
                     <CopyUrlButton
                       url={url}
-                      className="md:h-9 md:w-auto md:rounded-md md:px-3"
+                      className="h-8 md:w-auto md:rounded-md md:px-3"
                       labelClassName="hidden md:inline"
                     />
                   ) : null}
