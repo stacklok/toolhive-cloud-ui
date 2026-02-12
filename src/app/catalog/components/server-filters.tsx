@@ -64,7 +64,10 @@ export function ServerFilters({
       </ToggleGroup>
 
       <Select value={selectedRegistry} onValueChange={onRegistryChange}>
-        <SelectTrigger className="w-38 h-9" aria-label="Select registry">
+        <SelectTrigger
+          className="w-38 h-9 bg-white dark:bg-card"
+          aria-label="Select registry"
+        >
           <SelectValue placeholder="All registries" />
         </SelectTrigger>
         <SelectContent>

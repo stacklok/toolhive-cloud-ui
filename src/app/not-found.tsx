@@ -11,7 +11,7 @@ export default async function NotFound() {
         <ErrorPageLayout
           title="Page Not Found"
           actions={
-            <Button asChild variant="default">
+            <Button asChild variant="action" className="rounded-full">
               <Link href="/catalog">Browse Catalog</Link>
             </Button>
           }
