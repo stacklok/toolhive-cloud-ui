@@ -16,7 +16,7 @@ export default function NotFound() {
       <ErrorPageLayout
         title="Server Not Found"
         actions={
-          <Button asChild variant="action" className="rounded-full">
+          <Button asChild variant="action">
             <Link href="/catalog">Browse Catalog</Link>
           </Button>
         }

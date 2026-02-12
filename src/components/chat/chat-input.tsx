@@ -134,7 +134,6 @@ function InputWithAttachments({
           disabled={!text}
           status={status}
           variant="action"
-          className="rounded-full"
         />
       </PromptInputToolbar>
     </>
