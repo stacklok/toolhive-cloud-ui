@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   # -- Image repository
-  cloudUiImage: ghcr.io/stacklok/toolhive-cloud-ui:latest
+  cloudUiImage: toolhive-cloud-ui:latest
   # -- Pull from registry if available, use local image if not
   pullPolicy: IfNotPresent
 
