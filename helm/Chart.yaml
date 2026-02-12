@@ -3,7 +3,7 @@ name: toolhive-cloud-ui
 description: A Helm chart for ToolHive Cloud UI - Next.js application
 type: application
 version: 0.1.0
-appVersion: "0.1.0"
+appVersion: "v0.1.0"
 keywords:
   - nextjs
   - react

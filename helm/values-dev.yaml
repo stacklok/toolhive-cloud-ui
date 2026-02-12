@@ -6,11 +6,9 @@ replicaCount: 1
 
 image:
   # -- Image repository
-  repository: toolhive-cloud-ui
+  cloudUiImage: toolhive-cloud-ui:latest
   # -- Pull from registry if available, use local image if not
   pullPolicy: IfNotPresent
-  # -- Override with "latest" for local development
-  tag: "latest"
 
 service:
   type: ClusterIP

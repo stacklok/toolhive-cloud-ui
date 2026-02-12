@@ -44,9 +44,10 @@ jobs:
               path: version
             - file: helm/Chart.yaml
               path: appVersion
+              prefix: v
             - file: helm/values.yaml
-              path: image.tag
-              prefix: "v"
+              path: image.cloudUiImage
+              prefix: v
 
       - name: Summary
         run: |
