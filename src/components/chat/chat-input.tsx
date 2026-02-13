@@ -123,11 +123,11 @@ function InputWithAttachments({
               <PromptInputActionAddAttachments label="Add images or PDFs" />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
-          <McpServerSelector />
           <ModelSelector
             selectedModel={selectedModel}
             onModelChange={onModelChange}
           />
+          <McpServerSelector />
         </PromptInputTools>
         <PromptInputSubmit
           onClick={handleSubmit}
