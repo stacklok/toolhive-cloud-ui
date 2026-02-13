@@ -55,7 +55,10 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
         </p>
         {serverUrl && (
           <div className="flex items-center gap-2">
-            <CopyUrlButton url={serverUrl} className="w-fit cursor-pointer" />
+            <CopyUrlButton
+              url={serverUrl}
+              className="w-fit cursor-pointer rounded-full"
+            />
             <AddMcpToClientDropdown
               serverName={name ?? ""}
               serverUrl={serverUrl}
