@@ -7,35 +7,21 @@ export default function SignInPage() {
     <div className="relative flex h-screen w-full bg-nav-background md:bg-transparent">
       {/* Background pattern — visible on mobile full-screen, on desktop only left panel */}
       <Image
-        src="/bg-pattern-light.png"
+        src="/bg-pattern.png"
         alt=""
         fill
         sizes="100vw"
-        className="pointer-events-none select-none object-fill dark:hidden md:hidden"
-      />
-      <Image
-        src="/bg-pattern-dark.png"
-        alt=""
-        fill
-        sizes="100vw"
-        className="pointer-events-none select-none hidden object-fill dark:block md:!hidden"
+        className="pointer-events-none select-none object-fill md:hidden"
       />
 
       {/* Left panel — desktop only */}
       <div className="relative hidden md:flex w-1/2 bg-nav-background items-start p-10 overflow-hidden border-r border-border">
         <Image
-          src="/bg-pattern-light.png"
+          src="/bg-pattern.png"
           alt=""
           fill
           sizes="50vw"
-          className="pointer-events-none select-none object-fill dark:hidden"
-        />
-        <Image
-          src="/bg-pattern-dark.png"
-          alt=""
-          fill
-          sizes="50vw"
-          className="pointer-events-none select-none hidden object-fill dark:block"
+          className="pointer-events-none select-none object-fill"
         />
         <Image
           src="/toolhive-logo.svg"
