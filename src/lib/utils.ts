@@ -9,14 +9,14 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Checks if a server is a Virtual MCP server by examining metadata.
- * Virtual MCP servers have kubernetes_kind set to "VirtualMCPServer" in their metadata.
+ * Virtual MCP servers have kubernetes.kind set to "VirtualMCPServer" in their metadata.
  */
 export function isVirtualMCPServer(server: V0ServerJson): boolean {
   const result = parseStacklokMeta(server);
   if (!result.success) return false;
 
   return Object.values(result.data).some(
-    (t) => t.metadata?.kubernetes_kind === "VirtualMCPServer",
+    (t) => t.metadata?.kubernetes?.kind === "VirtualMCPServer",
   );
 }
 

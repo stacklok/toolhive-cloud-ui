@@ -32,7 +32,9 @@ describe("ServersTable", () => {
         "io.github.stacklok": {
           "https://mcp.example.com/servers/my-vmcp-server": {
             metadata: {
-              kubernetes_kind: "VirtualMCPServer",
+              kubernetes: {
+                kind: "VirtualMCPServer",
+              },
             },
           },
         },

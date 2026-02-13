@@ -1,73 +1,17 @@
 import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { mockedGetRegistryV01Servers } from "@/mocks/fixtures/registry_v0_1_servers/get";
 import { getTools, isVirtualMCPServer } from "./utils";
 
-const osvServer: V0ServerJson = {
-  name: "com.toolhive.k8s.toolhive-system/osv",
-  description:
-    "OSV (Open Source Vulnerabilities) database access for querying package and commit vulnerabilities",
-  version: "1.0.0",
-  remotes: [
-    {
-      type: "streamable-http",
-      url: "https://mcp.stacklok.dev/osv/mcp",
-    },
-  ],
-  _meta: {
-    "io.modelcontextprotocol.registry/publisher-provided": {
-      "io.github.stacklok": {
-        "https://mcp.stacklok.dev/osv/mcp": {
-          metadata: {
-            kubernetes_image:
-              "781189302813.dkr.ecr.us-east-1.amazonaws.com/stackloklabs/osv-mcp/server",
-            kubernetes_kind: "MCPServer",
-            kubernetes_name: "osv",
-            kubernetes_namespace: "toolhive-system",
-            kubernetes_transport: "streamable-http",
-            kubernetes_uid: "a47c2d8d-b15a-4d2e-a7ff-b1e0b5ce410f",
-          },
-          tool_definitions: [
-            {
-              name: "get_vulnerability",
-              description: "Get details for a specific vulnerability by ID",
-            },
-            {
-              name: "query_vulnerabilities_batch",
-              description:
-                "Query for vulnerabilities affecting multiple packages or commits at once",
-            },
-            {
-              name: "query_vulnerability",
-              description:
-                "Query for vulnerabilities affecting a specific package version or commit",
-            },
-          ],
-          tools: [
-            "query_vulnerability",
-            "query_vulnerabilities_batch",
-            "get_vulnerability",
-          ],
-        },
-      },
-    },
-  },
-};
+const servers = mockedGetRegistryV01Servers.defaultValue.servers!;
 
-const virtualMcpServer: V0ServerJson = {
-  name: "com.toolhive.k8s.production/my-vmcp-server",
-  title: "Virtual MCP Server",
-  _meta: {
-    "io.modelcontextprotocol.registry/publisher-provided": {
-      "io.github.stacklok": {
-        "https://mcp.example.com/servers/my-vmcp-server": {
-          metadata: {
-            kubernetes_kind: "VirtualMCPServer",
-          },
-        },
-      },
-    },
-  },
-};
+const osvServer = servers.find(
+  (s) => s.server?.name === "com.toolhive.k8s.toolhive-system/osv",
+)!.server as V0ServerJson;
+
+const virtualMcpServer = servers.find(
+  (s) => s.server?.name === "com.toolhive.k8s.production/my-vmcp-server",
+)!.server as V0ServerJson;
 
 const regularServer: V0ServerJson = {
   name: "regular-server",
@@ -75,11 +19,11 @@ const regularServer: V0ServerJson = {
 };
 
 describe("isVirtualMCPServer", () => {
-  it("returns true when kubernetes_kind is VirtualMCPServer", () => {
+  it("returns true when kubernetes.kind is VirtualMCPServer", () => {
     expect(isVirtualMCPServer(virtualMcpServer)).toBe(true);
   });
 
-  it("returns false when kubernetes_kind is MCPServer", () => {
+  it("returns false when kubernetes.kind is MCPServer", () => {
     expect(isVirtualMCPServer(osvServer)).toBe(false);
   });
 

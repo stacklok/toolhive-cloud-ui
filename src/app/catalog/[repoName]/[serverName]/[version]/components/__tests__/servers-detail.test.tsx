@@ -158,9 +158,11 @@ describe("ServerDetailTitle", () => {
         "io.github.stacklok": {
           "https://mcp.example.com/servers/my-vmcp-server": {
             metadata: {
-              kubernetes_kind: "VirtualMCPServer",
-              kubernetes_namespace: "production",
-              kubernetes_name: "my-vmcp-server",
+              kubernetes: {
+                kind: "VirtualMCPServer",
+                namespace: "production",
+                name: "my-vmcp-server",
+              },
             },
           },
         },
