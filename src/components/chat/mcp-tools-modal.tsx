@@ -205,7 +205,11 @@ export function McpToolsModal({
         </ScrollArea>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            className="rounded-full"
+          >
             Close
           </Button>
         </DialogFooter>
