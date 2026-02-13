@@ -1,3 +1,7 @@
+> [!NOTE]
+> This is a lightweight version of ToolHive Cloud for viewing your MCP servers.
+> Interested in enterprise capabilities? [Reach out to us](https://stacklok.com/demo/).
+
 <br>
 
 <picture>
@@ -18,10 +22,6 @@ A Next.js application for visualizing MCP (Model Context Protocol) servers runni
 **Frontend**: [toolhive-cloud-ui](https://github.com/stacklok/toolhive-cloud-ui) (this repository)
 
 **Backend API**: [toolhive-registry-server](https://github.com/stacklok/toolhive-registry-server) - implements the official MCP Registry API
-
-> [!NOTE]
-> This is an experimental project that is under active development and testing.
-> Features may change without notice.
 
 ## Quickstart
 
