@@ -16,7 +16,7 @@ interface HistoryBackProps {
 export function NavigateBackButton({
   className,
   href = "/",
-  variant = "secondary",
+  variant = "outline",
   size = "sm",
 }: HistoryBackProps) {
   const router = useRouter();
@@ -30,7 +30,7 @@ export function NavigateBackButton({
       variant={variant}
       size={size}
       onClick={handleClick}
-      className={cn("cursor-pointer", className)}
+      className={cn("cursor-pointer rounded-full", className)}
     >
       <ChevronLeft className="size-4" />
       Back

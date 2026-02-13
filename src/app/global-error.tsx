@@ -1,7 +1,7 @@
 "use client";
 
 import { Inter } from "next/font/google";
-import { ToolHiveIcon } from "@/components/icons";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import "./globals.css";
 
@@ -21,10 +21,13 @@ export default function GlobalError({ reset }: GlobalErrorProps) {
         className={`${inter.variable} antialiased bg-background text-foreground`}
       >
         <div className="flex flex-col items-center justify-center min-h-screen gap-6">
-          <div className="flex items-center gap-2">
-            <ToolHiveIcon className="size-8 shrink-0" />
-            <span className="text-3xl font-bold tracking-tight">ToolHive</span>
-          </div>
+          <Image
+            src="/toolhive-logo.svg"
+            alt="ToolHive"
+            width={145}
+            height={31}
+            className="shrink-0 brightness-0 dark:brightness-100"
+          />
 
           <h1 className="text-xl text-muted-foreground">
             Something went wrong

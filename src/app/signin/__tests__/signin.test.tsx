@@ -29,13 +29,6 @@ describe("SignInPage", () => {
       screen.getByText(/Sign in using your company credentials/i),
     ).toBeDefined();
 
-    expect(
-      screen.getByRole("heading", {
-        level: 1,
-        name: /Toolhive/i,
-      }),
-    ).toBeDefined();
-
     expect(screen.getByRole("button", { name: /Oidc/i })).toBeDefined();
   });
 

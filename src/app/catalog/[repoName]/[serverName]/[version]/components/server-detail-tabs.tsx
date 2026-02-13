@@ -10,12 +10,24 @@ interface ServerDetailTabsProps {
   tools: ServerTool[];
 }
 
+const tabs = [
+  { value: "about", label: "About" },
+  { value: "tools", label: "Tools" },
+] as const;
+
 export function ServerDetailTabs({ children, tools }: ServerDetailTabsProps) {
   return (
-    <Tabs defaultValue="about">
-      <TabsList className="mb-4">
-        <TabsTrigger value="about">About</TabsTrigger>
-        <TabsTrigger value="tools">Tools</TabsTrigger>
+    <Tabs defaultValue="about" className="gap-4">
+      <TabsList className="h-11 rounded-xl p-1">
+        {tabs.map((tab) => (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className="rounded-lg border-0 px-6 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none dark:data-[state=active]:bg-card"
+          >
+            {tab.label}
+          </TabsTrigger>
+        ))}
       </TabsList>
       <TabsContent value="about">{children}</TabsContent>
       <TabsContent value="tools">

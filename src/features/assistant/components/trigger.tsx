@@ -17,17 +17,17 @@ export function AssistantTrigger() {
     return null;
   }
 
-  const { toggleSidebar, open } = sidebar;
+  const { toggleSidebar } = sidebar;
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant={open ? "secondary" : "ghost"}
+            variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="size-9"
+            className="size-9 cursor-pointer hover:text-white focus:text-white"
             aria-label="Toggle Assistant"
           >
             <MessageCircle className="size-5" />

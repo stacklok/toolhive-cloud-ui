@@ -44,17 +44,30 @@ export function ServerFilters({
         onValueChange={(value) => {
           if (value) onViewModeChange(value as "grid" | "list");
         }}
+        spacing={1}
+        className="gap-2"
       >
-        <ToggleGroupItem value="list" aria-label="List view">
-          <List className="size-4" />
+        <ToggleGroupItem
+          value="list"
+          aria-label="List view"
+          className="size-11 rounded-md data-[state=on]:bg-accent data-[state=on]:shadow-none"
+        >
+          <List className="size-5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="grid" aria-label="Grid view">
+        <ToggleGroupItem
+          value="grid"
+          aria-label="Grid view"
+          className="size-11 rounded-md data-[state=on]:bg-accent data-[state=on]:shadow-none"
+        >
           <LayoutGrid className="size-4" />
         </ToggleGroupItem>
       </ToggleGroup>
 
       <Select value={selectedRegistry} onValueChange={onRegistryChange}>
-        <SelectTrigger className="w-48 h-9" aria-label="Select registry">
+        <SelectTrigger
+          className="w-38 h-9 bg-white dark:bg-card"
+          aria-label="Select registry"
+        >
           <SelectValue placeholder="All registries" />
         </SelectTrigger>
         <SelectContent>
@@ -72,14 +85,14 @@ export function ServerFilters({
         </SelectContent>
       </Select>
 
-      <div className="relative w-64">
+      <div className="relative w-48">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-9 px-9"
+          className="h-9 px-9 bg-white dark:bg-card"
         />
         {searchQuery && (
           <Button

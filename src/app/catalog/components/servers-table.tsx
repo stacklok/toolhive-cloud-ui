@@ -20,12 +20,12 @@ interface ServersTableProps {
 
 export function ServersTable({ servers, onServerClick }: ServersTableProps) {
   return (
-    <div className="w-full overflow-hidden rounded-md border">
+    <div className="w-full overflow-hidden rounded-md border bg-card">
       <Table className="min-w-full">
-        <TableHeader className="bg-muted/50">
-          <TableRow className="h-12">
-            <TableHead className="w-full p-3 pl-4 sm:w-1/5">Server</TableHead>
-            <TableHead className="hidden p-3 sm:w-7/10 sm:table-cell">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-full pl-4 sm:w-1/5">Server</TableHead>
+            <TableHead className="hidden sm:w-7/10 sm:table-cell">
               About
             </TableHead>
             <TableHead className="w-16 p-3 text-right sm:w-1/10" />
@@ -72,7 +72,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                   {url ? (
                     <CopyUrlButton
                       url={url}
-                      className="h-8 md:w-auto md:rounded-md md:px-3"
+                      className="h-8 md:w-auto md:px-3"
                       labelClassName="hidden md:inline"
                     />
                   ) : null}

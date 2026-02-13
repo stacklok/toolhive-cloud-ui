@@ -33,7 +33,7 @@ export default async function CatalogDetailPage({
   const tools = getTools(server);
 
   return (
-    <div className="flex flex-col gap-5 px-4">
+    <div className="flex flex-col gap-5">
       <ServerDetailTitle server={server} version={version} />
 
       <ServerDetailTabs tools={tools}>

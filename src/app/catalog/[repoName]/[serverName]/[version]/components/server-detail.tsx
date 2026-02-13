@@ -28,9 +28,13 @@ function GettingStarted({ serverUrl }: { serverUrl?: string }) {
           <Input
             readOnly
             value={serverUrl}
-            className="font-mono text-sm text-muted-foreground min-w-80 max-w-xl bg-transparent border-input focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="font-mono text-sm text-muted-foreground min-w-80 max-w-xl bg-white dark:bg-card border-input focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          <CopyUrlButton url={serverUrl} />
+          <CopyUrlButton
+            url={serverUrl}
+            variant="action"
+            className="rounded-md"
+          />
         </div>
       )}
     </>
@@ -41,7 +45,7 @@ function RepositoryLink({ repositoryUrl }: { repositoryUrl?: string }) {
   if (!repositoryUrl) return null;
 
   return (
-    <Button variant="secondary" size="sm" asChild>
+    <Button variant="action" size="sm" asChild>
       <Link
         href={repositoryUrl}
         target="_blank"

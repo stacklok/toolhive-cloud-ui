@@ -72,7 +72,7 @@ export function ChatInterface() {
         hasMessages={hasMessages}
       />
 
-      {hasMessages && <Separator />}
+      <Separator />
 
       <div className="relative flex-1 overflow-hidden">
         {hasMessages ? (

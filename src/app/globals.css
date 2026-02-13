@@ -23,7 +23,13 @@
   --input: 240 5.9% 90%;
   --ring: 240 5.9% 10%;
   --radius: 0.5rem;
-  --sidebar: hsl(0 0% 98%);
+  --avatar-background: oklch(0.696 0 0 / 89.8%);
+  --nav-background: oklch(0.4282 0.0561 216.14);
+  --nav-border: oklch(0.6031 0.0621 214.22);
+  --nav-button-active-bg: oklch(0.3516 0.0612 220.22);
+  --nav-button-active-text: oklch(1 0 0);
+  --success: oklch(0.5849 0.095 159.91);
+  --sidebar: hsl(40 20% 98.5%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
   --sidebar-primary: hsl(240 5.9% 10%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
@@ -34,7 +40,7 @@
 }
 
 .dark {
-  --background: 240 10% 3.9%;
+  --background: 0 0% 7.5%;
   --foreground: 0 0% 98%;
   --card: 240 10% 3.9%;
   --card-foreground: 0 0% 98%;
@@ -53,7 +59,13 @@
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
   --ring: 240 4.9% 83.9%;
-  --sidebar: hsl(240 5.9% 10%);
+  --avatar-background: oklch(0.696 0 0 / 89.8%);
+  --nav-background: oklch(0.2645 0.0334 218.49);
+  --nav-border: oklch(0.3865 0.0535 217.72);
+  --nav-button-active-bg: oklch(0.4861 0.0787 216.59);
+  --nav-button-active-text: oklch(0.9851 0 0);
+  --success: oklch(0.724 0.1091 160.66);
+  --sidebar: hsl(var(--background));
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
@@ -65,6 +77,7 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-merriweather);
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -93,6 +106,12 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-avatar-background: var(--avatar-background);
+  --color-nav-background: var(--nav-background);
+  --color-nav-border: var(--nav-border);
+  --color-nav-button-active-bg: var(--nav-button-active-bg);
+  --color-nav-button-active-text: var(--nav-button-active-text);
+  --color-success: var(--success);
 }
 
 * {
@@ -112,4 +131,20 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .text-page-title {
+    font-family: var(--font-merriweather), serif;
+    font-size: 34px;
+    line-height: 42px;
+    font-weight: 300;
+    letter-spacing: -0.85px;
+  }
+}
+
+[data-sonner-toaster] {
+  --normal-bg: hsl(var(--popover));
+  --normal-text: hsl(var(--popover-foreground));
+  --normal-border: hsl(var(--border));
 }

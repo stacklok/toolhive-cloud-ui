@@ -84,7 +84,7 @@ export function ModelSelector({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-9 justify-between gap-2"
+          className="h-9 justify-between gap-2 px-0"
           disabled={disabled}
         >
           <div className="flex min-w-0 items-center gap-2">

@@ -17,14 +17,14 @@ export const UserMenuButton = forwardRef<
     <Button
       ref={ref}
       variant="ghost"
-      className="cursor-pointer flex items-center gap-2 h-[46px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+      className="cursor-pointer flex items-center gap-2 h-[46px] hover:text-white focus:text-white focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
       {...props}
     >
       <UserAvatar userName={userName} />
-      <span className="text-sm font-medium leading-5 text-secondary-foreground">
+      <span className="hidden text-sm font-medium leading-5 md:inline">
         {userName}
       </span>
-      <ChevronIndicator isOpen={isOpen} />
+      <ChevronIndicator isOpen={isOpen} className="hidden md:block" />
     </Button>
   );
 });

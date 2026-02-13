@@ -118,21 +118,22 @@ function InputWithAttachments({
       <PromptInputToolbar className="p-2">
         <PromptInputTools>
           <PromptInputActionMenu>
-            <PromptInputActionMenuTrigger />
+            <PromptInputActionMenuTrigger className="rounded-full bg-secondary text-secondary-foreground" />
             <PromptInputActionMenuContent>
               <PromptInputActionAddAttachments label="Add images or PDFs" />
             </PromptInputActionMenuContent>
+            <ModelSelector
+              selectedModel={selectedModel}
+              onModelChange={onModelChange}
+            />
           </PromptInputActionMenu>
           <McpServerSelector />
-          <ModelSelector
-            selectedModel={selectedModel}
-            onModelChange={onModelChange}
-          />
         </PromptInputTools>
         <PromptInputSubmit
           onClick={handleSubmit}
           disabled={!text}
           status={status}
+          variant="action"
         />
       </PromptInputToolbar>
     </>

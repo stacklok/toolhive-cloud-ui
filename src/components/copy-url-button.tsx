@@ -19,6 +19,7 @@ export function CopyUrlButton({
   url,
   variant = "secondary",
   size = "sm",
+  className,
   labelClassName,
   ...props
 }: CopyUrlButtonProps) {
@@ -27,7 +28,7 @@ export function CopyUrlButton({
 
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("URL copied to clipboard");
+      toast.success("Successfully copied");
     } catch {
       toast.error("Failed to copy URL");
     }
@@ -39,7 +40,7 @@ export function CopyUrlButton({
       size={size}
       onClick={handleCopyUrl}
       aria-label="Copy URL"
-      className="cursor-pointer"
+      className={cn("cursor-pointer", className)}
       {...props}
     >
       <Copy className="size-4" />

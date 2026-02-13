@@ -8,7 +8,7 @@ export default function NotFound() {
     <div className="flex flex-col gap-5 px-8 pt-5 pb-8">
       <NavigateBackButton
         href="/catalog"
-        variant="secondary"
+        variant="outline"
         size="sm"
         className="w-fit"
       />
@@ -16,7 +16,7 @@ export default function NotFound() {
       <ErrorPageLayout
         title="Server Not Found"
         actions={
-          <Button asChild variant="default">
+          <Button asChild variant="action">
             <Link href="/catalog">Browse Catalog</Link>
           </Button>
         }

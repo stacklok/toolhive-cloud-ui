@@ -10,11 +10,11 @@ export async function Navbar() {
   });
 
   return (
-    <header className="w-full border-b bg-muted/50 flex items-center justify-between pl-4 pr-4 h-16">
+    <header className="w-full border-b border-nav-border bg-nav-background text-white flex items-center justify-between pl-6 pr-4 h-16">
       <NavbarLogo />
-      <div className="flex items-center">
+      <div className="flex shrink-0 items-center h-full">
         {session?.user?.name && <UserMenu userName={session.user.name} />}
-        <div className="ml-2 mr-4 h-6 w-px bg-muted-foreground/30" />
+        <div className="mx-4 h-full w-px bg-nav-border" />
         <AssistantTrigger />
       </div>
     </header>

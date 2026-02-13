@@ -96,7 +96,7 @@ export function AssistantMessage({
 }: AssistantMessageProps) {
   return (
     <div className="flex items-start gap-4">
-      <div className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-lg">
+      <div className="bg-card flex size-8 shrink-0 items-center justify-center rounded-lg">
         <ProviderIcon
           model={metadata?.model}
           providerId={metadata?.providerId}

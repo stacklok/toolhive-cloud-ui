@@ -16,23 +16,32 @@ export function AssistantSidebar({ models }: { models: string[] }) {
   const showContent = isMobile ? openMobile : !isCollapsed;
 
   return (
-    <Sidebar side="right" collapsible="offcanvas">
-      <SidebarHeader className="flex-row items-center justify-between border-b px-4 py-3 h-16">
-        <div className="flex items-center gap-2">
+    <Sidebar
+      side="right"
+      collapsible="offcanvas"
+      className="group-data-[side=right]:border-l-0"
+    >
+      <SidebarHeader className="flex-row items-center justify-between border-b border-l border-l-nav-border! bg-nav-background px-4 py-3 h-16">
+        <div className="flex items-center gap-2 text-white">
           <MessageCircle className="size-5" />
-          <span className="font-semibold">Assistant</span>
+          <span className="text-page-title text-2xl! leading-none!">
+            Assistant
+          </span>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={toggleSidebar}
-          aria-label="Close sidebar"
-        >
-          <PanelRightClose className="size-4" />
-        </Button>
+        <div className="flex items-center self-stretch -my-3">
+          <div className="h-full w-px bg-nav-border mx-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-white hover:text-white"
+            onClick={toggleSidebar}
+            aria-label="Close sidebar"
+          >
+            <PanelRightClose className="size-4" />
+          </Button>
+        </div>
       </SidebarHeader>
-      <SidebarContent className="p-0">
+      <SidebarContent className="border-l p-0">
         {showContent &&
           (models.length > 0 ? (
             <AssistantSidebarContent />
