@@ -40,7 +40,7 @@ export function CopyUrlButton({
       size={size}
       onClick={handleCopyUrl}
       aria-label="Copy URL"
-      className={cn("cursor-pointer rounded-full", className)}
+      className={cn("cursor-pointer", className)}
       {...props}
     >
       <Copy className="size-4" />
