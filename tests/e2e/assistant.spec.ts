@@ -30,6 +30,7 @@ async function warmupTestingModel(): Promise<void> {
 }
 
 test.describe("Assistant chat", () => {
+  // Run tests serially to avoid race conditions with route compilation
   // Triple all timeouts for this describe block since LLM operations are slow
   test.slow();
 
@@ -108,9 +109,10 @@ test.describe("Assistant chat", () => {
     await authenticatedPage.keyboard.press("Enter");
 
     // Wait for the assistant's response containing numbers
-    // Look for a pattern that indicates the assistant has responded with numbers
+    // Look for a pattern that indicates the assistant counted - digits on separate lines
+    // This won't match the user's message "1 to 5" or model name "4.5"
     await expect(
-      authenticatedPage.getByText(/[1-5].*[1-5]/), // At least two numbers in the response
+      authenticatedPage.getByText(/\b1\s+2\s+3\b/), // Sequential numbers separated by whitespace
     ).toBeVisible({
       timeout: 60_000,
     });
