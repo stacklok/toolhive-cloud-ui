@@ -693,7 +693,7 @@ export const PromptInputSubmit = ({
 
   return (
     <Button
-      className={cn("gap-1.5 rounded-lg", className)}
+      className={cn("gap-1.5", className)}
       size={size}
       type="submit"
       variant={variant}
