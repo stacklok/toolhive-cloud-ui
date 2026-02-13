@@ -24,7 +24,7 @@ export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
       />
 
       <div className="flex flex-col gap-1">
-        <h1 className="text-page-title m-0 mb-0 p-0">{serverName}</h1>
+        <h1 className="text-page-title m-0 p-0">{serverName}</h1>
         {publisher && (
           <div className="flex items-center mb-1">
             <span className="text-xs text-muted-foreground">{publisher}</span>
