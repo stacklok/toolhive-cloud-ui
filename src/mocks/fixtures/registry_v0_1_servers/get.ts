@@ -71,13 +71,15 @@ export const mockedGetRegistryV01Servers =
               "io.github.stacklok": {
                 "https://mcp.stacklok.dev/osv/mcp": {
                   metadata: {
-                    kubernetes_image:
-                      "781189302813.dkr.ecr.us-east-1.amazonaws.com/stackloklabs/osv-mcp/server",
-                    kubernetes_kind: "MCPServer",
-                    kubernetes_name: "osv",
-                    kubernetes_namespace: "toolhive-system",
-                    kubernetes_transport: "streamable-http",
-                    kubernetes_uid: "a47c2d8d-b15a-4d2e-a7ff-b1e0b5ce410f",
+                    kubernetes: {
+                      image:
+                        "781189302813.dkr.ecr.us-east-1.amazonaws.com/stackloklabs/osv-mcp/server",
+                      kind: "MCPServer",
+                      name: "osv",
+                      namespace: "toolhive-system",
+                      transport: "streamable-http",
+                      uid: "a47c2d8d-b15a-4d2e-a7ff-b1e0b5ce410f",
+                    },
                   },
                   tool_definitions: [
                     {
@@ -141,10 +143,12 @@ export const mockedGetRegistryV01Servers =
               "io.github.stacklok": {
                 "https://mcp.example.com/servers/my-vmcp-server": {
                   metadata: {
-                    kubernetes_kind: "VirtualMCPServer",
-                    kubernetes_namespace: "production",
-                    kubernetes_name: "my-vmcp-server",
-                    kubernetes_uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    kubernetes: {
+                      kind: "VirtualMCPServer",
+                      namespace: "production",
+                      name: "my-vmcp-server",
+                      uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    },
                   },
                 },
               },

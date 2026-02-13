@@ -10,7 +10,11 @@ export const transportDataSchema = z
   .object({
     metadata: z
       .object({
-        kubernetes_kind: z.string(),
+        kubernetes: z
+          .object({
+            kind: z.string(),
+          })
+          .passthrough(),
       })
       .passthrough()
       .optional(),
