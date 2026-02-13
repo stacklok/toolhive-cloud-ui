@@ -11,7 +11,7 @@ export default async function CatalogLayout({
     <AssistantLayout>
       <SidebarInset className="flex flex-col h-screen min-w-0">
         <Navbar />
-        <main className="flex flex-col flex-1 overflow-hidden px-8 pt-8 pb-5 bg-[hsl(40_20%_98.5%)] dark:bg-background">
+        <main className="flex flex-col flex-1 overflow-hidden px-8 pt-8 pb-5 bg-sidebar dark:bg-background">
           {children}
         </main>
       </SidebarInset>
