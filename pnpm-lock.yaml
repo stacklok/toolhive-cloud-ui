@@ -158,9 +158,6 @@ importers:
       '@biomejs/biome':
         specifier: 2.3.14
         version: 2.3.14
-      '@hey-api/client-next':
-        specifier: 0.5.1
-        version: 0.5.1(@hey-api/openapi-ts@0.90.10(magicast@0.5.1)(typescript@5.9.3))
       '@hey-api/openapi-ts':
         specifier: 0.90.10
         version: 0.90.10(magicast@0.5.1)(typescript@5.9.3)
@@ -737,12 +734,6 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
-
-  '@hey-api/client-next@0.5.1':
-    resolution: {integrity: sha512-eVMPIfDMBCkPsktrwMbvdjXyPHXvVkbrzxxgj+zdTFILxIQCSGQ8vjzqm4byBYQkqxAM18wqMTxmp3EwE3R66g==}
-    deprecated: Starting with v0.73.0, this package is bundled directly inside @hey-api/openapi-ts.
-    peerDependencies:
-      '@hey-api/openapi-ts': < 2
 
   '@hey-api/codegen-core@0.5.5':
     resolution: {integrity: sha512-f2ZHucnA2wBGAY8ipB4wn/mrEYW+WUxU2huJmUvfDO6AE2vfILSHeF3wCO39Pz4wUYPoAWZByaauftLrOfC12Q==}
@@ -5236,10 +5227,6 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
 
   '@floating-ui/utils@0.2.10': {}
-
-  '@hey-api/client-next@0.5.1(@hey-api/openapi-ts@0.90.10(magicast@0.5.1)(typescript@5.9.3))':
-    dependencies:
-      '@hey-api/openapi-ts': 0.90.10(magicast@0.5.1)(typescript@5.9.3)
 
   '@hey-api/codegen-core@0.5.5(magicast@0.5.1)(typescript@5.9.3)':
     dependencies:
