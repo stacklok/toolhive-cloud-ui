@@ -113,16 +113,24 @@ async function getMcpTools(
     { name: string; description?: string }[]
   > = {};
 
+  // If no servers are explicitly selected, skip MCP connections entirely
+  // This allows users to chat without tools when they haven't selected any servers
+  if (!options.selectedServers || options.selectedServers.length === 0) {
+    return {
+      tools: allTools,
+      clients: allClients,
+      errors: connectionErrors,
+      availableTools,
+    };
+  }
+
   try {
     const servers = await getServers();
 
-    // Filter servers if selectedServers is provided
-    const serversToConnect =
-      options.selectedServers && options.selectedServers.length > 0
-        ? servers.filter(
-            (s) => s.name && options.selectedServers?.includes(s.name),
-          )
-        : servers;
+    // Filter servers to only those explicitly selected by the user
+    const serversToConnect = servers.filter(
+      (s) => s.name && options.selectedServers?.includes(s.name),
+    );
 
     // Flatten servers and remotes into a single array of connection tasks
     const remoteConnections = serversToConnect.flatMap((server) =>
