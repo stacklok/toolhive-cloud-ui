@@ -52,7 +52,7 @@
     "ai-sdk-ollama": "^3.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "better-auth": "1.4.17",
+    "better-auth": "1.4.18",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "date-fns": "^4.1.0",
