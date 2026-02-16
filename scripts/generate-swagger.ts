@@ -8,7 +8,7 @@ import * as path from "node:path";
  * This is managed by Renovate and updated automatically when new versions are released.
  * renovate: datasource=github-releases depName=stacklok/toolhive-registry-server versioning=semver
  */
-const REGISTRY_SERVER_VERSION = "v0.5.3";
+const REGISTRY_SERVER_VERSION = "v0.6.2";
 
 (async () => {
   const url = `https://raw.githubusercontent.com/stacklok/toolhive-registry-server/refs/tags/${REGISTRY_SERVER_VERSION}/docs/thv-registry-api/swagger.json`;

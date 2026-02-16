@@ -920,6 +920,12 @@ export type GetRegistryByRegistryNameV01ServersErrors = {
   401: {
     [key: string]: string;
   };
+  /**
+   * Registry not found
+   */
+  404: {
+    [key: string]: string;
+  };
 };
 
 export type GetRegistryByRegistryNameV01ServersError =
