@@ -31,6 +31,9 @@ export async function getServers(): Promise<V0ServerJson[]> {
   const api = await getAuthenticatedClient();
   const servers = await api.getRegistryV01Servers({
     client: api.client,
+    query: {
+      version: "latest",
+    },
   });
 
   if (servers.error) {
