@@ -67,6 +67,9 @@ export async function getServersByRegistryName(
     path: {
       registryName,
     },
+    query: {
+      version: "latest",
+    },
   });
 
   if (servers.error) {
