@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.2",
-    "@hey-api/openapi-ts": "0.90.10",
+    "@hey-api/openapi-ts": "0.92.4",
     "@mswjs/http-middleware": "^0.10.2",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
