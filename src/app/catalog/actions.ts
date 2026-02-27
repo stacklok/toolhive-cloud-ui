@@ -3,8 +3,18 @@
 import type {
   GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo,
   V0ServerJson,
+  V0ServerResponse,
 } from "@/generated/types.gen";
 import { getAuthenticatedClient } from "@/lib/api-client";
+
+// TODO: remove once UI pagination is implemented
+const SERVER_PAGE_LIMIT = 200;
+
+function extractServers(items: V0ServerResponse[]): V0ServerJson[] {
+  return items
+    .map((item) => item?.server)
+    .filter((server): server is V0ServerJson => server != null);
+}
 
 /** Fetches all available MCP server registries */
 export async function getRegistries(): Promise<
@@ -27,58 +37,42 @@ export async function getRegistries(): Promise<
   return registries.data.registries ?? [];
 }
 
+/** Fetches MCP servers across all registries */
 export async function getServers(): Promise<V0ServerJson[]> {
   const api = await getAuthenticatedClient();
-  const servers = await api.getRegistryV01Servers({
+
+  const response = await api.getRegistryV01Servers({
     client: api.client,
-    query: {
-      version: "latest",
-    },
+    query: { version: "latest", limit: SERVER_PAGE_LIMIT },
   });
 
-  if (servers.error) {
-    console.error("[catalog] Failed to fetch servers:", servers.error);
-    throw servers.error;
+  if (response.error) {
+    console.error("[catalog] Failed to fetch servers:", response.error);
+    throw response.error;
   }
 
-  if (!servers.data) {
-    return [];
-  }
-
-  const data = servers.data;
-  const items = Array.isArray(data?.servers) ? data.servers : [];
-
-  // Extract the server objects from the response
-  return items
-    .map((item) => item?.server)
-    .filter((server): server is V0ServerJson => server != null);
+  return extractServers(response.data?.servers ?? []);
 }
 
 /**
- * Fetches all MCP servers from a specific registry
+ * Fetches MCP servers from a specific registry
  * @param registryName - The unique name of the registry to query
  */
 export async function getServersByRegistryName(
   registryName: string,
 ): Promise<V0ServerJson[]> {
   const api = await getAuthenticatedClient();
-  const servers = await api.getRegistryByRegistryNameV01Servers({
+
+  const response = await api.getRegistryByRegistryNameV01Servers({
     client: api.client,
-    path: {
-      registryName,
-    },
-    query: {
-      version: "latest",
-    },
+    path: { registryName },
+    query: { version: "latest", limit: SERVER_PAGE_LIMIT },
   });
 
-  if (servers.error) {
-    console.error("[catalog] Failed to fetch servers:", servers.error);
-    throw servers.error;
+  if (response.error) {
+    console.error("[catalog] Failed to fetch servers:", response.error);
+    throw response.error;
   }
 
-  const items = servers.data?.servers ?? [];
-  return items
-    .map((item) => item?.server)
-    .filter((server): server is V0ServerJson => server != null);
+  return extractServers(response.data?.servers ?? []);
 }
