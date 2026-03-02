@@ -90,67 +90,11 @@ describe("Servers", () => {
     });
   });
 
-  describe("search functionality", () => {
-    it("filters servers by name", () => {
+  describe("empty state with active search", () => {
+    it("shows no results message when servers list is empty and search is active", () => {
       render(
         <Servers
-          servers={mockServers}
-          viewMode="grid"
-          searchQuery="aws"
-          onClearSearch={mockOnClearSearch}
-        />,
-      );
-
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
-      expect(screen.queryByText("azure-mcp")).not.toBeInTheDocument();
-    });
-
-    it("filters servers by title", () => {
-      render(
-        <Servers
-          servers={mockServers}
-          viewMode="grid"
-          searchQuery="google"
-          onClearSearch={mockOnClearSearch}
-        />,
-      );
-
-      expect(screen.getByText("google-applications")).toBeVisible();
-      expect(screen.queryByText("aws-nova-canvas")).not.toBeInTheDocument();
-    });
-
-    it("filters servers by description", () => {
-      render(
-        <Servers
-          servers={mockServers}
-          viewMode="grid"
-          searchQuery="workspace"
-          onClearSearch={mockOnClearSearch}
-        />,
-      );
-
-      expect(screen.getByText("google-applications")).toBeVisible();
-      expect(screen.queryByText("aws-nova-canvas")).not.toBeInTheDocument();
-    });
-
-    it("is case insensitive", () => {
-      render(
-        <Servers
-          servers={mockServers}
-          viewMode="grid"
-          searchQuery="AWS"
-          onClearSearch={mockOnClearSearch}
-        />,
-      );
-
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-    });
-
-    it("shows no results message when search has no matches", () => {
-      render(
-        <Servers
-          servers={mockServers}
+          servers={[]}
           viewMode="grid"
           searchQuery="nonexistent"
           onClearSearch={mockOnClearSearch}
@@ -163,13 +107,13 @@ describe("Servers", () => {
       ).toBeVisible();
     });
 
-    it("shows clear search button when search has no matches", async () => {
+    it("shows clear search button when servers list is empty and search is active", async () => {
       const user = userEvent.setup();
       const onClearSearch = vi.fn();
 
       render(
         <Servers
-          servers={mockServers}
+          servers={[]}
           viewMode="grid"
           searchQuery="nonexistent"
           onClearSearch={onClearSearch}

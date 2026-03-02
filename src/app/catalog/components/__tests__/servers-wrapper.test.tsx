@@ -94,71 +94,7 @@ describe("ServersWrapper", () => {
     });
   });
 
-  it("filters servers when typing in search", async () => {
-    const user = userEvent.setup();
-    renderWithNuqs(
-      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
-    );
-
-    const searchInput = screen.getByPlaceholderText("Search");
-    await user.type(searchInput, "aws");
-
-    await waitFor(() => {
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
-    });
-  });
-
-  it("shows no results message when search has no matches", async () => {
-    const user = userEvent.setup();
-    renderWithNuqs(
-      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
-    );
-
-    const searchInput = screen.getByPlaceholderText("Search");
-    await user.type(searchInput, "nonexistent");
-
-    await waitFor(() => {
-      expect(screen.getByText("No results found")).toBeVisible();
-      expect(
-        screen.getByText(/couldn't find any servers matching "nonexistent"/),
-      ).toBeVisible();
-    });
-  });
-
-  it("clears search when clear button in empty state is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithNuqs(
-      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
-    );
-
-    const searchInput = screen.getByPlaceholderText(
-      "Search",
-    ) as HTMLInputElement;
-    await user.type(searchInput, "nonexistent");
-
-    await waitFor(() => {
-      expect(screen.getByText("No results found")).toBeVisible();
-    });
-
-    const clearButtons = screen.getAllByRole("button", {
-      name: /clear search/i,
-    });
-    const emptyStateClearButton = clearButtons.find(
-      (btn) => btn.textContent === "Clear search",
-    );
-    expect(emptyStateClearButton).toBeDefined();
-    await user.click(emptyStateClearButton as HTMLElement);
-
-    await waitFor(() => {
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.getByText("google-applications")).toBeVisible();
-    });
-
-    expect(searchInput.value).toBe("");
-  });
-
-  it("maintains search when switching view modes", async () => {
+  it("updates search input when typing", async () => {
     const user = userEvent.setup();
     renderWithNuqs(
       <ServersWrapper servers={mockServers} registries={mockRegistries} />,
@@ -169,10 +105,21 @@ describe("ServersWrapper", () => {
     ) as HTMLInputElement;
     await user.type(searchInput, "aws");
 
-    await waitFor(() => {
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.queryByText("google-applications")).not.toBeInTheDocument();
-    });
+    // Search is server-side — the input value updates immediately (nuqs buffers URL updates)
+    expect(searchInput.value).toBe("aws");
+  });
+
+  it("maintains search value when switching view modes", async () => {
+    const user = userEvent.setup();
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
+
+    const searchInput = screen.getByPlaceholderText(
+      "Search",
+    ) as HTMLInputElement;
+    await user.type(searchInput, "aws");
+    expect(searchInput.value).toBe("aws");
 
     await user.click(screen.getByLabelText("List view"));
 
@@ -181,13 +128,43 @@ describe("ServersWrapper", () => {
     });
 
     expect(searchInput.value).toBe("aws");
+  });
 
-    await waitFor(() => {
-      const awsCanvas = screen.queryByText("aws-nova-canvas");
-      const googleApps = screen.queryByText("google-applications");
+  it("renders pagination controls", () => {
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
 
-      expect(awsCanvas).toBeVisible();
-      expect(googleApps).not.toBeInTheDocument();
-    });
+    expect(screen.getByRole("button", { name: /previous/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /next/i })).toBeVisible();
+    expect(screen.getByText("Items per page")).toBeVisible();
+  });
+
+  it("disables previous button on first page", () => {
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
+
+    expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
+  });
+
+  it("disables next button when there is no nextCursor", () => {
+    renderWithNuqs(
+      <ServersWrapper servers={mockServers} registries={mockRegistries} />,
+    );
+
+    expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
+  });
+
+  it("enables next button when nextCursor is provided", () => {
+    renderWithNuqs(
+      <ServersWrapper
+        servers={mockServers}
+        registries={mockRegistries}
+        nextCursor="cursor-abc"
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /next/i })).not.toBeDisabled();
   });
 });
