@@ -125,7 +125,7 @@ async function getMcpTools(
   }
 
   try {
-    const servers = await getServers();
+    const { servers } = await getServers();
 
     // Filter servers to only those explicitly selected by the user
     const serversToConnect = servers.filter(
