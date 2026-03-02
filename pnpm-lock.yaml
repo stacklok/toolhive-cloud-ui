@@ -221,7 +221,7 @@ importers:
         version: 16.2.7
       oidc-provider:
         specifier: ^9.5.2
-        version: 9.6.0
+        version: 9.6.1
       tailwindcss:
         specifier: ^4
         version: 4.1.18
@@ -952,8 +952,8 @@ packages:
     resolution: {integrity: sha512-x/iUDjcS90W69PryLDIMgFyV21YLTnG9zOpPXS7Bkt2b8AsY3zZsIpOLBkYr9fBcF3HbkKaER5hOBZLfpLgYNw==}
     engines: {node: '>= 14.0.0'}
 
-  '@koa/router@15.3.0':
-    resolution: {integrity: sha512-s87hWJjFYky2Z97u8jzah73sSHp4IZivD/2PZCuspHRvcKU69OPLoBIbKigVlBmS50yFTh9GHFfr1hDag4+wXw==}
+  '@koa/router@15.3.1':
+    resolution: {integrity: sha512-n7UgxsPmgKtEsrguz8a0d6BNx3lO2x52Z4UqkGsGwJculk4TlzZf3btd3QZMq1r1M+bSxUkBbyul4mDhysIVaQ==}
     engines: {node: '>= 20'}
     peerDependencies:
       koa: ^2.0.0 || ^3.0.0
@@ -2533,8 +2533,8 @@ packages:
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
-  eta@4.5.0:
-    resolution: {integrity: sha512-qifAYjuW5AM1eEEIsFnOwB+TGqu6ynU3OKj9WbUTOtUBHFPZqL03XUW34kbp3zm19Ald+U8dEyRXaVsUck+Y1g==}
+  eta@4.5.1:
+    resolution: {integrity: sha512-EaNCGm+8XEIU7YNcc+THptWAO5NfKBHHARxt+wxZljj9bTr/+arRoOm9/MpGt4n6xn9fLnPFRSoLD0WFYGFUxQ==}
     engines: {node: '>=20'}
 
   etag@1.8.1:
@@ -2929,13 +2929,12 @@ packages:
   keygrip@1.1.0:
     resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
     engines: {node: '>= 0.6'}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   koa-compose@4.1.0:
     resolution: {integrity: sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw==}
 
-  koa@3.1.1:
-    resolution: {integrity: sha512-KDDuvpfqSK0ZKEO2gCPedNjl5wYpfj+HNiuVRlbhd1A88S3M0ySkdf2V/EJ4NWt5dwh5PXCdcenrKK2IQJAxsg==}
+  koa@3.1.2:
+    resolution: {integrity: sha512-2LOQnFKu3m0VxpE+5sb5+BRTSKrXmNxGgxVRiKwD9s5KQB1zID/FRXhtzeV7RT1L2GVpdEEAfVuclFOMGl1ikA==}
     engines: {node: '>= 18'}
 
   kysely@0.28.10:
@@ -3386,8 +3385,8 @@ packages:
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
-  oidc-provider@9.6.0:
-    resolution: {integrity: sha512-CCRUYPOumEy/DT+L86H40WgXjXfDHlsJYZdyd4ZKGFxJh/kAd7DxMX3dwpbX0g+WjB+NWU+kla1b/yZmHNcR0Q==}
+  oidc-provider@9.6.1:
+    resolution: {integrity: sha512-8AtFXE4gEV6MLd8Re78VhqGNjBm/SUw0fUxrP2XwQc+5DZKw6GyuTuy2M4jkidpH3jRrhtkkqQpXlxD1Awi6tg==}
 
   ollama@0.6.3:
     resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
@@ -4872,11 +4871,11 @@ snapshots:
     dependencies:
       vary: 1.1.2
 
-  '@koa/router@15.3.0(koa@3.1.1)':
+  '@koa/router@15.3.1(koa@3.1.2)':
     dependencies:
       debug: 4.4.3
       http-errors: 2.0.1
-      koa: 3.1.1
+      koa: 3.1.2
       koa-compose: 4.1.0
       path-to-regexp: 8.3.0
     transitivePeerDependencies:
@@ -6340,7 +6339,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
 
-  eta@4.5.0: {}
+  eta@4.5.1: {}
 
   etag@1.8.1: {}
 
@@ -6839,10 +6838,10 @@ snapshots:
 
   koa-compose@4.1.0: {}
 
-  koa@3.1.1:
+  koa@3.1.2:
     dependencies:
       accepts: 1.3.8
-      content-disposition: 0.5.4
+      content-disposition: 1.0.1
       content-type: 1.0.5
       cookies: 0.9.1
       delegates: 1.0.0
@@ -7477,15 +7476,15 @@ snapshots:
 
   ohash@2.0.11: {}
 
-  oidc-provider@9.6.0:
+  oidc-provider@9.6.1:
     dependencies:
       '@koa/cors': 5.0.0
-      '@koa/router': 15.3.0(koa@3.1.1)
+      '@koa/router': 15.3.1(koa@3.1.2)
       debug: 4.4.3
-      eta: 4.5.0
+      eta: 4.5.1
       jose: 6.1.3
       jsesc: 3.1.0
-      koa: 3.1.1
+      koa: 3.1.2
       nanoid: 5.1.6
       quick-lru: 7.3.0
       raw-body: 3.0.2
