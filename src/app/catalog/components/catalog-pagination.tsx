@@ -33,24 +33,20 @@ export function CatalogPagination({
     <div className="flex items-center justify-between rounded-md border bg-card px-4 py-3">
       <div />
       <div className="flex gap-6">
-        <span className={isFirstPage ? "cursor-not-allowed" : undefined}>
-          <Button
-            variant="ghost"
-            onClick={onPrev}
-            disabled={isFirstPage}
-            size="sm"
-            className="cursor-pointer"
-          >
-            <ChevronLeft className="size-4" />
-            Previous
-          </Button>
-        </span>
+        <Button
+          variant="ghost"
+          onClick={onPrev}
+          disabled={isFirstPage}
+          size="sm"
+        >
+          <ChevronLeft className="size-4" />
+          Previous
+        </Button>
         <Button
           variant="ghost"
           onClick={() => nextCursor && onNext(nextCursor)}
           disabled={!nextCursor}
           size="sm"
-          className="cursor-pointer"
         >
           Next
           <ChevronRight className="size-4" />

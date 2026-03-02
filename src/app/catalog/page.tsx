@@ -16,7 +16,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
 
   const paginationParams = {
     cursor: cursor || undefined,
-    limit: limit ? Number(limit) : CATALOG_PAGE_SIZE,
+    limit: Number.isFinite(Number(limit)) ? Number(limit) : CATALOG_PAGE_SIZE,
     search: search || undefined,
   };
 
