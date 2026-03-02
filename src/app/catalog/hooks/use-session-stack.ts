@@ -26,29 +26,40 @@ export function useSessionStack() {
   });
 
   const push = (value: string) => {
-    const current = JSON.parse(
-      sessionStorage.getItem(CATALOG_PREV_CURSOR_HISTORY_KEY) ?? "[]",
-    ) as string[];
-    const next = [...current, value];
-    sessionStorage.setItem(
-      CATALOG_PREV_CURSOR_HISTORY_KEY,
-      JSON.stringify(next),
-    );
-    setStack(next);
+    try {
+      const current = JSON.parse(
+        sessionStorage.getItem(CATALOG_PREV_CURSOR_HISTORY_KEY) ?? "[]",
+      ) as string[];
+      const next = [...current, value];
+      sessionStorage.setItem(
+        CATALOG_PREV_CURSOR_HISTORY_KEY,
+        JSON.stringify(next),
+      );
+      setStack(next);
+    } catch {
+      // sessionStorage may be unavailable (privacy mode) or contain corrupted
+      // data — silently ignore so pagination degrades gracefully
+    }
   };
 
   const pop = (): string => {
-    const current = JSON.parse(
-      sessionStorage.getItem(CATALOG_PREV_CURSOR_HISTORY_KEY) ?? "[]",
-    ) as string[];
-    const popped = current.at(-1) ?? "";
-    const next = current.slice(0, -1);
-    sessionStorage.setItem(
-      CATALOG_PREV_CURSOR_HISTORY_KEY,
-      JSON.stringify(next),
-    );
-    setStack(next);
-    return popped;
+    try {
+      const current = JSON.parse(
+        sessionStorage.getItem(CATALOG_PREV_CURSOR_HISTORY_KEY) ?? "[]",
+      ) as string[];
+      const popped = current.at(-1) ?? "";
+      const next = current.slice(0, -1);
+      sessionStorage.setItem(
+        CATALOG_PREV_CURSOR_HISTORY_KEY,
+        JSON.stringify(next),
+      );
+      setStack(next);
+      return popped;
+    } catch {
+      // sessionStorage may be unavailable (privacy mode) or contain corrupted
+      // data — return empty string to navigate back to the first page
+      return "";
+    }
   };
 
   const clear = () => {

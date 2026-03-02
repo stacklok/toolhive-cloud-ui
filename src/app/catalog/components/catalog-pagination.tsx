@@ -9,8 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const LIMIT_OPTIONS = [12, 24, 48] as const;
+import { CATALOG_PAGE_SIZE_OPTIONS } from "../constants";
 
 interface CatalogPaginationProps {
   isFirstPage: boolean;
@@ -62,7 +61,7 @@ export function CatalogPagination({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {LIMIT_OPTIONS.map((option) => (
+            {CATALOG_PAGE_SIZE_OPTIONS.map((option) => (
               <SelectItem key={option} value={String(option)}>
                 {option}
               </SelectItem>
