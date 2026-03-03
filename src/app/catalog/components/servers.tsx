@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import type { V0ServerJson } from "@/generated/types.gen";
 import { EmptyState } from "./empty-state";
@@ -16,7 +15,8 @@ interface ServersProps {
 }
 
 /**
- * Client component that displays filtered servers based on view mode and search query
+ * Client component that displays servers based on view mode.
+ * Filtering is done server-side — this component renders whatever servers are passed in.
  */
 export function Servers({
   servers,
@@ -26,20 +26,6 @@ export function Servers({
 }: ServersProps) {
   const router = useRouter();
 
-  const filteredServers = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return servers;
-    }
-
-    const query = searchQuery.toLowerCase();
-    return servers.filter(
-      (server) =>
-        server.name?.toLowerCase().includes(query) ||
-        server.title?.toLowerCase().includes(query) ||
-        server.description?.toLowerCase().includes(query),
-    );
-  }, [servers, searchQuery]);
-
   const handleServerClick = (server: V0ServerJson) => {
     if (!server.name) return;
 
@@ -47,7 +33,7 @@ export function Servers({
     router.push(detailUrl);
   };
 
-  if (filteredServers.length === 0) {
+  if (servers.length === 0) {
     if (searchQuery) {
       return (
         <EmptyState
@@ -74,17 +60,14 @@ export function Servers({
   if (viewMode === "list") {
     return (
       <div className="pb-6">
-        <ServersTable
-          servers={filteredServers}
-          onServerClick={handleServerClick}
-        />
+        <ServersTable servers={servers} onServerClick={handleServerClick} />
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 pb-6 md:grid-cols-2 lg:grid-cols-3">
-      {filteredServers.map((server) => (
+    <div className="grid grid-cols-1 gap-3 pb-3 md:grid-cols-2 lg:grid-cols-3">
+      {servers.map((server) => (
         <ServerCard
           key={server.name}
           server={server}

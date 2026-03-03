@@ -23,7 +23,7 @@ export async function getMcpServerTools(
   serverName: string,
 ): Promise<McpServerToolsResponse> {
   try {
-    const servers = await getServers();
+    const { servers } = await getServers();
     const server = servers.find((s) => s.name === serverName);
 
     if (!server) {

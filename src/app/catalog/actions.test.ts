@@ -17,19 +17,19 @@ describe("getServers", () => {
     vi.restoreAllMocks();
   });
   it("returns servers from default fixture", async () => {
-    const servers = await getServers();
+    const result = await getServers();
 
-    expect(servers.length).toBeGreaterThan(0);
-    expect(servers[0].name).toBe("awslabs/aws-nova-canvas");
+    expect(result.servers.length).toBeGreaterThan(0);
+    expect(result.servers[0].name).toBe("awslabs/aws-nova-canvas");
   });
 
   // Demo: using .activateScenario() for reusable test scenarios
   it("returns empty array when using empty-servers scenario", async () => {
     mockedGetRegistryV01Servers.activateScenario("empty-servers");
 
-    const servers = await getServers();
+    const result = await getServers();
 
-    expect(servers).toEqual([]);
+    expect(result.servers).toEqual([]);
   });
 
   // Demo: using .activateScenario() for error scenarios
@@ -53,10 +53,21 @@ describe("getServers", () => {
       metadata: { count: 1 },
     }));
 
-    const servers = await getServers();
+    const result = await getServers();
 
-    expect(servers).toHaveLength(1);
-    expect(servers[0].name).toBe("test/server");
+    expect(result.servers).toHaveLength(1);
+    expect(result.servers[0].name).toBe("test/server");
+  });
+
+  it("returns nextCursor when API provides one", async () => {
+    mockedGetRegistryV01Servers.override(() => ({
+      servers: [{ server: { name: "test/server" } }],
+      metadata: { count: 1, nextCursor: "cursor-abc" },
+    }));
+
+    const result = await getServers();
+
+    expect(result.nextCursor).toBe("cursor-abc");
   });
 
   // Demo: using .overrideHandler() for error status codes

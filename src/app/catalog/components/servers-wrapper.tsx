@@ -6,26 +6,37 @@ import type {
   V0ServerJson,
 } from "@/generated/types.gen";
 import { useCatalogFilters } from "../hooks/use-catalog-filters";
+import { CatalogPagination } from "./catalog-pagination";
 import { ServerFilters } from "./server-filters";
 import { Servers } from "./servers";
 
 interface ServersWrapperProps {
   servers: V0ServerJson[];
   registries: GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[];
+  nextCursor?: string;
 }
 
 /**
- * Wrapper that connects catalog filters to the server list view.
+ * Wrapper that connects catalog filters and pagination to the server list view.
  */
-export function ServersWrapper({ servers, registries }: ServersWrapperProps) {
+export function ServersWrapper({
+  servers,
+  registries,
+  nextCursor,
+}: ServersWrapperProps) {
   const {
     viewMode,
     search,
     selectedRegistry,
+    limit,
+    isFirstPage,
     handleViewModeChange,
     handleSearchChange,
     handleClearSearch,
     handleRegistryChange,
+    handleNextPage,
+    handlePrevPage,
+    handleLimitChange,
   } = useCatalogFilters();
 
   return (
@@ -50,6 +61,15 @@ export function ServersWrapper({ servers, registries }: ServersWrapperProps) {
           onClearSearch={handleClearSearch}
         />
       </div>
+
+      <CatalogPagination
+        isFirstPage={isFirstPage}
+        nextCursor={nextCursor}
+        limit={limit}
+        onPrev={handlePrevPage}
+        onNext={handleNextPage}
+        onLimitChange={handleLimitChange}
+      />
     </div>
   );
 }

@@ -14,7 +14,7 @@ interface AssistantLayoutProps {
 }
 
 export async function AssistantLayout({ children }: AssistantLayoutProps) {
-  const [models, servers] = await Promise.all([
+  const [models, { servers }] = await Promise.all([
     getOpenRouterModels(),
     getServers(),
   ]);

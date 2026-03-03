@@ -27,12 +27,28 @@ export async function getRegistries(): Promise<
   return registries.data.registries ?? [];
 }
 
-export async function getServers(): Promise<V0ServerJson[]> {
+export interface ServerListResult {
+  servers: V0ServerJson[];
+  nextCursor?: string;
+}
+
+interface ServerListParams {
+  cursor?: string;
+  limit?: number;
+  search?: string;
+}
+
+export async function getServers(
+  params?: ServerListParams,
+): Promise<ServerListResult> {
   const api = await getAuthenticatedClient();
   const servers = await api.getRegistryV01Servers({
     client: api.client,
     query: {
       version: "latest",
+      cursor: params?.cursor || undefined,
+      limit: params?.limit,
+      search: params?.search || undefined,
     },
   });
 
@@ -42,25 +58,29 @@ export async function getServers(): Promise<V0ServerJson[]> {
   }
 
   if (!servers.data) {
-    return [];
+    return { servers: [] };
   }
 
   const data = servers.data;
   const items = Array.isArray(data?.servers) ? data.servers : [];
 
-  // Extract the server objects from the response
-  return items
-    .map((item) => item?.server)
-    .filter((server): server is V0ServerJson => server != null);
+  return {
+    servers: items
+      .map((item) => item?.server)
+      .filter((server): server is V0ServerJson => server != null),
+    nextCursor: data.metadata?.nextCursor,
+  };
 }
 
 /**
- * Fetches all MCP servers from a specific registry
+ * Fetches MCP servers from a specific registry with optional pagination
  * @param registryName - The unique name of the registry to query
+ * @param params - Optional pagination and search parameters
  */
 export async function getServersByRegistryName(
   registryName: string,
-): Promise<V0ServerJson[]> {
+  params?: ServerListParams,
+): Promise<ServerListResult> {
   const api = await getAuthenticatedClient();
   const servers = await api.getRegistryByRegistryNameV01Servers({
     client: api.client,
@@ -69,6 +89,9 @@ export async function getServersByRegistryName(
     },
     query: {
       version: "latest",
+      cursor: params?.cursor || undefined,
+      limit: params?.limit,
+      search: params?.search || undefined,
     },
   });
 
@@ -78,7 +101,10 @@ export async function getServersByRegistryName(
   }
 
   const items = servers.data?.servers ?? [];
-  return items
-    .map((item) => item?.server)
-    .filter((server): server is V0ServerJson => server != null);
+  return {
+    servers: items
+      .map((item) => item?.server)
+      .filter((server): server is V0ServerJson => server != null),
+    nextCursor: servers.data?.metadata?.nextCursor,
+  };
 }
