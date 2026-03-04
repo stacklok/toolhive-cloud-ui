@@ -3,7 +3,7 @@
 import { genericOAuthClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
-import { clearOidcTokenAction, getOidcSignOutUrl } from "./actions";
+import { getOidcSignOutUrl } from "./actions";
 
 export const authClient = createAuthClient({
   // Don't specify baseURL - it will use the same origin as the page
@@ -22,13 +22,10 @@ export const signOut = async () => {
     // 1. Get logout URL FIRST (while session still exists)
     const redirectUrl = await getOidcSignOutUrl();
 
-    // 2. Clear OIDC token cookie (only has effect in stateless mode)
-    await clearOidcTokenAction();
-
-    // 3. Sign out from Better Auth (invalidates session)
+    // 2. Sign out from Better Auth (invalidates session + clears account_data)
     await authClient.signOut();
 
-    // 4. Redirect to OIDC provider logout
+    // 3. Redirect to OIDC provider logout
     window.location.replace(redirectUrl);
   } catch (error) {
     console.error("[Auth] Sign out error:", error);

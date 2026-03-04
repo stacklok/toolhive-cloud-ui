@@ -18,7 +18,7 @@ import { redirect } from "next/navigation";
 import { createClient, createConfig } from "@/generated/client";
 import * as apiServices from "@/generated/sdk.gen";
 import { auth } from "./auth/auth";
-import { getValidOidcToken } from "./auth/token";
+import { OIDC_PROVIDER_ID } from "./auth/constants";
 
 const MOCK_SCENARIO_COOKIE = "mock-scenario";
 const MOCK_SCENARIO_HEADER = "X-Mock-Scenario";
@@ -50,8 +50,10 @@ const API_BASE_URL = process.env.API_BASE_URL;
 export async function getAuthenticatedClient(accessToken?: string) {
   // If no token provided, get it from the session
   if (accessToken === undefined) {
+    const requestHeaders = await nextHeaders();
+
     const session = await auth.api.getSession({
-      headers: await nextHeaders(),
+      headers: requestHeaders,
     });
 
     if (!session?.user?.id) {
@@ -59,13 +61,16 @@ export async function getAuthenticatedClient(accessToken?: string) {
       redirect("/signin");
     }
 
-    const token = await getValidOidcToken(session.user.id);
-    if (!token) {
+    const tokenData = await auth.api.getAccessToken({
+      headers: requestHeaders,
+      body: { providerId: OIDC_PROVIDER_ID },
+    });
+    if (!tokenData?.accessToken) {
       console.log("[API Client] token not found, redirecting to signin");
       redirect("/signin");
     }
 
-    accessToken = token;
+    accessToken = tokenData.accessToken;
   }
 
   const requestHeaders: Record<string, string> = {
