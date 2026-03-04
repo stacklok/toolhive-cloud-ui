@@ -5,7 +5,7 @@ import { getServers } from "./actions";
 
 // Authentication is mocked globally in vitest.setup.ts:
 // - auth.api.getSession returns a mock session
-// - getValidOidcToken returns "mock-test-token"
+// - auth.api.getAccessToken returns "mock-test-token"
 
 describe("getServers", () => {
   beforeEach(() => {

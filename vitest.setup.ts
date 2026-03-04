@@ -39,8 +39,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Global auth server mock with default authenticated session
-// Uses importActual to preserve real exports (encrypt, decrypt, etc.) for unit tests
-// Individual tests can override getSession return value if needed
+// Uses importActual to preserve real exports for unit tests
+// Individual tests can override getSession/getAccessToken return values if needed
 vi.mock("@/lib/auth/auth", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/auth/auth")>();
   return {
@@ -57,6 +57,9 @@ vi.mock("@/lib/auth/auth", async (importOriginal) => {
               name: "Test User",
             },
           }),
+        ),
+        getAccessToken: vi.fn(() =>
+          Promise.resolve({ accessToken: "mock-test-token" }),
         ),
       },
     },
@@ -85,12 +88,6 @@ vi.mock("next-themes", () => ({
     setTheme: mockSetTheme,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-// Mock OIDC token retrieval to return a test token by default
-// This allows server action tests to bypass the full auth flow
-vi.mock("@/lib/auth/token", () => ({
-  getValidOidcToken: vi.fn(() => Promise.resolve("mock-test-token")),
 }));
 
 // Auth client baseline mock; individual tests can customize return values

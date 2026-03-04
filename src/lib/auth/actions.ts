@@ -1,17 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth, getOidcDiscovery, getOidcIdToken } from "@/lib/auth/auth";
-import { BASE_URL } from "@/lib/auth/constants";
-import { clearOidcProviderToken } from "@/lib/auth/cookie";
-
-/**
- * Server action to clear OIDC token cookie on sign out.
- * Only has effect in stateless (cookie) mode.
- */
-export async function clearOidcTokenAction(): Promise<void> {
-  await clearOidcProviderToken();
-}
+import { auth, getOidcDiscovery } from "@/lib/auth/auth";
+import { BASE_URL, OIDC_PROVIDER_ID } from "@/lib/auth/constants";
 
 /**
  * Server action to build the OIDC logout URL for RP-Initiated Logout.
@@ -19,8 +10,10 @@ export async function clearOidcTokenAction(): Promise<void> {
  */
 export async function getOidcSignOutUrl(): Promise<string> {
   try {
+    const requestHeaders = await headers();
+
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user?.id) {
@@ -35,7 +28,11 @@ export async function getOidcSignOutUrl(): Promise<string> {
       return "/signin";
     }
 
-    const idToken = await getOidcIdToken(session.user.id);
+    const tokenData = await auth.api.getAccessToken({
+      headers: requestHeaders,
+      body: { providerId: OIDC_PROVIDER_ID },
+    });
+    const idToken = tokenData?.idToken ?? null;
 
     if (!idToken) {
       console.warn("[Auth] No idToken found for OIDC logout");

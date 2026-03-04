@@ -11,7 +11,6 @@ import { signOut } from "../auth-client";
 const mockAuthClientSignOut = vi.hoisted(() => vi.fn());
 const mockLocationReplace = vi.hoisted(() => vi.fn());
 const mockGetOidcSignOutUrl = vi.hoisted(() => vi.fn<() => Promise<string>>());
-const mockClearOidcTokenAction = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
 // Mock Better Auth client
 vi.mock("better-auth/client/plugins", () => ({
@@ -28,7 +27,6 @@ vi.mock("better-auth/react", () => ({
 
 vi.mock("../actions", () => ({
   getOidcSignOutUrl: mockGetOidcSignOutUrl,
-  clearOidcTokenAction: mockClearOidcTokenAction,
 }));
 
 // Mock window.location globally
@@ -57,14 +55,12 @@ describe("signOut", () => {
     const oidcLogoutUrl = "https://okta.example.com/logout?id_token_hint=xxx";
 
     mockGetOidcSignOutUrl.mockResolvedValue(oidcLogoutUrl);
-    mockClearOidcTokenAction.mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
 
     await signOut();
 
     // Verify all functions were called
     expect(mockGetOidcSignOutUrl).toHaveBeenCalledTimes(1);
-    expect(mockClearOidcTokenAction).toHaveBeenCalledTimes(1);
     expect(mockAuthClientSignOut).toHaveBeenCalledTimes(1);
     expect(mockLocationReplace).toHaveBeenCalledWith(oidcLogoutUrl);
   });
@@ -77,10 +73,6 @@ describe("signOut", () => {
       return "https://okta.example.com/logout";
     });
 
-    mockClearOidcTokenAction.mockImplementation(async () => {
-      callOrder.push("clearOidcTokenAction");
-    });
-
     mockAuthClientSignOut.mockImplementation(async () => {
       callOrder.push("authClient.signOut");
     });
@@ -91,10 +83,9 @@ describe("signOut", () => {
 
     await signOut();
 
-    // Order: get URL first (while session still exists), then clear token cookie, then sign out, then redirect.
+    // Order: get URL first (while session still exists), then sign out, then redirect.
     expect(callOrder).toEqual([
       "getOidcSignOutUrl",
-      "clearOidcTokenAction",
       "authClient.signOut",
       "window.location.replace",
     ]);
@@ -118,7 +109,6 @@ describe("signOut", () => {
 
   it("uses /signin as fallback when no OIDC URL", async () => {
     mockGetOidcSignOutUrl.mockResolvedValue("/signin");
-    mockClearOidcTokenAction.mockResolvedValue(undefined);
     mockAuthClientSignOut.mockResolvedValue(undefined);
 
     await signOut();

@@ -1,4 +1,3 @@
-import type { Account } from "better-auth";
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import {
@@ -11,22 +10,11 @@ import {
   OIDC_DISCOVERY_URL,
   OIDC_PROVIDER_ID,
   OIDC_SCOPES,
-  TOKEN_ONE_HOUR_MS,
   TOKEN_SEVEN_DAYS_SECONDS,
   TRUSTED_ORIGINS,
 } from "./constants";
-import { getTokenFromCookie, saveTokenCookie } from "./cookie";
-import {
-  getIdTokenFromDatabase,
-  getTokenFromDatabase,
-  isDatabaseMode,
-  pool,
-} from "./db";
-import type {
-  OidcDiscovery,
-  OidcDiscoveryResponse,
-  OidcTokenData,
-} from "./types";
+import { pool } from "./db";
+import type { OidcDiscovery, OidcDiscoveryResponse } from "./types";
 import { getUserInfoFromTokens } from "./utils";
 
 /**
@@ -68,89 +56,6 @@ export async function getOidcDiscovery(): Promise<OidcDiscoveryResponse | null> 
   } catch (error) {
     console.error("[Auth] Error fetching OIDC discovery document:", error);
     return null;
-  }
-}
-
-// ============================================================================
-// Token Access Functions
-// ============================================================================
-
-/**
- * Retrieves the OIDC provider access token.
- * Uses database if available, otherwise falls back to cookie.
- */
-export async function getOidcProviderAccessToken(
-  userId: string,
-): Promise<string | null> {
-  if (isDatabaseMode) {
-    return getTokenFromDatabase(userId);
-  }
-  return getTokenFromCookieMode(userId);
-}
-
-/**
- * Retrieves the OIDC ID token for logout.
- * Uses database if available, otherwise falls back to cookie.
- */
-export async function getOidcIdToken(userId: string): Promise<string | null> {
-  if (isDatabaseMode) {
-    return getIdTokenFromDatabase(userId);
-  }
-  return getIdTokenFromCookie(userId);
-}
-
-// Cookie mode helpers
-async function getTokenFromCookieMode(userId: string): Promise<string | null> {
-  const tokenData = await getTokenFromCookie(userId);
-  if (!tokenData?.accessToken) {
-    return null;
-  }
-
-  if (
-    tokenData.accessTokenExpiresAt &&
-    tokenData.accessTokenExpiresAt <= Date.now()
-  ) {
-    console.log("[Auth] Access token expired (cookie mode)");
-    return null;
-  }
-
-  return tokenData.accessToken;
-}
-
-async function getIdTokenFromCookie(userId: string): Promise<string | null> {
-  const tokenData = await getTokenFromCookie(userId);
-  return tokenData?.idToken || null;
-}
-
-// ============================================================================
-// Database Hook for Cookie Mode
-// ============================================================================
-
-async function saveAccountTokenToCookie(account: Account) {
-  if (pool) {
-    return;
-  }
-
-  if (account.accessToken && account.userId) {
-    const accessTokenExpiresAt = account.accessTokenExpiresAt
-      ? new Date(account.accessTokenExpiresAt).getTime()
-      : Date.now() + TOKEN_ONE_HOUR_MS;
-
-    const refreshTokenExpiresAt = account.refreshTokenExpiresAt
-      ? new Date(account.refreshTokenExpiresAt).getTime()
-      : undefined;
-
-    const tokenData: OidcTokenData = {
-      accessToken: account.accessToken,
-      refreshToken: account.refreshToken || undefined,
-      accessTokenExpiresAt,
-      refreshTokenExpiresAt,
-      userId: account.userId,
-      idToken: account.idToken || undefined,
-    };
-
-    await saveTokenCookie(tokenData);
-    console.log("[Auth] Token saved to cookie (stateless mode)");
   }
 }
 
@@ -209,14 +114,4 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
       ],
     }),
   ],
-  databaseHooks: {
-    account: {
-      create: {
-        after: saveAccountTokenToCookie,
-      },
-      update: {
-        after: saveAccountTokenToCookie,
-      },
-    },
-  },
 });
