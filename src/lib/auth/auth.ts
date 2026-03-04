@@ -180,7 +180,7 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
   }),
   account: {
     storeStateStrategy: pool ? "database" : "cookie",
-    storeAccountCookie: !pool,
+    storeAccountCookie: false,
   },
   trustedOrigins: TRUSTED_ORIGINS,
   session: {
