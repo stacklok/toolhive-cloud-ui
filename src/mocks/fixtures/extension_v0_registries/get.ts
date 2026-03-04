@@ -6,7 +6,7 @@ export const mockedGetExtensionV0Registries =
     registries: [
       {
         name: "Ut est",
-        createdAt: "id",
+        createdAt: "2024-01-01T00:00:00.000Z",
         creationType: "CONFIG",
         filterConfig: {
           names: {
