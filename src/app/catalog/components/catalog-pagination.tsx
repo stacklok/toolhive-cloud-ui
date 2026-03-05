@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronFirst, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,6 +15,8 @@ interface CatalogPaginationProps {
   isFirstPage: boolean;
   nextCursor: string | undefined;
   limit: number;
+  pageNumber: number;
+  onFirstPage: () => void;
   onPrev: () => void;
   onNext: (nextCursor: string) => void;
   onLimitChange: (limit: number) => void;
@@ -24,6 +26,8 @@ export function CatalogPagination({
   isFirstPage,
   nextCursor,
   limit,
+  pageNumber,
+  onFirstPage,
   onPrev,
   onNext,
   onLimitChange,
@@ -31,23 +35,36 @@ export function CatalogPagination({
   return (
     <div className="flex items-center justify-between rounded-md border bg-card px-4 py-3">
       <div />
-      <div className="flex gap-6">
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          onClick={onFirstPage}
+          disabled={isFirstPage}
+          size="sm"
+          aria-label="First page"
+          className="cursor-pointer"
+        >
+          <ChevronFirst className="size-4" />
+        </Button>
         <Button
           variant="ghost"
           onClick={onPrev}
           disabled={isFirstPage}
           size="sm"
+          aria-label="Previous page"
+          className="cursor-pointer"
         >
           <ChevronLeft className="size-4" />
-          Previous
         </Button>
+        <span className="px-3 text-sm font-medium">Page {pageNumber}</span>
         <Button
           variant="ghost"
           onClick={() => nextCursor && onNext(nextCursor)}
           disabled={!nextCursor}
           size="sm"
+          aria-label="Next page"
+          className="cursor-pointer"
         >
-          Next
           <ChevronRight className="size-4" />
         </Button>
       </div>

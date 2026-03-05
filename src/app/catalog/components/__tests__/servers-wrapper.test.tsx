@@ -135,8 +135,10 @@ describe("ServersWrapper", () => {
       <ServersWrapper servers={mockServers} registries={mockRegistries} />,
     );
 
-    expect(screen.getByRole("button", { name: /previous/i })).toBeVisible();
-    expect(screen.getByRole("button", { name: /next/i })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /previous page/i }),
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: /next page/i })).toBeVisible();
     expect(screen.getByText("Items per page")).toBeVisible();
   });
 
@@ -145,7 +147,9 @@ describe("ServersWrapper", () => {
       <ServersWrapper servers={mockServers} registries={mockRegistries} />,
     );
 
-    expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /previous page/i }),
+    ).toBeDisabled();
   });
 
   it("disables next button when there is no nextCursor", () => {
@@ -153,7 +157,7 @@ describe("ServersWrapper", () => {
       <ServersWrapper servers={mockServers} registries={mockRegistries} />,
     );
 
-    expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /next page/i })).toBeDisabled();
   });
 
   it("enables next button when nextCursor is provided", () => {
@@ -165,6 +169,8 @@ describe("ServersWrapper", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: /next/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /next page/i }),
+    ).not.toBeDisabled();
   });
 });
