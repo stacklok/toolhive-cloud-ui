@@ -5,6 +5,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
+import { useTransition } from "react";
 import {
   CATALOG_ALL_REGISTRIES,
   CATALOG_PAGE_SIZE,
@@ -18,6 +19,8 @@ import { useSessionStack } from "./use-session-stack";
  * rather than the URL since it's local navigation history, not shareable state.
  */
 export function useCatalogFilters() {
+  const [isPending, startTransition] = useTransition();
+
   const [{ viewMode, search, registryName, cursor, limit }, setFilters] =
     useQueryStates(
       {
@@ -32,7 +35,7 @@ export function useCatalogFilters() {
       },
     );
 
-  const { push, pop, clear } = useSessionStack();
+  const { stack, push, pop, clear } = useSessionStack();
 
   const handleViewModeChange = (newViewMode: "grid" | "list") => {
     setFilters((prev) => ({ ...prev, viewMode: newViewMode }));
@@ -42,36 +45,51 @@ export function useCatalogFilters() {
     clear();
     setFilters((prev) => ({ ...prev, search: newSearch, cursor: "" }), {
       limitUrlUpdates: debounce(500),
+      startTransition,
     });
   };
 
   const handleClearSearch = () => {
     clear();
-    setFilters((prev) => ({ ...prev, search: "", cursor: "" }));
+    setFilters((prev) => ({ ...prev, search: "", cursor: "" }), {
+      startTransition,
+    });
   };
 
   const handleRegistryChange = (value: string) => {
     clear();
-    setFilters((prev) => ({
-      ...prev,
-      registryName: value === CATALOG_ALL_REGISTRIES ? null : value,
-      cursor: "",
-    }));
+    setFilters(
+      (prev) => ({
+        ...prev,
+        registryName: value === CATALOG_ALL_REGISTRIES ? null : value,
+        cursor: "",
+      }),
+      { startTransition },
+    );
   };
 
   const handleNextPage = (nextCursor: string) => {
     push(cursor);
-    setFilters((prev) => ({ ...prev, cursor: nextCursor }));
+    setFilters((prev) => ({ ...prev, cursor: nextCursor }), {
+      startTransition,
+    });
   };
 
   const handlePrevPage = () => {
     const restored = pop();
-    setFilters((prev) => ({ ...prev, cursor: restored }));
+    setFilters((prev) => ({ ...prev, cursor: restored }), { startTransition });
+  };
+
+  const handleFirstPage = () => {
+    clear();
+    setFilters((prev) => ({ ...prev, cursor: "" }), { startTransition });
   };
 
   const handleLimitChange = (newLimit: number) => {
     clear();
-    setFilters((prev) => ({ ...prev, limit: newLimit, cursor: "" }));
+    setFilters((prev) => ({ ...prev, limit: newLimit, cursor: "" }), {
+      startTransition,
+    });
   };
 
   const isFirstPage = cursor === "";
@@ -83,12 +101,15 @@ export function useCatalogFilters() {
     cursor,
     limit,
     isFirstPage,
+    isPending,
+    pageNumber: stack.length + 1,
     handleViewModeChange,
     handleSearchChange,
     handleClearSearch,
     handleRegistryChange,
     handleNextPage,
     handlePrevPage,
+    handleFirstPage,
     handleLimitChange,
   };
 }

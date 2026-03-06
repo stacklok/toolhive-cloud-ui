@@ -8,6 +8,7 @@ import type {
 import { useCatalogFilters } from "../hooks/use-catalog-filters";
 import { CatalogPagination } from "./catalog-pagination";
 import { ServerFilters } from "./server-filters";
+import { ServerListSkeleton } from "./server-list-skeleton";
 import { Servers } from "./servers";
 
 interface ServersWrapperProps {
@@ -30,12 +31,15 @@ export function ServersWrapper({
     selectedRegistry,
     limit,
     isFirstPage,
+    isPending,
+    pageNumber,
     handleViewModeChange,
     handleSearchChange,
     handleClearSearch,
     handleRegistryChange,
     handleNextPage,
     handlePrevPage,
+    handleFirstPage,
     handleLimitChange,
   } = useCatalogFilters();
 
@@ -54,18 +58,24 @@ export function ServersWrapper({
       </PageHeader>
 
       <div className="flex-1 overflow-auto">
-        <Servers
-          servers={servers}
-          viewMode={viewMode}
-          searchQuery={search}
-          onClearSearch={handleClearSearch}
-        />
+        {isPending ? (
+          <ServerListSkeleton />
+        ) : (
+          <Servers
+            servers={servers}
+            viewMode={viewMode}
+            searchQuery={search}
+            onClearSearch={handleClearSearch}
+          />
+        )}
       </div>
 
       <CatalogPagination
         isFirstPage={isFirstPage}
         nextCursor={nextCursor}
         limit={limit}
+        pageNumber={pageNumber}
+        onFirstPage={handleFirstPage}
         onPrev={handlePrevPage}
         onNext={handleNextPage}
         onLimitChange={handleLimitChange}

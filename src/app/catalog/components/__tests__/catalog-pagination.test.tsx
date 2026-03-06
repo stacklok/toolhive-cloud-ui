@@ -7,22 +7,57 @@ const defaultProps = {
   isFirstPage: true,
   nextCursor: undefined,
   limit: 24,
+  pageNumber: 1,
+  onFirstPage: vi.fn(),
   onPrev: vi.fn(),
   onNext: vi.fn(),
   onLimitChange: vi.fn(),
 };
 
 describe("CatalogPagination", () => {
-  describe("Previous button", () => {
+  describe("First page button", () => {
     it("is disabled on the first page", () => {
       render(<CatalogPagination {...defaultProps} isFirstPage={true} />);
-      expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /first page/i }),
+      ).toBeDisabled();
     });
 
     it("is enabled when not on the first page", () => {
       render(<CatalogPagination {...defaultProps} isFirstPage={false} />);
       expect(
-        screen.getByRole("button", { name: /previous/i }),
+        screen.getByRole("button", { name: /first page/i }),
+      ).not.toBeDisabled();
+    });
+
+    it("calls onFirstPage when clicked", async () => {
+      const onFirstPage = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <CatalogPagination
+          {...defaultProps}
+          isFirstPage={false}
+          onFirstPage={onFirstPage}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: /first page/i }));
+      expect(onFirstPage).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Previous button", () => {
+    it("is disabled on the first page", () => {
+      render(<CatalogPagination {...defaultProps} isFirstPage={true} />);
+      expect(
+        screen.getByRole("button", { name: /previous page/i }),
+      ).toBeDisabled();
+    });
+
+    it("is enabled when not on the first page", () => {
+      render(<CatalogPagination {...defaultProps} isFirstPage={false} />);
+      expect(
+        screen.getByRole("button", { name: /previous page/i }),
       ).not.toBeDisabled();
     });
 
@@ -37,7 +72,7 @@ describe("CatalogPagination", () => {
         />,
       );
 
-      await user.click(screen.getByRole("button", { name: /previous/i }));
+      await user.click(screen.getByRole("button", { name: /previous page/i }));
       expect(onPrev).toHaveBeenCalledTimes(1);
     });
   });
@@ -45,12 +80,14 @@ describe("CatalogPagination", () => {
   describe("Next button", () => {
     it("is disabled when there is no nextCursor", () => {
       render(<CatalogPagination {...defaultProps} nextCursor={undefined} />);
-      expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /next page/i })).toBeDisabled();
     });
 
     it("is enabled when nextCursor is provided", () => {
       render(<CatalogPagination {...defaultProps} nextCursor="cursor-abc" />);
-      expect(screen.getByRole("button", { name: /next/i })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /next page/i }),
+      ).not.toBeDisabled();
     });
 
     it("calls onNext with the cursor when clicked", async () => {
@@ -64,8 +101,15 @@ describe("CatalogPagination", () => {
         />,
       );
 
-      await user.click(screen.getByRole("button", { name: /next/i }));
+      await user.click(screen.getByRole("button", { name: /next page/i }));
       expect(onNext).toHaveBeenCalledWith("cursor-abc");
+    });
+  });
+
+  describe("Page number", () => {
+    it("displays the current page number", () => {
+      render(<CatalogPagination {...defaultProps} pageNumber={4} />);
+      expect(screen.getByText("Page 4")).toBeVisible();
     });
   });
 
