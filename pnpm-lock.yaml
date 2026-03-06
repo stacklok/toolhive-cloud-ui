@@ -27,8 +27,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.2(ai@6.0.108(zod@4.3.6))(zod@4.3.6)
       '@openrouter/sdk':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.9.0
+        version: 0.9.11
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1080,8 +1080,8 @@ packages:
   '@openrouter/sdk@0.1.27':
     resolution: {integrity: sha512-RH//L10bSmc81q25zAZudiI4kNkLgxF2E+WU42vghp3N6TEvZ6F0jK7uT3tOxkEn91gzmMw9YVmDENy7SJsajQ==}
 
-  '@openrouter/sdk@0.4.0':
-    resolution: {integrity: sha512-FKT6fT3LzIJA2UEXj9WVnNT74i5aeyz25YvjxfGMxu/lIuInpzkYkd7c7rZGQfMxXzq5d9syglrA4AVv08q0eQ==}
+  '@openrouter/sdk@0.9.11':
+    resolution: {integrity: sha512-BgFu6NcIJO4a9aVjr04y3kZ8pyM71j15I+bzfVAGEvxnj+KQNIkBYQGgwrG3D+aT1QpDKLki8btcQmpaxUas6A==}
 
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
@@ -5027,7 +5027,7 @@ snapshots:
     dependencies:
       zod: 4.3.6
 
-  '@openrouter/sdk@0.4.0':
+  '@openrouter/sdk@0.9.11':
     dependencies:
       zod: 4.3.6
 
