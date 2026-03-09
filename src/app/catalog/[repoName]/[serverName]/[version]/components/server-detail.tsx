@@ -38,10 +38,12 @@ function GettingStarted({
             className="font-mono text-sm text-muted-foreground min-w-80 max-w-xl bg-white dark:bg-card border-input focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <CopyUrlButton url={serverUrl} variant="action" />
-          <AddMcpToClientDropdown
-            serverName={serverName ?? ""}
-            serverUrl={serverUrl}
-          />
+          {serverName && (
+            <AddMcpToClientDropdown
+              serverName={serverName}
+              serverUrl={serverUrl}
+            />
+          )}
         </div>
       )}
     </>

@@ -39,7 +39,7 @@ export default async function CatalogDetailPage({
       <ServerDetailTabs tools={tools}>
         <ServerDetail
           description={server.description}
-          serverName={server.name}
+          serverName={server.name ?? serverName}
           serverUrl={remote?.url}
           repositoryUrl={server.repository?.url}
         />
