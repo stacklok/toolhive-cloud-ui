@@ -1,5 +1,6 @@
 import { Github } from "lucide-react";
 import Link from "next/link";
+import { AddMcpToClientDropdown } from "@/components/add-mcp-to-client-dropdown";
 import { CopyUrlButton } from "@/components/copy-url-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,13 @@ function ServerDescription({ description }: { description?: string }) {
   );
 }
 
-function GettingStarted({ serverUrl }: { serverUrl?: string }) {
+function GettingStarted({
+  serverName,
+  serverUrl,
+}: {
+  serverName?: string;
+  serverUrl?: string;
+}) {
   return (
     <>
       <div className="mb-2">
@@ -31,6 +38,10 @@ function GettingStarted({ serverUrl }: { serverUrl?: string }) {
             className="font-mono text-sm text-muted-foreground min-w-80 max-w-xl bg-white dark:bg-card border-input focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <CopyUrlButton url={serverUrl} variant="action" />
+          <AddMcpToClientDropdown
+            serverName={serverName ?? ""}
+            serverUrl={serverUrl}
+          />
         </div>
       )}
     </>
@@ -57,12 +68,14 @@ function RepositoryLink({ repositoryUrl }: { repositoryUrl?: string }) {
 
 interface ServerDetailProps {
   description?: string;
+  serverName?: string;
   serverUrl?: string;
   repositoryUrl?: string;
 }
 
 export function ServerDetail({
   description = "No description available",
+  serverName,
   serverUrl,
   repositoryUrl,
 }: ServerDetailProps) {
@@ -70,7 +83,7 @@ export function ServerDetail({
     <div className="space-y-6">
       <ServerDescription description={description} />
       <RepositoryLink repositoryUrl={repositoryUrl} />
-      <GettingStarted serverUrl={serverUrl} />
+      <GettingStarted serverName={serverName} serverUrl={serverUrl} />
     </div>
   );
 }

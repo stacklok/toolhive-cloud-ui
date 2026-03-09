@@ -1,5 +1,6 @@
 "use client";
 
+import { AddMcpToClientDropdown } from "@/components/add-mcp-to-client-dropdown";
 import { CopyUrlButton } from "@/components/copy-url-button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,7 +29,7 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
             <TableHead className="hidden sm:w-7/10 sm:table-cell">
               About
             </TableHead>
-            <TableHead className="w-16 p-3 text-right sm:w-1/10" />
+            <TableHead className="p-3 text-right sm:w-2/10" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,13 +69,19 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
                 >
                   {description}
                 </TableCell>
-                <TableCell className="px-3 py-1.5 text-right align-middle sm:w-1/10">
+                <TableCell className="px-3 py-1.5 text-right align-middle sm:w-2/10">
                   {url ? (
-                    <CopyUrlButton
-                      url={url}
-                      className="h-8 md:w-auto md:px-3 rounded-full"
-                      labelClassName="hidden md:inline"
-                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <CopyUrlButton
+                        url={url}
+                        className="h-8 md:w-auto md:px-3 rounded-full"
+                        labelClassName="hidden md:inline"
+                      />
+                      <AddMcpToClientDropdown
+                        serverName={serverName}
+                        serverUrl={url}
+                      />
+                    </div>
                   ) : null}
                 </TableCell>
               </TableRow>
