@@ -5,7 +5,31 @@ import {
   buildVSCodeDeeplink,
   type McpRemoteConfig,
   type McpStdioConfig,
+  normalizeServerName,
 } from "../client-configs";
+
+describe("normalizeServerName", () => {
+  it("replaces dots and slashes with dashes", () => {
+    expect(
+      normalizeServerName("com.toolhive.k8s.toolhive-mcp/github-proxy"),
+    ).toBe("com-toolhive-k8s-toolhive-mcp-github-proxy");
+  });
+
+  it("leaves a simple name unchanged", () => {
+    expect(normalizeServerName("github")).toBe("github");
+  });
+
+  it("produces unique names for ambiguous last segments", () => {
+    expect(normalizeServerName("com.gitlab/mcp")).toBe("com-gitlab-mcp");
+    expect(normalizeServerName("com.paypal.mcp/mcp")).toBe(
+      "com-paypal-mcp-mcp",
+    );
+  });
+
+  it("handles names with only dots", () => {
+    expect(normalizeServerName("io.github.myorg")).toBe("io-github-myorg");
+  });
+});
 
 describe("client-configs", () => {
   describe("stdio config", () => {

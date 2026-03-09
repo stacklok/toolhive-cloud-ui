@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { V0ServerJson } from "@/generated/types.gen";
+import { normalizeServerName } from "@/lib/mcp/client-configs";
 import { isVirtualMCPServer } from "@/lib/utils";
 
 interface ServerCardProps {
@@ -35,7 +36,7 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
     >
       <CardHeader className="cursor-pointer gap-1">
         <CardTitle className="text-xl font-semibold leading-7 tracking-tight">
-          {name}
+          {server.title ?? name}
         </CardTitle>
         <CardDescription className="flex items-center gap-1.5 text-xs leading-5">
           {author && <span>{author}</span>}
@@ -60,7 +61,7 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
               className="w-fit cursor-pointer rounded-full"
             />
             <AddMcpToClientDropdown
-              serverName={name ?? ""}
+              serverName={server.title ?? normalizeServerName(name ?? "")}
               serverUrl={serverUrl}
             />
           </div>

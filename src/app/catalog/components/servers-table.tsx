@@ -34,7 +34,8 @@ export function ServersTable({ servers, onServerClick }: ServersTableProps) {
         <TableBody>
           {servers.map((server, index) => {
             const url = server.remotes?.[0]?.url || "";
-            const serverName = server.name || "Unknown";
+            const serverName =
+              server.title ?? server.name ?? "Unknown server name";
             const description =
               server.description || "No description available";
 
