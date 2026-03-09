@@ -104,7 +104,7 @@ describe("ServersTable", () => {
 
     render(<ServersTable servers={[serverWithoutName]} />);
 
-    expect(screen.getByText("Unknown")).toBeVisible();
+    expect(screen.getByText("Unknown server name")).toBeVisible();
   });
 
   it("displays Virtual MCP badge for Virtual MCP servers", () => {

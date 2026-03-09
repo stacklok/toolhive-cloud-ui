@@ -39,9 +39,9 @@ describe("Servers", () => {
         />,
       );
 
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.getByText("google-applications")).toBeVisible();
-      expect(screen.getByText("azure-mcp")).toBeVisible();
+      expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
+      expect(screen.getByText("Google Applications")).toBeVisible();
+      expect(screen.getByText("Azure MCP")).toBeVisible();
     });
 
     it("displays grid container", () => {
@@ -70,9 +70,9 @@ describe("Servers", () => {
         />,
       );
 
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-      expect(screen.getByText("google-applications")).toBeVisible();
-      expect(screen.getByText("azure-mcp")).toBeVisible();
+      expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
+      expect(screen.getByText("Google Applications")).toBeVisible();
+      expect(screen.getByText("Azure MCP")).toBeVisible();
     });
 
     it("displays table headers", () => {
