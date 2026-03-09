@@ -47,7 +47,10 @@ export function isStdioConfig(
  * Server names from Kubernetes resources use reverse DNS notation
  * (e.g. "com.toolhive.k8s.toolhive-mcp/github-proxy") which some clients
  * like Claude Code CLI do not support. This function replaces "." and "/"
- * with "-" to produce a unique, valid identifier.
+ * with "-" to produce a valid identifier compatible with MCP clients.
+ *
+ * Note: names that differ only in "." vs "/" will produce the same result
+ * (e.g. "a/b" and "a.b" both become "a-b").
  */
 export function normalizeServerName(name: string): string {
   return name.replace(/[./]/g, "-");

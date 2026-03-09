@@ -61,7 +61,7 @@ export function ServerCard({ server, serverUrl, onClick }: ServerCardProps) {
               className="w-fit cursor-pointer rounded-full"
             />
             <AddMcpToClientDropdown
-              serverName={server.title ?? normalizeServerName(name ?? "")}
+              serverName={normalizeServerName(server.title ?? name ?? "")}
               serverUrl={serverUrl}
             />
           </div>
