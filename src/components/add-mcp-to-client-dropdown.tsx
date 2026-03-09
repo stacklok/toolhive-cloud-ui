@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAddMcpToClient } from "@/hooks/use-add-mcp-to-client";
-import { MCP_CLIENT_LIST } from "@/lib/mcp/client-configs";
+import { MCP_CLIENT_LIST, normalizeServerName } from "@/lib/mcp/client-configs";
 
 interface AddMcpClientDropdownProps {
   serverName: string;
@@ -16,11 +16,11 @@ interface AddMcpClientDropdownProps {
 }
 
 export function AddMcpToClientDropdown({
-  serverName,
+  serverName: rawServerName,
   serverUrl,
 }: AddMcpClientDropdownProps) {
   const { openInClient, copyCommand } = useAddMcpToClient({
-    serverName,
+    serverName: normalizeServerName(rawServerName),
     config: { url: serverUrl },
   });
 
