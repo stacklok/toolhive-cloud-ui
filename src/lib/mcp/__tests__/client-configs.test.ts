@@ -19,7 +19,7 @@ describe("normalizeServerName", () => {
     expect(normalizeServerName("github")).toBe("github");
   });
 
-  it("produces unique names for ambiguous last segments", () => {
+  it("normalizes names with mixed dots and slashes", () => {
     expect(normalizeServerName("com.gitlab/mcp")).toBe("com-gitlab-mcp");
     expect(normalizeServerName("com.paypal.mcp/mcp")).toBe(
       "com-paypal-mcp-mcp",
