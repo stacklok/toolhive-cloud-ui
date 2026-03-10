@@ -23,10 +23,12 @@ import type { OidcUserInfo } from "./types";
  * refresh token (R2) is saved properly — Server Components cannot write cookies,
  * so the refresh + cookie save must happen in a Route Handler.
  *
- * @param marginMs - How far in advance to consider the token "near expiry" (default 30s)
+ * @param marginMs - How far in advance to consider the token "near expiry" (default 10s).
+ *   Must be greater than Better Auth's internal 5s refresh threshold, and less than the
+ *   OIDC provider's access token TTL (e.g. 15s in dev, 3600s in production).
  * @returns `true` if the token is near expiry, expired, or the cookie cannot be decoded
  */
-export async function isTokenNearExpiry(marginMs = 30_000): Promise<boolean> {
+export async function isTokenNearExpiry(marginMs = 10_000): Promise<boolean> {
   try {
     const cookieStore = await cookies();
     const allCookies = cookieStore.getAll();

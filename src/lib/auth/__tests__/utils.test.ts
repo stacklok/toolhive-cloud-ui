@@ -56,22 +56,22 @@ describe("isTokenNearExpiry", () => {
     expect(await isTokenNearExpiry()).toBe(true);
   });
 
-  it("returns true when token expires within the default 30s margin", async () => {
+  it("returns true when token expires within the default 10s margin", async () => {
     mockGetAll.mockReturnValue([
       { name: "better-auth.account_data", value: "some-jwe" },
     ]);
     mockSymmetricDecodeJWT.mockResolvedValue({
-      accessTokenExpiresAt: new Date(Date.now() + 10_000).toISOString(),
+      accessTokenExpiresAt: new Date(Date.now() + 5_000).toISOString(),
     });
     expect(await isTokenNearExpiry()).toBe(true);
   });
 
-  it("returns false when token expires beyond the default 30s margin", async () => {
+  it("returns false when token expires beyond the default 10s margin", async () => {
     mockGetAll.mockReturnValue([
       { name: "better-auth.account_data", value: "some-jwe" },
     ]);
     mockSymmetricDecodeJWT.mockResolvedValue({
-      accessTokenExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+      accessTokenExpiresAt: new Date(Date.now() + 15_000).toISOString(),
     });
     expect(await isTokenNearExpiry()).toBe(false);
   });
