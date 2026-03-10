@@ -20,9 +20,20 @@ import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
  * renders with a fresh, valid token.
  */
 export async function GET(request: NextRequest) {
-  const redirectTo = request.nextUrl.searchParams.get("redirect") || "/catalog";
-  // Validate redirect target — must be a relative path to prevent open redirects.
-  const safeRedirect = redirectTo.startsWith("/") ? redirectTo : "/catalog";
+  // Validate redirect target to prevent open redirects.
+  // Parse with new URL() and enforce same-origin; extract only pathname+search+hash.
+  const redirectParam = request.nextUrl.searchParams.get("redirect");
+  let safeRedirect = "/catalog";
+  if (redirectParam && !redirectParam.startsWith("//")) {
+    try {
+      const resolved = new URL(redirectParam, request.url);
+      if (resolved.origin === request.nextUrl.origin) {
+        safeRedirect = resolved.pathname + resolved.search + resolved.hash;
+      }
+    } catch {
+      // Invalid URL — keep default safeRedirect
+    }
+  }
 
   const requestHeaders = await headers();
 

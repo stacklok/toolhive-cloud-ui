@@ -34,20 +34,44 @@ export async function isTokenNearExpiry(marginMs = 10_000): Promise<boolean> {
     const allCookies = cookieStore.getAll();
 
     // Better Auth may chunk large cookies as account_data.0, account_data.1, etc.
-    const chunks = allCookies
-      .filter(
-        (c) =>
-          c.name === "better-auth.account_data" ||
-          c.name.startsWith("better-auth.account_data."),
-      )
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((c) => c.value)
-      .join("");
+    const accountCookies = allCookies.filter(
+      (c) =>
+        c.name === "better-auth.account_data" ||
+        c.name.startsWith("better-auth.account_data."),
+    );
 
-    if (!chunks) return true; // No cookie → treat as expired
+    const baseCookie = accountCookies.find(
+      (c) => c.name === "better-auth.account_data",
+    );
+    const chunkedCookies = accountCookies.filter((c) =>
+      c.name.startsWith("better-auth.account_data."),
+    );
+
+    let jwe: string;
+    if (chunkedCookies.length > 0) {
+      // Sort by numeric suffix to avoid lexicographic mis-ordering (.10 before .2)
+      jwe = [...chunkedCookies]
+        .sort((a, b) => {
+          const aIdx = Number.parseInt(
+            a.name.match(/\.(\d+)$/)?.[1] ?? "0",
+            10,
+          );
+          const bIdx = Number.parseInt(
+            b.name.match(/\.(\d+)$/)?.[1] ?? "0",
+            10,
+          );
+          return aIdx - bIdx;
+        })
+        .map((c) => c.value)
+        .join("");
+    } else {
+      jwe = baseCookie?.value ?? "";
+    }
+
+    if (!jwe) return true; // No cookie → treat as expired
 
     const decoded = await symmetricDecodeJWT(
-      chunks,
+      jwe,
       BETTER_AUTH_SECRET,
       "better-auth-account",
     );
