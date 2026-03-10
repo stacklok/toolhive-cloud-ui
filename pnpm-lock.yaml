@@ -221,7 +221,7 @@ importers:
         version: 16.3.2
       oidc-provider:
         specifier: ^9.5.2
-        version: 9.6.1
+        version: 9.7.0
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -3408,8 +3408,8 @@ packages:
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
-  oidc-provider@9.6.1:
-    resolution: {integrity: sha512-8AtFXE4gEV6MLd8Re78VhqGNjBm/SUw0fUxrP2XwQc+5DZKw6GyuTuy2M4jkidpH3jRrhtkkqQpXlxD1Awi6tg==}
+  oidc-provider@9.7.0:
+    resolution: {integrity: sha512-xrOjNvwSOZf6hSR0fmD1SodaUIETbZeBMxjPnwQSMeCotHWWSBPqiZVeqCp/YFwGP/U+4VIBLYoO5PlypAg8KA==}
 
   ollama@0.6.3:
     resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
@@ -7545,7 +7545,7 @@ snapshots:
 
   ohash@2.0.11: {}
 
-  oidc-provider@9.6.1:
+  oidc-provider@9.7.0:
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 15.3.1(koa@3.1.2)
@@ -7557,6 +7557,7 @@ snapshots:
       nanoid: 5.1.6
       quick-lru: 7.3.0
       raw-body: 3.0.2
+      undici: 7.22.0
     transitivePeerDependencies:
       - supports-color
 
