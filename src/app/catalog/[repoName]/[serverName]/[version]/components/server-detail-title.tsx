@@ -10,7 +10,7 @@ interface ServerDetailTitleProps {
 
 export function ServerDetailTitle({ server, version }: ServerDetailTitleProps) {
   const { name, repository } = server;
-  const serverName = name || "Unknown server";
+  const serverName = server.title ?? name ?? "Unknown server name";
   const publisher = repository?.source;
   const type = server.remotes?.[0]?.type;
 

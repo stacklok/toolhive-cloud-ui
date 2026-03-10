@@ -5,7 +5,47 @@ import {
   buildVSCodeDeeplink,
   type McpRemoteConfig,
   type McpStdioConfig,
+  normalizeServerName,
 } from "../client-configs";
+
+describe("normalizeServerName", () => {
+  it("replaces dots and slashes with dashes", () => {
+    expect(
+      normalizeServerName("com.toolhive.k8s.toolhive-mcp/github-proxy"),
+    ).toBe("com-toolhive-k8s-toolhive-mcp-github-proxy");
+  });
+
+  it("leaves a simple name unchanged", () => {
+    expect(normalizeServerName("github")).toBe("github");
+  });
+
+  it("normalizes names with mixed dots and slashes", () => {
+    expect(normalizeServerName("com.gitlab/mcp")).toBe("com-gitlab-mcp");
+    expect(normalizeServerName("com.paypal.mcp/mcp")).toBe(
+      "com-paypal-mcp-mcp",
+    );
+  });
+
+  it("replaces spaces with dashes (e.g. human-readable titles)", () => {
+    expect(normalizeServerName("MCP GITHUB")).toBe("MCP-GITHUB");
+    expect(normalizeServerName("My MCP Server")).toBe("My-MCP-Server");
+  });
+
+  it("collapses multiple consecutive dashes into one", () => {
+    expect(normalizeServerName("foo  bar")).toBe("foo-bar");
+    expect(normalizeServerName("foo / bar")).toBe("foo-bar");
+  });
+
+  it("strips leading and trailing dashes", () => {
+    expect(normalizeServerName(" github ")).toBe("github");
+    expect(normalizeServerName("/github/")).toBe("github");
+  });
+
+  it("replaces dots, slashes, and other invalid characters with dashes", () => {
+    expect(normalizeServerName("mcp@github!server")).toBe("mcp-github-server");
+    expect(normalizeServerName("io.github.myorg")).toBe("io-github-myorg");
+  });
+});
 
 describe("client-configs", () => {
   describe("stdio config", () => {

@@ -10,11 +10,7 @@ test.describe("Catalog page", () => {
       authenticatedPage.getByRole("heading", { name: "MCP Server Catalog" }),
     ).toBeVisible();
 
-    await expect(
-      authenticatedPage.getByText("awslabs/aws-nova-canvas"),
-    ).toBeVisible();
-    await expect(
-      authenticatedPage.getByText("github/mcp-github"),
-    ).toBeVisible();
+    await expect(authenticatedPage.getByText("AWS Nova Canvas")).toBeVisible();
+    await expect(authenticatedPage.getByText("GitHub API")).toBeVisible();
   });
 });

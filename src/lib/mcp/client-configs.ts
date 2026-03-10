@@ -42,6 +42,23 @@ export function isStdioConfig(
 }
 
 /**
+ * Normalizes an MCP server name for use in client configurations.
+ *
+ * Valid characters are alphanumeric, dots, hyphens, and underscores.
+ * This handles:
+ * - Kubernetes reverse DNS names (e.g. "com.toolhive.k8s/github-proxy")
+ * - Human-readable titles (e.g. "MCP GitHub" → "MCP-GitHub")
+ * - Any other characters replaced with "-", consecutive hyphens collapsed,
+ *   and leading/trailing hyphens stripped.
+ */
+export function normalizeServerName(name: string): string {
+  return name
+    .replace(/[^a-zA-Z0-9_-]/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
  * Client-specific configuration generators
  */
 

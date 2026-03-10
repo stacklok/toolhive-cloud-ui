@@ -60,8 +60,8 @@ describe("ServersWrapper", () => {
       <ServersWrapper servers={mockServers} registries={mockRegistries} />,
     );
 
-    expect(screen.getByText("aws-nova-canvas")).toBeVisible();
-    expect(screen.getByText("google-applications")).toBeVisible();
+    expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
+    expect(screen.getByText("Google Applications")).toBeVisible();
   });
 
   it("switches to list mode when list button is clicked", async () => {
@@ -75,7 +75,7 @@ describe("ServersWrapper", () => {
     await waitFor(() => {
       expect(screen.getByText("Server")).toBeVisible();
       expect(screen.getByText("About")).toBeVisible();
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
     });
   });
 
@@ -89,7 +89,7 @@ describe("ServersWrapper", () => {
     await user.click(screen.getByLabelText("Grid view"));
 
     await waitFor(() => {
-      expect(screen.getByText("aws-nova-canvas")).toBeVisible();
+      expect(screen.getByText("AWS Nova Canvas")).toBeVisible();
       expect(screen.queryByText("Server")).not.toBeInTheDocument();
     });
   });
