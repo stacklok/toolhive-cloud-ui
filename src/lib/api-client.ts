@@ -19,6 +19,7 @@ import { createClient, createConfig } from "@/generated/client";
 import * as apiServices from "@/generated/sdk.gen";
 import { auth } from "./auth/auth";
 import { OIDC_PROVIDER_ID } from "./auth/constants";
+import { isTokenNearExpiry } from "./auth/utils";
 
 const MOCK_SCENARIO_COOKIE = "mock-scenario";
 const MOCK_SCENARIO_HEADER = "X-Mock-Scenario";
@@ -61,10 +62,44 @@ export async function getAuthenticatedClient(accessToken?: string) {
       redirect("/signin");
     }
 
-    const tokenData = await auth.api.getAccessToken({
-      headers: requestHeaders,
-      body: { providerId: OIDC_PROVIDER_ID },
-    });
+    // cookies().set() is NOT allowed from getAuthenticatedClient() — this
+    // function is always called from within a Server Component render, even
+    // when that render happens as part of a Server Action POST response.
+    // Next.js only permits cookies().set() in the *direct* handler of a
+    // Server Action (i.e. the "use server" function invoked by the Client
+    // Component), not in Server Components rendered as part of the response.
+    //
+    // Strategy: if the token is near expiry, redirect to the token-refresh
+    // Route Handler which CAN write cookies via the HTTP response (it performs
+    // the OIDC refresh and saves the rotated refresh token R2), then redirects
+    // back. If the token is fresh, call getAccessToken() directly — Better Auth
+    // won't refresh (its threshold is 5s), so no Set-Cookie is produced.
+    const nearExpiry = await isTokenNearExpiry();
+
+    if (nearExpiry) {
+      const currentPath = requestHeaders.get("x-url") || "/catalog";
+      console.log(
+        `[API Client] token near expiry, redirecting to token-refresh | path=${currentPath}`,
+      );
+      redirect(
+        `/api/auth/token-refresh?redirect=${encodeURIComponent(currentPath)}`,
+      );
+    }
+
+    let tokenData: {
+      accessToken?: string;
+      accessTokenExpiresAt?: string;
+    } | null = null;
+    try {
+      tokenData = (await auth.api.getAccessToken({
+        headers: requestHeaders,
+        body: { providerId: OIDC_PROVIDER_ID },
+      })) as { accessToken?: string; accessTokenExpiresAt?: string };
+    } catch (err) {
+      console.error("[API Client] getAccessToken threw:", err);
+      redirect("/signin");
+    }
+
     if (!tokenData?.accessToken) {
       console.log("[API Client] token not found, redirecting to signin");
       redirect("/signin");

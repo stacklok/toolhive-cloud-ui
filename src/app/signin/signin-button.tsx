@@ -14,6 +14,15 @@ export function SignInButton({ providerId }: { providerId: string }) {
   const handleOIDCSignIn = async () => {
     setIsLoading(true);
     try {
+      // Clear any stale cookies/session before starting a new OAuth flow.
+      // When the app redirects to /signin due to an expired or invalid token,
+      // Better Auth cookies may still be present with stale data. Signing out
+      // first ensures a clean state and prevents the new OAuth flow from
+      // inheriting the stale account_data cookie.
+      // Better Auth client methods return { data, error } and don't throw,
+      // so no error handling is needed here.
+      await authClient.signOut();
+
       const { error } = await authClient.signIn.oauth2({
         providerId,
         callbackURL: "/catalog",

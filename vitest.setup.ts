@@ -96,12 +96,12 @@ vi.mock("@/lib/auth/auth-client", () => ({
     signIn: {
       oauth2: vi.fn(),
     },
-    signOut: vi.fn(),
+    signOut: vi.fn().mockResolvedValue({ data: null, error: null }),
   },
   signIn: {
     oauth2: vi.fn(),
   },
-  signOut: vi.fn(),
+  signOut: vi.fn().mockResolvedValue({ data: null, error: null }),
   useSession: vi.fn(),
 }));
 
