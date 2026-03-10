@@ -9,6 +9,9 @@ import type {
   DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
   DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
   DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
+  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
+  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
+  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameResponses,
@@ -32,6 +35,18 @@ import type {
   GetRegistryByRegistryNameV01ServersData,
   GetRegistryByRegistryNameV01ServersErrors,
   GetRegistryByRegistryNameV01ServersResponses,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameData,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameErrors,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponses,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsData,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsErrors,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponses,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsData,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
   GetRegistryV01ServersByServerNameVersionsByVersionData,
   GetRegistryV01ServersByServerNameVersionsByVersionErrors,
   GetRegistryV01ServersByServerNameVersionsByVersionResponses,
@@ -46,6 +61,9 @@ import type {
   PostByRegistryNameV01PublishData,
   PostByRegistryNameV01PublishErrors,
   PostByRegistryNameV01PublishResponses,
+  PostRegistryByRegistryNameV01xDevToolhiveSkillsData,
+  PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
+  PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
   PutExtensionV0RegistriesByRegistryNameData,
@@ -407,6 +425,165 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
     >({
       security: [{ name: "Authorization", type: "apiKey" }],
       url: "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+/**
+ * List skills in registry
+ *
+ * List skills in a registry (paginated, latest versions).
+ */
+export const getRegistryByRegistryNameV01xDevToolhiveSkills = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).get<
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Publish skill
+ *
+ * Publish a skill version to the registry.
+ */
+export const postRegistryByRegistryNameV01xDevToolhiveSkills = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    PostRegistryByRegistryNameV01xDevToolhiveSkillsData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).post<
+    PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
+    PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get latest skill version
+ *
+ * Get the latest version of a skill by namespace and name.
+ */
+export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByName = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).get<
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponses,
+    GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameErrors,
+    ThrowOnError
+  >({
+    security: [{ name: "Authorization", type: "apiKey" }],
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List skill versions
+ *
+ * List all versions of a skill.
+ */
+export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersions =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsData,
+      ThrowOnError
+    >,
+  ) =>
+    (options.client ?? client).get<
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponses,
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsErrors,
+      ThrowOnError
+    >({
+      security: [{ name: "Authorization", type: "apiKey" }],
+      url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+/**
+ * Delete skill version
+ *
+ * Delete a specific version of a skill from the registry.
+ */
+export const deleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersion =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
+      ThrowOnError
+    >,
+  ) =>
+    (options.client ?? client).delete<
+      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
+      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
+      ThrowOnError
+    >({
+      security: [{ name: "Authorization", type: "apiKey" }],
+      url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions/{version}",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+/**
+ * Get specific skill version
+ *
+ * Get a specific version of a skill.
+ */
+export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersion =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
+      ThrowOnError
+    >,
+  ) =>
+    (options.client ?? client).get<
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
+      GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
+      ThrowOnError
+    >({
+      security: [{ name: "Authorization", type: "apiKey" }],
+      url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions/{version}",
       ...options,
       headers: {
         "Content-Type": "application/json",
