@@ -108,8 +108,9 @@ export const auth: Auth<BetterAuthOptions> = betterAuth({
           clientSecret: OIDC_CLIENT_SECRET,
           scopes: OIDC_SCOPES,
           pkce: true,
-          getUserInfo: (tokens) =>
-            getUserInfoFromTokens(tokens, OIDC_DISCOVERY_URL),
+          getUserInfo: (tokens) => {
+            return getUserInfoFromTokens(tokens, OIDC_DISCOVERY_URL);
+          },
         },
       ],
     }),

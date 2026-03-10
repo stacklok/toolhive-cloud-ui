@@ -2,7 +2,69 @@
  * Utility functions for authentication and token management.
  */
 
+import { symmetricDecodeJWT } from "better-auth/crypto";
+import { cookies } from "next/headers";
+import { BETTER_AUTH_SECRET } from "./constants";
 import type { OidcUserInfo } from "./types";
+
+// ============================================================================
+// Token Expiry Check (for Server Component context)
+// ============================================================================
+
+/**
+ * Checks whether the stored OIDC access token is near expiry.
+ *
+ * Decodes the Better Auth `account_data` JWE cookie to read `accessTokenExpiresAt`
+ * and returns `true` if the token expires within the given margin.
+ *
+ * Used by `getAuthenticatedClient()` in Server Component context to decide
+ * whether to preemptively redirect to `/api/auth/token-refresh` before Better
+ * Auth's 5-second refresh threshold is reached. This ensures the rotated
+ * refresh token (R2) is saved properly — Server Components cannot write cookies,
+ * so the refresh + cookie save must happen in a Route Handler.
+ *
+ * @param marginMs - How far in advance to consider the token "near expiry" (default 30s)
+ * @returns `true` if the token is near expiry, expired, or the cookie cannot be decoded
+ */
+export async function isTokenNearExpiry(marginMs = 30_000): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+
+    // Better Auth may chunk large cookies as account_data.0, account_data.1, etc.
+    const chunks = allCookies
+      .filter(
+        (c) =>
+          c.name === "better-auth.account_data" ||
+          c.name.startsWith("better-auth.account_data."),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((c) => c.value)
+      .join("");
+
+    if (!chunks) return true; // No cookie → treat as expired
+
+    const decoded = await symmetricDecodeJWT(
+      chunks,
+      BETTER_AUTH_SECRET,
+      "better-auth-account",
+    );
+
+    if (!decoded || typeof decoded !== "object") return true;
+
+    const account = decoded as Record<string, unknown>;
+    if (!account.accessTokenExpiresAt) return true;
+
+    const expiresAt = new Date(
+      account.accessTokenExpiresAt as string,
+    ).getTime();
+    return expiresAt - Date.now() < marginMs;
+  } catch {
+    // JWE decode failed (corrupted cookie, secret mismatch, etc.)
+    // Treat as near-expiry so the Route Handler re-establishes a valid state.
+    return true;
+  }
+}
 
 // ============================================================================
 // User Info Extraction (for Azure AD compatibility)

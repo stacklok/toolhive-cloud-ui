@@ -108,6 +108,31 @@ describe("SignInPage", () => {
     });
   });
 
+  test("calls signOut before signIn.oauth2 to clear stale session", async () => {
+    const user = userEvent.setup();
+    const callOrder: string[] = [];
+    vi.mocked(authClient.signOut).mockImplementation(async () => {
+      callOrder.push("signOut");
+      return { data: null, error: null };
+    });
+    vi.mocked(authClient.signIn.oauth2).mockImplementation(async () => {
+      callOrder.push("signIn");
+      return {
+        data: { url: "http://example.com", redirect: true },
+        error: null,
+      };
+    });
+
+    render(<SignInPage />);
+    await user.click(screen.getByRole("button", { name: /Oidc/i }));
+
+    await waitFor(() => {
+      expect(authClient.signOut).toHaveBeenCalledOnce();
+      expect(authClient.signIn.oauth2).toHaveBeenCalledOnce();
+      expect(callOrder).toEqual(["signOut", "signIn"]);
+    });
+  });
+
   test("signin with okta provider", async () => {
     const user = userEvent.setup();
     vi.mocked(authClient.signIn.oauth2).mockResolvedValue({

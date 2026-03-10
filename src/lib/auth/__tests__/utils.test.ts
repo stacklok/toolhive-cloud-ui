@@ -1,7 +1,108 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+// Hoisted mocks — must be defined before any imports
+const mockGetAll = vi.hoisted(() => vi.fn());
+const mockSymmetricDecodeJWT = vi.hoisted(() => vi.fn());
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(() => Promise.resolve({ getAll: mockGetAll })),
+  headers: vi.fn(() => Promise.resolve(new Headers())),
+}));
+
+vi.mock("better-auth/crypto", () => ({
+  symmetricDecodeJWT: mockSymmetricDecodeJWT,
+}));
+
 // Import after mocks
-import { getUserInfoFromIdToken, getUserInfoFromTokens } from "../utils";
+import {
+  getUserInfoFromIdToken,
+  getUserInfoFromTokens,
+  isTokenNearExpiry,
+} from "../utils";
+
+describe("isTokenNearExpiry", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetAll.mockReturnValue([]);
+  });
+
+  it("returns true when no account_data cookie exists", async () => {
+    expect(await isTokenNearExpiry()).toBe(true);
+  });
+
+  it("returns true when JWE decode fails", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "invalid-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockRejectedValue(new Error("Decode failed"));
+    expect(await isTokenNearExpiry()).toBe(true);
+  });
+
+  it("returns true when decoded payload has no accessTokenExpiresAt", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({ userId: "123" });
+    expect(await isTokenNearExpiry()).toBe(true);
+  });
+
+  it("returns true when token is already expired", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() - 5_000).toISOString(),
+    });
+    expect(await isTokenNearExpiry()).toBe(true);
+  });
+
+  it("returns true when token expires within the default 30s margin", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 10_000).toISOString(),
+    });
+    expect(await isTokenNearExpiry()).toBe(true);
+  });
+
+  it("returns false when token expires beyond the default 30s margin", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+    expect(await isTokenNearExpiry()).toBe(false);
+  });
+
+  it("respects a custom margin", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 15_000).toISOString(),
+    });
+    expect(await isTokenNearExpiry(10_000)).toBe(false); // 15s > 10s margin
+    expect(await isTokenNearExpiry(20_000)).toBe(true); // 15s < 20s margin
+  });
+
+  it("concatenates chunked cookies in sorted order", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "better-auth.account_data.1", value: "chunk-b" },
+      { name: "better-auth.account_data.0", value: "chunk-a" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+    await isTokenNearExpiry();
+    expect(mockSymmetricDecodeJWT).toHaveBeenCalledWith(
+      "chunk-achunk-b",
+      expect.any(String),
+      "better-auth-account",
+    );
+  });
+});
 
 describe("utils", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
