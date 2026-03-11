@@ -1,7 +1,9 @@
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
-import { OIDC_PROVIDER_ID } from "@/lib/auth/constants";
+import { BASE_URL, OIDC_PROVIDER_ID } from "@/lib/auth/constants";
+
+const BASE_ORIGIN = new URL(BASE_URL).origin;
 
 /**
  * Route Handler for preemptive OIDC token refresh.
@@ -26,8 +28,8 @@ export async function GET(request: NextRequest) {
   let safeRedirect = "/catalog";
   if (redirectParam && !redirectParam.startsWith("//")) {
     try {
-      const resolved = new URL(redirectParam, request.url);
-      if (resolved.origin === request.nextUrl.origin) {
+      const resolved = new URL(redirectParam, BASE_URL);
+      if (resolved.origin === BASE_ORIGIN) {
         safeRedirect = resolved.pathname + resolved.search + resolved.hash;
       }
     } catch {
@@ -49,11 +51,11 @@ export async function GET(request: NextRequest) {
         "[TokenRefresh] getAccessToken failed:",
         tokenResponse.status,
       );
-      return NextResponse.redirect(new URL("/signin", request.url));
+      return NextResponse.redirect(new URL("/signin", BASE_URL));
     }
 
     const redirectResponse = NextResponse.redirect(
-      new URL(safeRedirect, request.url),
+      new URL(safeRedirect, BASE_URL),
     );
 
     // Copy Set-Cookie headers from Better Auth's internal response directly
@@ -79,6 +81,6 @@ export async function GET(request: NextRequest) {
     return redirectResponse;
   } catch (err) {
     console.error("[TokenRefresh] Unexpected error:", err);
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/signin", BASE_URL));
   }
 }

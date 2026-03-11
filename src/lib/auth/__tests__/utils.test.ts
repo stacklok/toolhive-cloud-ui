@@ -102,6 +102,32 @@ describe("isTokenNearExpiry", () => {
       "better-auth-account",
     );
   });
+
+  it("reads __Secure- prefixed cookie (production HTTPS)", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "__Secure-better-auth.account_data", value: "some-jwe" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+    expect(await isTokenNearExpiry()).toBe(false);
+  });
+
+  it("concatenates __Secure- prefixed chunked cookies in sorted order", async () => {
+    mockGetAll.mockReturnValue([
+      { name: "__Secure-better-auth.account_data.1", value: "chunk-b" },
+      { name: "__Secure-better-auth.account_data.0", value: "chunk-a" },
+    ]);
+    mockSymmetricDecodeJWT.mockResolvedValue({
+      accessTokenExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+    await isTokenNearExpiry();
+    expect(mockSymmetricDecodeJWT).toHaveBeenCalledWith(
+      "chunk-achunk-b",
+      expect.any(String),
+      "better-auth-account",
+    );
+  });
 });
 
 describe("utils", () => {

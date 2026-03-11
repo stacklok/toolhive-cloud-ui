@@ -34,17 +34,19 @@ export async function isTokenNearExpiry(marginMs = 10_000): Promise<boolean> {
     const allCookies = cookieStore.getAll();
 
     // Better Auth may chunk large cookies as account_data.0, account_data.1, etc.
-    const accountCookies = allCookies.filter(
-      (c) =>
-        c.name === "better-auth.account_data" ||
-        c.name.startsWith("better-auth.account_data."),
-    );
+    // In production (HTTPS), cookies are prefixed with "__Secure-".
+    const ACCOUNT_DATA_BASE = "better-auth.account_data";
+    const normalize = (name: string) => name.replace(/^__Secure-/, "");
+    const accountCookies = allCookies.filter((c) => {
+      const n = normalize(c.name);
+      return n === ACCOUNT_DATA_BASE || n.startsWith(`${ACCOUNT_DATA_BASE}.`);
+    });
 
     const baseCookie = accountCookies.find(
-      (c) => c.name === "better-auth.account_data",
+      (c) => normalize(c.name) === ACCOUNT_DATA_BASE,
     );
     const chunkedCookies = accountCookies.filter((c) =>
-      c.name.startsWith("better-auth.account_data."),
+      normalize(c.name).startsWith(`${ACCOUNT_DATA_BASE}.`),
     );
 
     let jwe: string;
