@@ -245,6 +245,16 @@ export type InternalApiVersionResponse = {
   version?: string;
 };
 
+export type InternalApiXSkillsSkillListMetadata = {
+  count?: number;
+  nextCursor?: string;
+};
+
+export type InternalApiXSkillsSkillListResponse = {
+  metadata?: InternalApiXSkillsSkillListMetadata;
+  skills?: Array<RegistrySkill>;
+};
+
 export type ModelArgument = {
   isRepeated?: boolean;
   name?: string;
@@ -340,6 +350,143 @@ export type ModelTransport = {
   variables?: {
     [key: string]: ModelInput;
   };
+};
+
+export type RegistrySkill = {
+  /**
+   * Meta is an opaque payload with extended meta data details of the skill.
+   */
+  _meta?: {
+    [key: string]: unknown;
+  };
+  /**
+   * AllowedTools is the list of tools that the skill is compatible with.
+   * This is experimental.
+   */
+  allowedTools?: Array<string>;
+  /**
+   * Compatibility is the environment requirements of the skill.
+   */
+  compatibility?: string;
+  /**
+   * Description is the description of the skill.
+   */
+  description?: string;
+  /**
+   * Icons is the list of icons for the skill.
+   */
+  icons?: Array<RegistrySkillIcon>;
+  /**
+   * License is the SPDX license identifier of the skill.
+   */
+  license?: string;
+  /**
+   * Metadata is the official metadata of the skill as reported in the
+   * SKILL.md file.
+   */
+  metadata?: {
+    [key: string]: unknown;
+  };
+  /**
+   * Name is the name of the skill.
+   * The format is that of identifiers, e.g. "my-skill".
+   */
+  name?: string;
+  /**
+   * Namespace is the namespace of the skill.
+   * The format is reverse-DNS, e.g. "io.github.user".
+   */
+  namespace?: string;
+  /**
+   * Packages is the list of packages for the skill.
+   */
+  packages?: Array<RegistrySkillPackage>;
+  repository?: RegistrySkillRepository;
+  /**
+   * Status is the status of the skill.
+   * Can be one of "active", "deprecated", or "archived".
+   */
+  status?: string;
+  /**
+   * Title is the title of the skill.
+   * This is for human consumption, not an identifier.
+   */
+  title?: string;
+  /**
+   * Version is the version of the skill.
+   * Any non-empty string is valid, but ideally it should be either a
+   * semantic version or a commit hash.
+   */
+  version?: string;
+};
+
+export type RegistrySkillIcon = {
+  /**
+   * Label is the label of the icon.
+   */
+  label?: string;
+  /**
+   * Size is the size of the icon.
+   */
+  size?: string;
+  /**
+   * Src is the source of the icon.
+   */
+  src?: string;
+  /**
+   * Type is the type of the icon.
+   */
+  type?: string;
+};
+
+export type RegistrySkillPackage = {
+  /**
+   * Commit is the commit of the package.
+   */
+  commit?: string;
+  /**
+   * Digest is the digest of the package.
+   */
+  digest?: string;
+  /**
+   * Identifier is the OCI identifier of the package.
+   */
+  identifier?: string;
+  /**
+   * MediaType is the media type of the package.
+   */
+  mediaType?: string;
+  /**
+   * Ref is the reference of the package.
+   */
+  ref?: string;
+  /**
+   * RegistryType is the type of registry the package is from.
+   * Can be "oci" or "git".
+   */
+  registryType?: string;
+  /**
+   * Subfolder is the subfolder of the package.
+   */
+  subfolder?: string;
+  /**
+   * URL is the URL of the package.
+   */
+  url?: string;
+};
+
+/**
+ * Repository is the source repository of the skill.
+ */
+export type RegistrySkillRepository = {
+  /**
+   * Type is the type of the repository.
+   */
+  type?: string;
+  /**
+   * URL is the URL of the repository.
+   */
+  url?: string;
 };
 
 export type V0Metadata = {
@@ -1122,6 +1269,386 @@ export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResp
 
 export type GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponse =
   GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses[keyof GetRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry name
+     */
+    registryName: string;
+  };
+  query?: {
+    /**
+     * Filter by name/description substring
+     */
+    search?: string;
+    /**
+     * Filter by status (comma-separated, e.g. active,deprecated)
+     */
+    status?: string;
+    /**
+     * Max results (default 50, max 100)
+     */
+    limit?: number;
+    /**
+     * Pagination cursor
+     */
+    cursor?: string;
+  };
+  url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills";
+};
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+};
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsError =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses = {
+  /**
+   * List of skills
+   */
+  200: InternalApiXSkillsSkillListResponse;
+};
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsResponse =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses];
+
+export type PostRegistryByRegistryNameV01xDevToolhiveSkillsData = {
+  /**
+   * Skill data
+   */
+  body:
+    | {
+        [key: string]: unknown;
+      }
+    | RegistrySkill;
+  path: {
+    /**
+     * Registry name
+     */
+    registryName: string;
+  };
+  query?: never;
+  url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills";
+};
+
+export type PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    [key: string]: string;
+  };
+  /**
+   * Not a managed registry
+   */
+  403: {
+    [key: string]: string;
+  };
+  /**
+   * Version already exists
+   */
+  409: {
+    [key: string]: string;
+  };
+  /**
+   * Internal server error
+   */
+  500: {
+    [key: string]: string;
+  };
+};
+
+export type PostRegistryByRegistryNameV01xDevToolhiveSkillsError =
+  PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors[keyof PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors];
+
+export type PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses = {
+  /**
+   * Created
+   */
+  201: RegistrySkill;
+};
+
+export type PostRegistryByRegistryNameV01xDevToolhiveSkillsResponse =
+  PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses[keyof PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameData =
+  {
+    body?: {
+      [key: string]: unknown;
+    };
+    path: {
+      /**
+       * Registry name
+       */
+      registryName: string;
+      /**
+       * Skill namespace (reverse-DNS)
+       */
+      namespace: string;
+      /**
+       * Skill name
+       */
+      name: string;
+    };
+    query?: never;
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}";
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Skill not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameError =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameErrors[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameErrors];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponses =
+  {
+    /**
+     * Skill details
+     */
+    200: RegistrySkill;
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponse =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponses[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameResponses];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsData =
+  {
+    body?: {
+      [key: string]: unknown;
+    };
+    path: {
+      /**
+       * Registry name
+       */
+      registryName: string;
+      /**
+       * Skill namespace (reverse-DNS)
+       */
+      namespace: string;
+      /**
+       * Skill name
+       */
+      name: string;
+    };
+    query?: never;
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions";
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Skill not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsError =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsErrors[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsErrors];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponses =
+  {
+    /**
+     * List of skill versions
+     */
+    200: InternalApiXSkillsSkillListResponse;
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponse =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponses[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsResponses];
+
+export type DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData =
+  {
+    body?: {
+      [key: string]: unknown;
+    };
+    path: {
+      /**
+       * Registry name
+       */
+      registryName: string;
+      /**
+       * Skill namespace (reverse-DNS)
+       */
+      namespace: string;
+      /**
+       * Skill name
+       */
+      name: string;
+      /**
+       * Skill version
+       */
+      version: string;
+    };
+    query?: never;
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions/{version}";
+  };
+
+export type DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Unauthorized
+     */
+    401: {
+      [key: string]: string;
+    };
+    /**
+     * Not a managed registry
+     */
+    403: {
+      [key: string]: string;
+    };
+    /**
+     * Skill version not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionError =
+  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors[keyof DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors];
+
+export type DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses =
+  {
+    /**
+     * No content
+     */
+    204: void;
+  };
+
+export type DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponse =
+  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses[keyof DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData =
+  {
+    body?: {
+      [key: string]: unknown;
+    };
+    path: {
+      /**
+       * Registry name
+       */
+      registryName: string;
+      /**
+       * Skill namespace (reverse-DNS)
+       */
+      namespace: string;
+      /**
+       * Skill name
+       */
+      name: string;
+      /**
+       * Skill version
+       */
+      version: string;
+    };
+    query?: never;
+    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions/{version}";
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors =
+  {
+    /**
+     * Bad request
+     */
+    400: {
+      [key: string]: string;
+    };
+    /**
+     * Skill or version not found
+     */
+    404: {
+      [key: string]: string;
+    };
+    /**
+     * Internal server error
+     */
+    500: {
+      [key: string]: string;
+    };
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionError =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors];
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses =
+  {
+    /**
+     * Skill details
+     */
+    200: RegistrySkill;
+  };
+
+export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponse =
+  GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses];
 
 export type GetVersionData = {
   body?: never;
