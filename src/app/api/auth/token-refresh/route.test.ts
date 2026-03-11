@@ -15,8 +15,6 @@ vi.mock("@/lib/auth/auth", () => ({
   },
 }));
 
-// BASE_URL defaults to "http://localhost:3000" in test (no BETTER_AUTH_URL set)
-
 const INTERNAL_URL = "http://0.0.0.0:3000/api/auth/token-refresh";
 
 function makeRequest(path = INTERNAL_URL) {
