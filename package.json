@@ -114,6 +114,7 @@
   },
   "pnpm": {
     "overrides": {
+      "express-rate-limit": ">=8.2.2",
       "lodash": ">=4.17.23",
       "lodash-es": ">=4.17.23",
       "hono": "4.12.7",
