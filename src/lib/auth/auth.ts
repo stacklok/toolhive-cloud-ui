@@ -1,4 +1,4 @@
-import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
+import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import {
   BASE_URL,
@@ -63,7 +63,7 @@ export async function getOidcDiscovery(): Promise<OidcDiscoveryResponse | null> 
 // Better Auth Configuration
 // ============================================================================
 
-export const auth: Auth<BetterAuthOptions> = betterAuth({
+export const auth = betterAuth({
   debug: !IS_PRODUCTION,
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
