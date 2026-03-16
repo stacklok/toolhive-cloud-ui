@@ -12,6 +12,12 @@ import type {
   DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
   DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
   DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
+  DeleteV1EntriesByTypeByNameVersionsByVersionData,
+  DeleteV1EntriesByTypeByNameVersionsByVersionErrors,
+  DeleteV1RegistriesByNameData,
+  DeleteV1RegistriesByNameErrors,
+  DeleteV1SourcesByNameData,
+  DeleteV1SourcesByNameErrors,
   GetExtensionV0RegistriesByRegistryNameData,
   GetExtensionV0RegistriesByRegistryNameErrors,
   GetExtensionV0RegistriesByRegistryNameResponses,
@@ -56,6 +62,18 @@ import type {
   GetRegistryV01ServersData,
   GetRegistryV01ServersErrors,
   GetRegistryV01ServersResponses,
+  GetV1RegistriesByNameData,
+  GetV1RegistriesByNameEntriesData,
+  GetV1RegistriesByNameEntriesErrors,
+  GetV1RegistriesByNameErrors,
+  GetV1RegistriesData,
+  GetV1RegistriesErrors,
+  GetV1SourcesByNameData,
+  GetV1SourcesByNameEntriesData,
+  GetV1SourcesByNameEntriesErrors,
+  GetV1SourcesByNameErrors,
+  GetV1SourcesData,
+  GetV1SourcesErrors,
   GetVersionData,
   GetVersionResponses,
   PostByRegistryNameV01PublishData,
@@ -66,9 +84,17 @@ import type {
   PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
   PostRegistryV01PublishData,
   PostRegistryV01PublishErrors,
+  PostV1EntriesData,
+  PostV1EntriesErrors,
   PutExtensionV0RegistriesByRegistryNameData,
   PutExtensionV0RegistriesByRegistryNameErrors,
   PutExtensionV0RegistriesByRegistryNameResponses,
+  PutV1EntriesByTypeByNameClaimsData,
+  PutV1EntriesByTypeByNameClaimsErrors,
+  PutV1RegistriesByNameData,
+  PutV1RegistriesByNameErrors,
+  PutV1SourcesByNameData,
+  PutV1SourcesByNameErrors,
 } from "./types.gen";
 
 export type Options<
@@ -590,6 +616,278 @@ export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVers
         ...options.headers,
       },
     });
+
+/**
+ * Publish entry
+ *
+ * Publish a new entry
+ */
+export const postV1Entries = <ThrowOnError extends boolean = false>(
+  options?: Options<PostV1EntriesData, ThrowOnError>,
+) =>
+  (options?.client ?? client).post<unknown, PostV1EntriesErrors, ThrowOnError>({
+    url: "/v1/entries",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    },
+  });
+
+/**
+ * Update entry claims
+ *
+ * Update claims for a published entry name
+ */
+export const putV1EntriesByTypeByNameClaims = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PutV1EntriesByTypeByNameClaimsData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    unknown,
+    PutV1EntriesByTypeByNameClaimsErrors,
+    ThrowOnError
+  >({
+    url: "/v1/entries/{type}/{name}/claims",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Delete published entry
+ *
+ * Delete a published entry version
+ */
+export const deleteV1EntriesByTypeByNameVersionsByVersion = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    DeleteV1EntriesByTypeByNameVersionsByVersionData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).delete<
+    unknown,
+    DeleteV1EntriesByTypeByNameVersionsByVersionErrors,
+    ThrowOnError
+  >({
+    url: "/v1/entries/{type}/{name}/versions/{version}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List registries
+ *
+ * List all registries
+ */
+export const getV1Registries = <ThrowOnError extends boolean = false>(
+  options?: Options<GetV1RegistriesData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<unknown, GetV1RegistriesErrors, ThrowOnError>(
+    {
+      url: "/v1/registries",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      },
+    },
+  );
+
+/**
+ * Delete registry
+ *
+ * Delete a registry by name
+ */
+export const deleteV1RegistriesByName = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteV1RegistriesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    unknown,
+    DeleteV1RegistriesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/registries/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get registry
+ *
+ * Get a registry by name
+ */
+export const getV1RegistriesByName = <ThrowOnError extends boolean = false>(
+  options: Options<GetV1RegistriesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    unknown,
+    GetV1RegistriesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/registries/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Create or update registry
+ *
+ * Create a new registry or update an existing one
+ */
+export const putV1RegistriesByName = <ThrowOnError extends boolean = false>(
+  options: Options<PutV1RegistriesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    unknown,
+    PutV1RegistriesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/registries/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List registry entries
+ *
+ * List all entries for a registry
+ */
+export const getV1RegistriesByNameEntries = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetV1RegistriesByNameEntriesData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    unknown,
+    GetV1RegistriesByNameEntriesErrors,
+    ThrowOnError
+  >({
+    url: "/v1/registries/{name}/entries",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List sources
+ *
+ * List all sources
+ */
+export const getV1Sources = <ThrowOnError extends boolean = false>(
+  options?: Options<GetV1SourcesData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<unknown, GetV1SourcesErrors, ThrowOnError>({
+    url: "/v1/sources",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    },
+  });
+
+/**
+ * Delete source
+ *
+ * Delete a source by name
+ */
+export const deleteV1SourcesByName = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteV1SourcesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    unknown,
+    DeleteV1SourcesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/sources/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get source
+ *
+ * Get a source by name
+ */
+export const getV1SourcesByName = <ThrowOnError extends boolean = false>(
+  options: Options<GetV1SourcesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    unknown,
+    GetV1SourcesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/sources/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Create or update source
+ *
+ * Create a new source or update an existing one
+ */
+export const putV1SourcesByName = <ThrowOnError extends boolean = false>(
+  options: Options<PutV1SourcesByNameData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    unknown,
+    PutV1SourcesByNameErrors,
+    ThrowOnError
+  >({
+    url: "/v1/sources/{name}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List source entries
+ *
+ * List all entries for a source
+ */
+export const getV1SourcesByNameEntries = <ThrowOnError extends boolean = false>(
+  options: Options<GetV1SourcesByNameEntriesData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    unknown,
+    GetV1SourcesByNameEntriesErrors,
+    ThrowOnError
+  >({
+    url: "/v1/sources/{name}/entries",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * Version information

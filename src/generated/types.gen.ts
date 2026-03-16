@@ -1650,6 +1650,399 @@ export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersi
 export type GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponse =
   GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses[keyof GetRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses];
 
+export type PostV1EntriesData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: "/v1/entries";
+};
+
+export type PostV1EntriesErrors = {
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type PostV1EntriesError = PostV1EntriesErrors[keyof PostV1EntriesErrors];
+
+export type PutV1EntriesByTypeByNameClaimsData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Entry Type (server or skill)
+     */
+    type: string;
+    /**
+     * Entry Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/entries/{type}/{name}/claims";
+};
+
+export type PutV1EntriesByTypeByNameClaimsErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type PutV1EntriesByTypeByNameClaimsError =
+  PutV1EntriesByTypeByNameClaimsErrors[keyof PutV1EntriesByTypeByNameClaimsErrors];
+
+export type DeleteV1EntriesByTypeByNameVersionsByVersionData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Entry Type (server or skill)
+     */
+    type: string;
+    /**
+     * Entry Name
+     */
+    name: string;
+    /**
+     * Version
+     */
+    version: string;
+  };
+  query?: never;
+  url: "/v1/entries/{type}/{name}/versions/{version}";
+};
+
+export type DeleteV1EntriesByTypeByNameVersionsByVersionErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type DeleteV1EntriesByTypeByNameVersionsByVersionError =
+  DeleteV1EntriesByTypeByNameVersionsByVersionErrors[keyof DeleteV1EntriesByTypeByNameVersionsByVersionErrors];
+
+export type GetV1RegistriesData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: "/v1/registries";
+};
+
+export type GetV1RegistriesErrors = {
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1RegistriesError =
+  GetV1RegistriesErrors[keyof GetV1RegistriesErrors];
+
+export type DeleteV1RegistriesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/registries/{name}";
+};
+
+export type DeleteV1RegistriesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type DeleteV1RegistriesByNameError =
+  DeleteV1RegistriesByNameErrors[keyof DeleteV1RegistriesByNameErrors];
+
+export type GetV1RegistriesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/registries/{name}";
+};
+
+export type GetV1RegistriesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1RegistriesByNameError =
+  GetV1RegistriesByNameErrors[keyof GetV1RegistriesByNameErrors];
+
+export type PutV1RegistriesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/registries/{name}";
+};
+
+export type PutV1RegistriesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type PutV1RegistriesByNameError =
+  PutV1RegistriesByNameErrors[keyof PutV1RegistriesByNameErrors];
+
+export type GetV1RegistriesByNameEntriesData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Registry Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/registries/{name}/entries";
+};
+
+export type GetV1RegistriesByNameEntriesErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1RegistriesByNameEntriesError =
+  GetV1RegistriesByNameEntriesErrors[keyof GetV1RegistriesByNameEntriesErrors];
+
+export type GetV1SourcesData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: "/v1/sources";
+};
+
+export type GetV1SourcesErrors = {
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1SourcesError = GetV1SourcesErrors[keyof GetV1SourcesErrors];
+
+export type DeleteV1SourcesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Source Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/sources/{name}";
+};
+
+export type DeleteV1SourcesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type DeleteV1SourcesByNameError =
+  DeleteV1SourcesByNameErrors[keyof DeleteV1SourcesByNameErrors];
+
+export type GetV1SourcesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Source Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/sources/{name}";
+};
+
+export type GetV1SourcesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1SourcesByNameError =
+  GetV1SourcesByNameErrors[keyof GetV1SourcesByNameErrors];
+
+export type PutV1SourcesByNameData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Source Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/sources/{name}";
+};
+
+export type PutV1SourcesByNameErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type PutV1SourcesByNameError =
+  PutV1SourcesByNameErrors[keyof PutV1SourcesByNameErrors];
+
+export type GetV1SourcesByNameEntriesData = {
+  body?: {
+    [key: string]: unknown;
+  };
+  path: {
+    /**
+     * Source Name
+     */
+    name: string;
+  };
+  query?: never;
+  url: "/v1/sources/{name}/entries";
+};
+
+export type GetV1SourcesByNameEntriesErrors = {
+  /**
+   * Bad request
+   */
+  400: {
+    [key: string]: string;
+  };
+  /**
+   * Not implemented
+   */
+  501: {
+    [key: string]: string;
+  };
+};
+
+export type GetV1SourcesByNameEntriesError =
+  GetV1SourcesByNameEntriesErrors[keyof GetV1SourcesByNameEntriesErrors];
+
 export type GetVersionData = {
   body?: never;
   path?: never;
