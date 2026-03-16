@@ -31,5 +31,8 @@ export function parseStacklokMeta(server: V0ServerJson) {
     server._meta?.["io.modelcontextprotocol.registry/publisher-provided"]?.[
       "io.github.stacklok"
     ];
+
+  if (!raw) return null;
+
   return stacklokMetaSchema.safeParse(raw);
 }
