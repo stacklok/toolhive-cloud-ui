@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { JSONSchemaFaker as jsf } from "json-schema-faker";
+import { createGenerator } from "json-schema-faker";
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
 import type { AutoAPIMockInstance } from "./autoAPIMock";
@@ -24,27 +24,15 @@ const FIXTURE_EXT = "ts";
 // Load OpenAPI JSON (resolveJsonModule is enabled in tsconfig)
 import openapi from "../../swagger.json";
 
-// json-schema-faker options
-jsf.option({ alwaysFakeOptionals: true });
-jsf.option({ fillProperties: true });
-jsf.option({ minItems: 1 });
-jsf.option({ maxItems: 3 });
-jsf.option({ failOnInvalidTypes: false });
-jsf.option({ failOnInvalidFormat: false });
-
-// Prefer example/default values when present to get recognizable data
-type JsfOptionCarrier = {
-  option: (opts: {
-    useExamplesValue?: boolean;
-    useDefaultValue?: boolean;
-  }) => unknown;
-};
-try {
-  (jsf as unknown as JsfOptionCarrier).option({ useExamplesValue: true });
-  (jsf as unknown as JsfOptionCarrier).option({ useDefaultValue: true });
-} catch {
-  // ignore if not supported by the installed jsf version
-}
+const jsf = createGenerator({
+  alwaysFakeOptionals: true,
+  fillProperties: true,
+  minItems: 1,
+  maxItems: 3,
+  failOnInvalidTypes: false,
+  useExamplesValue: true,
+  useDefaultValue: true,
+});
 
 function toFileSafe(s: string): string {
   return s.replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
@@ -416,7 +404,7 @@ export function autoGenerateHandlers() {
                       "Unresolved $ref remains after dereferencing passes",
                     );
                   }
-                  const generated = jsf.generate(
+                  const generated = await jsf.generate(
                     resolved as Parameters<typeof jsf.generate>[0],
                   );
                   payload = shrinkPayload(generated, resolved, 0, []);
