@@ -3,15 +3,17 @@ import type { V0ServerJson } from "@/generated/types.gen";
 import { mockedGetRegistryV01Servers } from "@/mocks/fixtures/registry_v0_1_servers/get";
 import { getTools, isVirtualMCPServer } from "./utils";
 
-const servers = mockedGetRegistryV01Servers.defaultValue.servers!;
+const servers = mockedGetRegistryV01Servers.defaultValue.servers ?? [];
 
-const osvServer = servers.find(
+const osvEntry = servers.find(
   (s) => s.server?.name === "com.toolhive.k8s.toolhive-system/osv",
-)!.server as V0ServerJson;
+);
+const osvServer = osvEntry?.server as V0ServerJson;
 
-const virtualMcpServer = servers.find(
+const vmcpEntry = servers.find(
   (s) => s.server?.name === "com.toolhive.k8s.production/my-vmcp-server",
-)!.server as V0ServerJson;
+);
+const virtualMcpServer = vmcpEntry?.server as V0ServerJson;
 
 const regularServer: V0ServerJson = {
   name: "regular-server",
