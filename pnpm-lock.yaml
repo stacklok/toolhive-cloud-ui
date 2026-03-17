@@ -81,7 +81,7 @@ importers:
         version: 6.0.116(zod@4.3.6)
       ai-sdk-ollama:
         specifier: ^3.0.0
-        version: 3.8.0(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
+        version: 3.8.1(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
       ajv:
         specifier: ^8.17.1
         version: 8.18.0
@@ -2050,11 +2050,11 @@ packages:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
     engines: {node: '>= 0.6'}
 
-  ai-sdk-ollama@3.8.0:
-    resolution: {integrity: sha512-Nlla8FpK8QFMNh9m8sPCZoNqnr+n+Ud0QTqpXNds4j/b/lbVZGaji13ZcRuuFvBwPwd4xnFkNrijJzi70Ih1Tg==}
+  ai-sdk-ollama@3.8.1:
+    resolution: {integrity: sha512-DeNG88t3Knsu0AFNU8qe20tp82W+9yczgjduSltIEFWvo2mKuR3MeUNjg5/iGz2IBOkYKnni8pDoI19OxOCN/Q==}
     engines: {node: '>=22'}
     peerDependencies:
-      ai: ^6.0.89
+      ai: ^6.0.116
 
   ai@6.0.116:
     resolution: {integrity: sha512-7yM+cTmyRLeNIXwt4Vj+mrrJgVQ9RMIW5WO0ydoLoYkewIvsMcvUmqS4j2RJTUXaF1HphwmSKUMQ/HypNRGOmA==}
@@ -2958,8 +2958,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  jsonrepair@3.13.2:
-    resolution: {integrity: sha512-Leuly0nbM4R+S5SVJk3VHfw1oxnlEK9KygdZvfUtEtTawNDyzB4qa1xWTmFt1aeoA7sXZkVTRuIixJ8bAvqVUg==}
+  jsonrepair@3.13.3:
+    resolution: {integrity: sha512-BTznj0owIt2CBAH/LTo7+1I5pMvl1e1033LRl/HUowlZmJOIhzC0zbX5bxMngLkfT4WnzPP26QnW5wMr2g9tsQ==}
     hasBin: true
 
   katex@0.16.28:
@@ -5978,12 +5978,12 @@ snapshots:
       mime-types: 3.0.2
       negotiator: 1.0.0
 
-  ai-sdk-ollama@3.8.0(ai@6.0.116(zod@4.3.6))(zod@4.3.6):
+  ai-sdk-ollama@3.8.1(ai@6.0.116(zod@4.3.6))(zod@4.3.6):
     dependencies:
       '@ai-sdk/provider': 3.0.8
       '@ai-sdk/provider-utils': 4.0.19(zod@4.3.6)
       ai: 6.0.116(zod@4.3.6)
-      jsonrepair: 3.13.2
+      jsonrepair: 3.13.3
       ollama: 0.6.3
     transitivePeerDependencies:
       - zod
@@ -6919,7 +6919,7 @@ snapshots:
       '@jsep-plugin/regex': 1.0.4(jsep@1.4.0)
       jsep: 1.4.0
 
-  jsonrepair@3.13.2: {}
+  jsonrepair@3.13.3: {}
 
   katex@0.16.28:
     dependencies:
