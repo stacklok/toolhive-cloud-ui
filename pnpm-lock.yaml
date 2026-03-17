@@ -10,7 +10,7 @@ overrides:
   lodash-es: '>=4.17.23'
   hono: 4.12.7
   rollup: '>=4.59.0'
-  undici: 7.24.0
+  undici: 7.24.4
 
 importers:
 
@@ -4101,8 +4101,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@7.24.0:
-    resolution: {integrity: sha512-jxytwMHhsbdpBXxLAcuu0fzlQeXCNnWdDyRHpvWsUl8vd98UwYdl9YTyn8/HcpcJPC3pwUveefsa3zTxyD/ERg==}
+  undici@7.24.4:
+    resolution: {integrity: sha512-BM/JzwwaRXxrLdElV2Uo6cTLEjhSb3WXboncJamZ15NgUURmvlXvxa6xkwIOILIjPNo9i8ku136ZvWV0Uly8+w==}
     engines: {node: '>=20.18.1'}
 
   unified@11.0.5:
@@ -6893,7 +6893,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 7.24.0
+      undici: 7.24.4
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -7611,7 +7611,7 @@ snapshots:
       nanoid: 5.1.7
       quick-lru: 7.3.0
       raw-body: 3.0.2
-      undici: 7.24.0
+      undici: 7.24.4
     transitivePeerDependencies:
       - supports-color
 
@@ -8354,7 +8354,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici@7.24.0: {}
+  undici@7.24.4: {}
 
   unified@11.0.5:
     dependencies:
