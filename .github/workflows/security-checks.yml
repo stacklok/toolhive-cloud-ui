@@ -21,7 +21,6 @@ jobs:
         with:
           path: "."
           fail-build: true
-          only-fixed: true
           severity-cutoff: "medium"
           output-format: "table"
 
