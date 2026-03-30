@@ -106,7 +106,7 @@ importers:
         version: 4.1.0
       dexie:
         specifier: ^4.2.1
-        version: 4.3.0
+        version: 4.4.1
       json-schema-faker:
         specifier: ^0.5.6
         version: 0.5.9
@@ -2392,8 +2392,8 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  dexie@4.3.0:
-    resolution: {integrity: sha512-5EeoQpJvMKHe6zWt/FSIIuRa3CWlZeIl6zKXt+Lz7BU6RoRRLgX9dZEynRfXrkLcldKYCBiz7xekTEylnie1Ug==}
+  dexie@4.4.1:
+    resolution: {integrity: sha512-4Xec5+yrS+TgyFAnMrneFOt/QG8sD3FxlkUVpfypui3SriRN80UN0SZBWmkNAY7ulfKgk0ilvv7M6pBURprdgA==}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -6165,7 +6165,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  dexie@4.3.0: {}
+  dexie@4.4.1: {}
 
   dom-accessibility-api@0.5.16: {}
 
