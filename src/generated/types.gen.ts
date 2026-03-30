@@ -498,6 +498,8 @@ export type V0RegistryExtensions = {
   isLatest?: boolean;
   publishedAt?: string;
   status?: ModelStatus;
+  statusChangedAt?: string;
+  statusMessage?: string;
   updatedAt?: string;
 };
 
