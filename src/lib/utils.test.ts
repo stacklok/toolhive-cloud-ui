@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { V0ServerJson } from "@/generated/types.gen";
-import { mockedGetRegistryV01Servers } from "@/mocks/fixtures/registry_v0_1_servers/get";
+import { mockedGetRegistryV01Servers } from "@/mocks/fixtures/registry_registryName_v0_1_servers/get";
 import { getTools, isVirtualMCPServer } from "./utils";
 
 const servers = mockedGetRegistryV01Servers.defaultValue.servers ?? [];

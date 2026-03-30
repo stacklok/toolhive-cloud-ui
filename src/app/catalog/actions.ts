@@ -11,10 +11,9 @@ export async function getRegistries(): Promise<
   GithubComStacklokToolhiveRegistryServerInternalServiceRegistryInfo[]
 > {
   const api = await getAuthenticatedClient();
-  const registries = await api.getExtensionV0Registries({
+  const registries = await api.getV1Registries({
     client: api.client,
   });
-
   if (registries.error) {
     console.error("[catalog] Failed to fetch registries:", registries.error);
     throw registries.error;
@@ -23,6 +22,7 @@ export async function getRegistries(): Promise<
   if (!registries.data) {
     return [];
   }
+  // console.log("registries", JSON.stringify(registries.data, null, 2));
 
   return registries.data.registries ?? [];
 }
@@ -38,38 +38,21 @@ interface ServerListParams {
   search?: string;
 }
 
+/**
+ * Fetches MCP servers using the first available registry as default.
+ * Used when no specific registry is selected by the user.
+ */
 export async function getServers(
   params?: ServerListParams,
 ): Promise<ServerListResult> {
-  const api = await getAuthenticatedClient();
-  const servers = await api.getRegistryV01Servers({
-    client: api.client,
-    query: {
-      version: "latest",
-      cursor: params?.cursor || undefined,
-      limit: params?.limit,
-      search: params?.search || undefined,
-    },
-  });
+  const registries = await getRegistries();
+  const defaultRegistry = registries[0]?.name;
 
-  if (servers.error) {
-    console.error("[catalog] Failed to fetch servers:", servers.error);
-    throw servers.error;
-  }
-
-  if (!servers.data) {
+  if (!defaultRegistry) {
     return { servers: [] };
   }
 
-  const data = servers.data;
-  const items = Array.isArray(data?.servers) ? data.servers : [];
-
-  return {
-    servers: items
-      .map((item) => item?.server)
-      .filter((server): server is V0ServerJson => server != null),
-    nextCursor: data.metadata?.nextCursor,
-  };
+  return getServersByRegistryName(defaultRegistry, params);
 }
 
 /**

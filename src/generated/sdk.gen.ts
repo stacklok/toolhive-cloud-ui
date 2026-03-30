@@ -3,27 +3,15 @@
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
 import type {
-  DeleteExtensionV0RegistriesByRegistryNameData,
-  DeleteExtensionV0RegistriesByRegistryNameErrors,
-  DeleteExtensionV0RegistriesByRegistryNameResponses,
-  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
-  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
-  DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
-  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
-  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
-  DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
   DeleteV1EntriesByTypeByNameVersionsByVersionData,
   DeleteV1EntriesByTypeByNameVersionsByVersionErrors,
+  DeleteV1EntriesByTypeByNameVersionsByVersionResponses,
   DeleteV1RegistriesByNameData,
   DeleteV1RegistriesByNameErrors,
+  DeleteV1RegistriesByNameResponses,
   DeleteV1SourcesByNameData,
   DeleteV1SourcesByNameErrors,
-  GetExtensionV0RegistriesByRegistryNameData,
-  GetExtensionV0RegistriesByRegistryNameErrors,
-  GetExtensionV0RegistriesByRegistryNameResponses,
-  GetExtensionV0RegistriesData,
-  GetExtensionV0RegistriesErrors,
-  GetExtensionV0RegistriesResponses,
+  DeleteV1SourcesByNameResponses,
   GetHealthData,
   GetHealthResponses,
   GetOpenapiJsonData,
@@ -53,48 +41,37 @@ import type {
   GetRegistryByRegistryNameV01xDevToolhiveSkillsData,
   GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
   GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
-  GetRegistryV01ServersByServerNameVersionsByVersionData,
-  GetRegistryV01ServersByServerNameVersionsByVersionErrors,
-  GetRegistryV01ServersByServerNameVersionsByVersionResponses,
-  GetRegistryV01ServersByServerNameVersionsData,
-  GetRegistryV01ServersByServerNameVersionsErrors,
-  GetRegistryV01ServersByServerNameVersionsResponses,
-  GetRegistryV01ServersData,
-  GetRegistryV01ServersErrors,
-  GetRegistryV01ServersResponses,
   GetV1RegistriesByNameData,
   GetV1RegistriesByNameEntriesData,
   GetV1RegistriesByNameEntriesErrors,
+  GetV1RegistriesByNameEntriesResponses,
   GetV1RegistriesByNameErrors,
+  GetV1RegistriesByNameResponses,
   GetV1RegistriesData,
   GetV1RegistriesErrors,
+  GetV1RegistriesResponses,
   GetV1SourcesByNameData,
   GetV1SourcesByNameEntriesData,
   GetV1SourcesByNameEntriesErrors,
+  GetV1SourcesByNameEntriesResponses,
   GetV1SourcesByNameErrors,
+  GetV1SourcesByNameResponses,
   GetV1SourcesData,
   GetV1SourcesErrors,
+  GetV1SourcesResponses,
   GetVersionData,
   GetVersionResponses,
-  PostByRegistryNameV01PublishData,
-  PostByRegistryNameV01PublishErrors,
-  PostByRegistryNameV01PublishResponses,
-  PostRegistryByRegistryNameV01xDevToolhiveSkillsData,
-  PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
-  PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
-  PostRegistryV01PublishData,
-  PostRegistryV01PublishErrors,
   PostV1EntriesData,
   PostV1EntriesErrors,
-  PutExtensionV0RegistriesByRegistryNameData,
-  PutExtensionV0RegistriesByRegistryNameErrors,
-  PutExtensionV0RegistriesByRegistryNameResponses,
+  PostV1EntriesResponses,
   PutV1EntriesByTypeByNameClaimsData,
   PutV1EntriesByTypeByNameClaimsErrors,
   PutV1RegistriesByNameData,
   PutV1RegistriesByNameErrors,
+  PutV1RegistriesByNameResponses,
   PutV1SourcesByNameData,
   PutV1SourcesByNameErrors,
+  PutV1SourcesByNameResponses,
 } from "./types.gen";
 
 export type Options<
@@ -113,100 +90,6 @@ export type Options<
    */
   meta?: Record<string, unknown>;
 };
-
-/**
- * List registries
- *
- * List all registries
- */
-export const getExtensionV0Registries = <ThrowOnError extends boolean = false>(
-  options?: Options<GetExtensionV0RegistriesData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetExtensionV0RegistriesResponses,
-    GetExtensionV0RegistriesErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-
-/**
- * Delete registry
- *
- * Delete a registry by name. Only registries created via API can be deleted.
- */
-export const deleteExtensionV0RegistriesByRegistryName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<DeleteExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) =>
-  (options.client ?? client).delete<
-    DeleteExtensionV0RegistriesByRegistryNameResponses,
-    DeleteExtensionV0RegistriesByRegistryNameErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries/{registryName}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Get registry
- *
- * Get a registry by name
- */
-export const getExtensionV0RegistriesByRegistryName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<GetExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) =>
-  (options.client ?? client).get<
-    GetExtensionV0RegistriesByRegistryNameResponses,
-    GetExtensionV0RegistriesByRegistryNameErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries/{registryName}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Create or update registry
- *
- * Create a new registry or update an existing one. Only registries created via API can be updated.
- */
-export const putExtensionV0RegistriesByRegistryName = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<PutExtensionV0RegistriesByRegistryNameData, ThrowOnError>,
-) =>
-  (options.client ?? client).put<
-    PutExtensionV0RegistriesByRegistryNameResponses,
-    PutExtensionV0RegistriesByRegistryNameErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/extension/v0/registries/{registryName}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
 
 /**
  * Health check
@@ -248,111 +131,6 @@ export const getReadiness = <ThrowOnError extends boolean = false>(
     GetReadinessErrors,
     ThrowOnError
   >({ url: "/readiness", ...options });
-
-/**
- * Publish server (not supported)
- *
- * Publish a server to the registry. This server does not support publishing via this endpoint.
- * Use the registry-specific endpoint /{registryName}/v0.1/publish instead.
- *
- * @deprecated
- */
-export const postRegistryV01Publish = <ThrowOnError extends boolean = false>(
-  options?: Options<PostRegistryV01PublishData, ThrowOnError>,
-) =>
-  (options?.client ?? client).post<
-    unknown,
-    PostRegistryV01PublishErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/registry/v0.1/publish",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-
-/**
- * List servers (aggregated)
- *
- * Get a list of available servers from all registries (aggregated view)
- *
- * @deprecated
- */
-export const getRegistryV01Servers = <ThrowOnError extends boolean = false>(
-  options?: Options<GetRegistryV01ServersData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetRegistryV01ServersResponses,
-    GetRegistryV01ServersErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/registry/v0.1/servers",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-
-/**
- * List all versions of an MCP server (aggregated)
- *
- * Returns all available versions for a specific MCP server from all registries (aggregated view)
- *
- * @deprecated
- */
-export const getRegistryV01ServersByServerNameVersions = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<GetRegistryV01ServersByServerNameVersionsData, ThrowOnError>,
-) =>
-  (options.client ?? client).get<
-    GetRegistryV01ServersByServerNameVersionsResponses,
-    GetRegistryV01ServersByServerNameVersionsErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/registry/v0.1/servers/{serverName}/versions",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Get specific MCP server version (aggregated)
- *
- * Returns detailed information about a specific version of an MCP server from all registries.
- * Use the special version `latest` to get the latest version.
- *
- * @deprecated
- */
-export const getRegistryV01ServersByServerNameVersionsByVersion = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<
-    GetRegistryV01ServersByServerNameVersionsByVersionData,
-    ThrowOnError
-  >,
-) =>
-  (options.client ?? client).get<
-    GetRegistryV01ServersByServerNameVersionsByVersionResponses,
-    GetRegistryV01ServersByServerNameVersionsByVersionErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/registry/v0.1/servers/{serverName}/versions/{version}",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
 
 /**
  * List servers in specific registry
@@ -406,32 +184,6 @@ export const getRegistryByRegistryNameV01ServersByServerNameVersions = <
   });
 
 /**
- * Delete server version from specific registry
- *
- * Delete a server version from a specific managed registry
- */
-export const deleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersion =
-  <ThrowOnError extends boolean = false>(
-    options: Options<
-      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionData,
-      ThrowOnError
-    >,
-  ) =>
-    (options.client ?? client).delete<
-      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionResponses,
-      DeleteRegistryByRegistryNameV01ServersByServerNameVersionsByVersionErrors,
-      ThrowOnError
-    >({
-      security: [{ name: "Authorization", type: "apiKey" }],
-      url: "/registry/{registryName}/v0.1/servers/{serverName}/versions/{version}",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    });
-
-/**
  * Get specific MCP server version in specific registry
  *
  * Returns detailed information about a specific version of an MCP server from a specific registry.
@@ -474,33 +226,6 @@ export const getRegistryByRegistryNameV01xDevToolhiveSkills = <
   (options.client ?? client).get<
     GetRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
     GetRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Publish skill
- *
- * Publish a skill version to the registry.
- */
-export const postRegistryByRegistryNameV01xDevToolhiveSkills = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<
-    PostRegistryByRegistryNameV01xDevToolhiveSkillsData,
-    ThrowOnError
-  >,
-) =>
-  (options.client ?? client).post<
-    PostRegistryByRegistryNameV01xDevToolhiveSkillsResponses,
-    PostRegistryByRegistryNameV01xDevToolhiveSkillsErrors,
     ThrowOnError
   >({
     security: [{ name: "Authorization", type: "apiKey" }],
@@ -566,32 +291,6 @@ export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVers
     });
 
 /**
- * Delete skill version
- *
- * Delete a specific version of a skill from the registry.
- */
-export const deleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersion =
-  <ThrowOnError extends boolean = false>(
-    options: Options<
-      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionData,
-      ThrowOnError
-    >,
-  ) =>
-    (options.client ?? client).delete<
-      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionResponses,
-      DeleteRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVersionsByVersionErrors,
-      ThrowOnError
-    >({
-      security: [{ name: "Authorization", type: "apiKey" }],
-      url: "/registry/{registryName}/v0.1/x/dev.toolhive/skills/{namespace}/{name}/versions/{version}",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    });
-
-/**
  * Get specific skill version
  *
  * Get a specific version of a skill.
@@ -620,17 +319,21 @@ export const getRegistryByRegistryNameV01xDevToolhiveSkillsByNamespaceByNameVers
 /**
  * Publish entry
  *
- * Publish a new entry
+ * Publish a new server or skill entry. Exactly one of 'server' or 'skill' must be provided.
  */
 export const postV1Entries = <ThrowOnError extends boolean = false>(
-  options?: Options<PostV1EntriesData, ThrowOnError>,
+  options: Options<PostV1EntriesData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).post<unknown, PostV1EntriesErrors, ThrowOnError>({
+  (options.client ?? client).post<
+    PostV1EntriesResponses,
+    PostV1EntriesErrors,
+    ThrowOnError
+  >({
     url: "/v1/entries",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options?.headers,
+      ...options.headers,
     },
   });
 
@@ -671,7 +374,7 @@ export const deleteV1EntriesByTypeByNameVersionsByVersion = <
   >,
 ) =>
   (options.client ?? client).delete<
-    unknown,
+    DeleteV1EntriesByTypeByNameVersionsByVersionResponses,
     DeleteV1EntriesByTypeByNameVersionsByVersionErrors,
     ThrowOnError
   >({
@@ -691,16 +394,18 @@ export const deleteV1EntriesByTypeByNameVersionsByVersion = <
 export const getV1Registries = <ThrowOnError extends boolean = false>(
   options?: Options<GetV1RegistriesData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).get<unknown, GetV1RegistriesErrors, ThrowOnError>(
-    {
-      url: "/v1/registries",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
+  (options?.client ?? client).get<
+    GetV1RegistriesResponses,
+    GetV1RegistriesErrors,
+    ThrowOnError
+  >({
+    url: "/v1/registries",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
     },
-  );
+  });
 
 /**
  * Delete registry
@@ -711,7 +416,7 @@ export const deleteV1RegistriesByName = <ThrowOnError extends boolean = false>(
   options: Options<DeleteV1RegistriesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).delete<
-    unknown,
+    DeleteV1RegistriesByNameResponses,
     DeleteV1RegistriesByNameErrors,
     ThrowOnError
   >({
@@ -732,7 +437,7 @@ export const getV1RegistriesByName = <ThrowOnError extends boolean = false>(
   options: Options<GetV1RegistriesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).get<
-    unknown,
+    GetV1RegistriesByNameResponses,
     GetV1RegistriesByNameErrors,
     ThrowOnError
   >({
@@ -753,7 +458,7 @@ export const putV1RegistriesByName = <ThrowOnError extends boolean = false>(
   options: Options<PutV1RegistriesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).put<
-    unknown,
+    PutV1RegistriesByNameResponses,
     PutV1RegistriesByNameErrors,
     ThrowOnError
   >({
@@ -776,7 +481,7 @@ export const getV1RegistriesByNameEntries = <
   options: Options<GetV1RegistriesByNameEntriesData, ThrowOnError>,
 ) =>
   (options.client ?? client).get<
-    unknown,
+    GetV1RegistriesByNameEntriesResponses,
     GetV1RegistriesByNameEntriesErrors,
     ThrowOnError
   >({
@@ -796,7 +501,11 @@ export const getV1RegistriesByNameEntries = <
 export const getV1Sources = <ThrowOnError extends boolean = false>(
   options?: Options<GetV1SourcesData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).get<unknown, GetV1SourcesErrors, ThrowOnError>({
+  (options?.client ?? client).get<
+    GetV1SourcesResponses,
+    GetV1SourcesErrors,
+    ThrowOnError
+  >({
     url: "/v1/sources",
     ...options,
     headers: {
@@ -814,7 +523,7 @@ export const deleteV1SourcesByName = <ThrowOnError extends boolean = false>(
   options: Options<DeleteV1SourcesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).delete<
-    unknown,
+    DeleteV1SourcesByNameResponses,
     DeleteV1SourcesByNameErrors,
     ThrowOnError
   >({
@@ -835,7 +544,7 @@ export const getV1SourcesByName = <ThrowOnError extends boolean = false>(
   options: Options<GetV1SourcesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).get<
-    unknown,
+    GetV1SourcesByNameResponses,
     GetV1SourcesByNameErrors,
     ThrowOnError
   >({
@@ -856,7 +565,7 @@ export const putV1SourcesByName = <ThrowOnError extends boolean = false>(
   options: Options<PutV1SourcesByNameData, ThrowOnError>,
 ) =>
   (options.client ?? client).put<
-    unknown,
+    PutV1SourcesByNameResponses,
     PutV1SourcesByNameErrors,
     ThrowOnError
   >({
@@ -877,7 +586,7 @@ export const getV1SourcesByNameEntries = <ThrowOnError extends boolean = false>(
   options: Options<GetV1SourcesByNameEntriesData, ThrowOnError>,
 ) =>
   (options.client ?? client).get<
-    unknown,
+    GetV1SourcesByNameEntriesResponses,
     GetV1SourcesByNameEntriesErrors,
     ThrowOnError
   >({
@@ -900,28 +609,4 @@ export const getVersion = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<GetVersionResponses, unknown, ThrowOnError>({
     url: "/version",
     ...options,
-  });
-
-/**
- * Publish server to specific registry
- *
- * Publish a server version to a specific managed registry
- */
-export const postByRegistryNameV01Publish = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<PostByRegistryNameV01PublishData, ThrowOnError>,
-) =>
-  (options.client ?? client).post<
-    PostByRegistryNameV01PublishResponses,
-    PostByRegistryNameV01PublishErrors,
-    ThrowOnError
-  >({
-    security: [{ name: "Authorization", type: "apiKey" }],
-    url: "/{registryName}/v0.1/publish",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
   });
