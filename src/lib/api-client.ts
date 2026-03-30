@@ -19,6 +19,7 @@ import { createClient, createConfig } from "@/generated/client";
 import * as apiServices from "@/generated/sdk.gen";
 import { auth } from "./auth/auth";
 import { OIDC_PROVIDER_ID } from "./auth/constants";
+import { isDatabaseMode } from "./auth/db";
 import { isTokenNearExpiry } from "./auth/utils";
 
 const MOCK_SCENARIO_COOKIE = "mock-scenario";
@@ -74,16 +75,21 @@ export async function getAuthenticatedClient(accessToken?: string) {
     // the OIDC refresh and saves the rotated refresh token R2), then redirects
     // back. If the token is fresh, call getAccessToken() directly — Better Auth
     // won't refresh (its threshold is 5s), so no Set-Cookie is produced.
-    const nearExpiry = await isTokenNearExpiry();
+    // In database mode, Better Auth stores and refreshes tokens directly in the DB —
+    // no cookie write is needed, so we skip the Route Handler redirect entirely.
+    // The cookie-based preemptive refresh is only needed in stateless (cookie) mode.
+    if (!isDatabaseMode) {
+      const nearExpiry = await isTokenNearExpiry();
 
-    if (nearExpiry) {
-      const currentPath = requestHeaders.get("x-url") || "/catalog";
-      console.log(
-        `[API Client] token near expiry, redirecting to token-refresh | path=${currentPath}`,
-      );
-      redirect(
-        `/api/auth/token-refresh?redirect=${encodeURIComponent(currentPath)}`,
-      );
+      if (nearExpiry) {
+        const currentPath = requestHeaders.get("x-url") || "/catalog";
+        console.log(
+          `[API Client] token near expiry, redirecting to token-refresh | path=${currentPath}`,
+        );
+        redirect(
+          `/api/auth/token-refresh?redirect=${encodeURIComponent(currentPath)}`,
+        );
+      }
     }
 
     let tokenData: {
