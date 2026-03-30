@@ -224,7 +224,7 @@ importers:
         version: 16.4.0
       oidc-provider:
         specifier: ^9.5.2
-        version: 9.7.0
+        version: 9.7.1
       tailwindcss:
         specifier: ^4
         version: 4.2.2
@@ -955,8 +955,8 @@ packages:
     resolution: {integrity: sha512-x/iUDjcS90W69PryLDIMgFyV21YLTnG9zOpPXS7Bkt2b8AsY3zZsIpOLBkYr9fBcF3HbkKaER5hOBZLfpLgYNw==}
     engines: {node: '>= 14.0.0'}
 
-  '@koa/router@15.3.1':
-    resolution: {integrity: sha512-n7UgxsPmgKtEsrguz8a0d6BNx3lO2x52Z4UqkGsGwJculk4TlzZf3btd3QZMq1r1M+bSxUkBbyul4mDhysIVaQ==}
+  '@koa/router@15.4.0':
+    resolution: {integrity: sha512-vKYlXtoCfcAN8z4dHiveYX55rTYOgHEYJNumK1WM9ZAwaArhreGVkyC1LTMGfUQUJyIO/SbwRFBOHeOCY8/MaQ==}
     engines: {node: '>= 20'}
     peerDependencies:
       koa: ^2.0.0 || ^3.0.0
@@ -2892,8 +2892,8 @@ packages:
   koa-compose@4.1.0:
     resolution: {integrity: sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw==}
 
-  koa@3.1.2:
-    resolution: {integrity: sha512-2LOQnFKu3m0VxpE+5sb5+BRTSKrXmNxGgxVRiKwD9s5KQB1zID/FRXhtzeV7RT1L2GVpdEEAfVuclFOMGl1ikA==}
+  koa@3.2.0:
+    resolution: {integrity: sha512-TrM4/tnNY7uJ1aW55sIIa+dqBvc4V14WRIAlGcWat9wV5pRS9Wr5Zk2ZTjQP1jtfIHDoHiSbPuV08P0fUZo2pg==}
     engines: {node: '>= 18'}
 
   kysely@0.28.14:
@@ -3360,8 +3360,8 @@ packages:
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
-  oidc-provider@9.7.0:
-    resolution: {integrity: sha512-xrOjNvwSOZf6hSR0fmD1SodaUIETbZeBMxjPnwQSMeCotHWWSBPqiZVeqCp/YFwGP/U+4VIBLYoO5PlypAg8KA==}
+  oidc-provider@9.7.1:
+    resolution: {integrity: sha512-yzOdAYxQEisPspCy6xVPrK++bYz71011uylwhR3XLDfb3r0NfVuJStApQvXoeMXj928nkZoxRTBC4ECYM94KOw==}
 
   ollama@0.6.3:
     resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
@@ -3416,8 +3416,8 @@ packages:
   path-to-regexp@6.3.0:
     resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
-  path-to-regexp@8.3.0:
-    resolution: {integrity: sha512-7jdwVIRtsP8MYpdXSwOS0YdD0Du+qOoF/AEPIt88PcCFrZCzx41oxku1jD88hZBwbNUIEfpqvuhjFaMAqMTWnA==}
+  path-to-regexp@8.4.0:
+    resolution: {integrity: sha512-PuseHIvAnz3bjrM2rGJtSgo1zjgxapTLZ7x2pjhzWwlp4SJQgK3f3iZIQwkpEnBaKz6seKBADpM4B4ySkuYypg==}
 
   path-to-regexp@8.4.0:
     resolution: {integrity: sha512-PuseHIvAnz3bjrM2rGJtSgo1zjgxapTLZ7x2pjhzWwlp4SJQgK3f3iZIQwkpEnBaKz6seKBADpM4B4ySkuYypg==}
@@ -4802,13 +4802,13 @@ snapshots:
     dependencies:
       vary: 1.1.2
 
-  '@koa/router@15.3.1(koa@3.1.2)':
+  '@koa/router@15.4.0(koa@3.2.0)':
     dependencies:
       debug: 4.4.3
       http-errors: 2.0.1
-      koa: 3.1.2
+      koa: 3.2.0
       koa-compose: 4.1.0
-      path-to-regexp: 8.3.0
+      path-to-regexp: 8.4.0
     transitivePeerDependencies:
       - supports-color
 
@@ -6730,7 +6730,7 @@ snapshots:
 
   koa-compose@4.1.0: {}
 
-  koa@3.1.2:
+  koa@3.2.0:
     dependencies:
       accepts: 1.3.8
       content-disposition: 1.0.1
@@ -7383,15 +7383,15 @@ snapshots:
 
   ohash@2.0.11: {}
 
-  oidc-provider@9.7.0:
+  oidc-provider@9.7.1:
     dependencies:
       '@koa/cors': 5.0.0
-      '@koa/router': 15.3.1(koa@3.1.2)
+      '@koa/router': 15.4.0(koa@3.2.0)
       debug: 4.4.3
       eta: 4.5.1
-      jose: 6.2.0
+      jose: 6.2.2
       jsesc: 3.1.0
-      koa: 3.1.2
+      koa: 3.2.0
       nanoid: 5.1.7
       quick-lru: 7.3.0
       raw-body: 3.0.2
@@ -7464,7 +7464,7 @@ snapshots:
 
   path-to-regexp@6.3.0: {}
 
-  path-to-regexp@8.3.0: {}
+  path-to-regexp@8.4.0: {}
 
   path-to-regexp@8.4.0: {}
 
