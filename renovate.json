@@ -1,9 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
-  "lockFileMaintenance": {
-    "enabled": false
-  },
+  "rangeStrategy": "bump",
   "labels": ["dependencies"],
   "prConcurrentLimit": 3,
   "timezone": "Europe/London",
