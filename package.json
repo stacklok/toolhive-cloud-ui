@@ -100,7 +100,7 @@
     "oidc-provider": "^9.5.2",
     "tailwindcss": "^4",
     "tsx": "4.21.0",
-    "typescript": "^5",
+    "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "vite-tsconfig-paths": "^6.0.0",
     "vitest": "^4.0.8",
