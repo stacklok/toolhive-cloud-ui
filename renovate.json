@@ -24,6 +24,7 @@
       "datasourceTemplate": "npm"
     }
   ],
+  "minimumReleaseAge": "7 days",
   "packageRules": [
     {
       "description": "Auto-regenerate API client via GitHub Actions workflow",
