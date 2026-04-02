@@ -14,3 +14,21 @@ README.md
 coverage
 .vercel
 
+# Build artifacts not needed in Docker
+tsconfig.tsbuildinfo
+playwright-report/
+test-results/
+.vitest/
+
+# Dev/test files not needed in production image
+tests/
+scripts/
+dev-auth/
+src/mocks/
+docker-compose.yaml
+biome.json
+knip.ts
+vitest.setup.ts
+openapi-ts.config.ts
+swagger.json
+.pnpm-debug.log
