@@ -1,4 +1,4 @@
-import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_v0_1_servers/get";
+import { mockedGetRegistryV01Servers } from "@mocks/fixtures/registry_registryName_v0_1_servers/get";
 import { HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getServers } from "./actions";

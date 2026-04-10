@@ -1,13 +1,13 @@
 import type { RequestHandler } from "msw";
 import { HttpResponse, http } from "msw";
-import { mockedGetRegistryV01Servers } from "../fixtures/registry_v0_1_servers/get";
+import { mockedGetRegistryV01Servers } from "../fixtures/registry_registryName_v0_1_servers/get";
 
 // Add non-schema, hand-written mocks here.
 // These take precedence over the schema-based mocks.
 export const serverDetailHandlers: RequestHandler[] = [
   // Mock for server detail endpoint - returns server from list with normalized version
   http.get(
-    "*/registry/v0.1/servers/:serverName/versions/:version",
+    "*/registry/:registryName/v0.1/servers/:serverName/versions/:version",
     ({ params }) => {
       // MSW already decodes the path parameters
       const serverName = String(params.serverName);

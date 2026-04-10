@@ -2,7 +2,7 @@ import type { GetRegistryByRegistryNameV01ServersResponse } from "@api/types.gen
 import { AutoAPIMock } from "@mocks";
 import { HttpResponse } from "msw";
 
-export const mockedGetRegistryV01Servers =
+export const mockedGetRegistryByRegistryNameV01Servers =
   AutoAPIMock<GetRegistryByRegistryNameV01ServersResponse>({
     servers: [
       {
@@ -610,3 +610,6 @@ export const mockedGetRegistryV01Servers =
         HttpResponse.json({ error: "Internal Server Error" }, { status: 500 }),
       ),
     );
+
+export const mockedGetRegistryV01Servers =
+  mockedGetRegistryByRegistryNameV01Servers;

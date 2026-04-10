@@ -1,4 +1,4 @@
-import { getRegistries, getServers, getServersByRegistryName } from "./actions";
+import { getRegistries, getServersByRegistryName } from "./actions";
 import { ServersWrapper } from "./components/servers-wrapper";
 import { CATALOG_PAGE_SIZE } from "./constants";
 
@@ -20,12 +20,12 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     search: search || undefined,
   };
 
-  const [registries, { servers, nextCursor }] = await Promise.all([
-    getRegistries(),
-    registryName
-      ? getServersByRegistryName(registryName, paginationParams)
-      : getServers(paginationParams),
-  ]);
+  const registries = await getRegistries();
+  const selectedRegistry = registryName ?? registries[0]?.name;
+
+  const { servers, nextCursor } = selectedRegistry
+    ? await getServersByRegistryName(selectedRegistry, paginationParams)
+    : { servers: [], nextCursor: undefined };
 
   return (
     <ServersWrapper
