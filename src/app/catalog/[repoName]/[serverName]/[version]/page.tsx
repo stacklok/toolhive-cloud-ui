@@ -11,14 +11,22 @@ interface CatalogDetailPageProps {
     serverName: string;
     version: string;
   }>;
+  searchParams: Promise<{
+    registryName?: string;
+  }>;
 }
 
 export default async function CatalogDetailPage({
   params,
+  searchParams,
 }: CatalogDetailPageProps) {
   const { repoName, serverName, version } = await params;
+  const { registryName } = await searchParams;
+
+  const fullServerName = `${repoName}/${serverName}`;
   const { data: serverResponse, response } = await getServerDetails(
-    `${repoName}/${serverName}`,
+    registryName,
+    fullServerName,
     version,
   );
 

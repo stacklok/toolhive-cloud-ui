@@ -9,6 +9,7 @@ import { ServersTable } from "./servers-table";
 
 interface ServersProps {
   servers: V0ServerJson[];
+  registryName: string;
   viewMode: "grid" | "list";
   searchQuery: string;
   onClearSearch: () => void;
@@ -20,6 +21,7 @@ interface ServersProps {
  */
 export function Servers({
   servers,
+  registryName,
   viewMode,
   searchQuery,
   onClearSearch,
@@ -29,7 +31,7 @@ export function Servers({
   const handleServerClick = (server: V0ServerJson) => {
     if (!server.name) return;
 
-    const detailUrl = `/catalog/${server.name}/${server.version || "latest"}`;
+    const detailUrl = `/catalog/${server.name}/${server.version || "latest"}?registryName=${encodeURIComponent(registryName)}`;
     router.push(detailUrl);
   };
 

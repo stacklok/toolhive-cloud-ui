@@ -6,11 +6,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { useTransition } from "react";
-import {
-  CATALOG_ALL_REGISTRIES,
-  CATALOG_PAGE_SIZE,
-  CATALOG_VIEW_MODES,
-} from "../constants";
+import { CATALOG_PAGE_SIZE, CATALOG_VIEW_MODES } from "../constants";
 import { useSessionStack } from "./use-session-stack";
 
 /**
@@ -61,7 +57,7 @@ export function useCatalogFilters() {
     setFilters(
       (prev) => ({
         ...prev,
-        registryName: value === CATALOG_ALL_REGISTRIES ? null : value,
+        registryName: value,
         cursor: "",
       }),
       { startTransition },
@@ -97,7 +93,7 @@ export function useCatalogFilters() {
   return {
     viewMode,
     search,
-    selectedRegistry: registryName || CATALOG_ALL_REGISTRIES,
+    selectedRegistry: registryName,
     cursor,
     limit,
     isFirstPage,
