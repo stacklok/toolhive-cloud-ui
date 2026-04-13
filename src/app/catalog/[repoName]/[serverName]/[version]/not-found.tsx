@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col gap-5 px-8 pt-5 pb-8">
+    <div className="flex flex-col gap-5">
       <NavigateBackButton
         href="/catalog"
         variant="outline"

@@ -33,6 +33,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={mockServers}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -48,6 +49,7 @@ describe("Servers", () => {
       const { container } = render(
         <Servers
           servers={mockServers}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -64,6 +66,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={mockServers}
+          registryName="default-registry"
           viewMode="list"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -79,6 +82,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={mockServers}
+          registryName="default-registry"
           viewMode="list"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -95,6 +99,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery="nonexistent"
           onClearSearch={mockOnClearSearch}
@@ -114,6 +119,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery="nonexistent"
           onClearSearch={onClearSearch}
@@ -135,6 +141,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -151,6 +158,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="list"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -164,6 +172,7 @@ describe("Servers", () => {
       const { container } = render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery=""
           onClearSearch={mockOnClearSearch}
@@ -177,6 +186,7 @@ describe("Servers", () => {
       render(
         <Servers
           servers={[]}
+          registryName="default-registry"
           viewMode="grid"
           searchQuery=""
           onClearSearch={mockOnClearSearch}

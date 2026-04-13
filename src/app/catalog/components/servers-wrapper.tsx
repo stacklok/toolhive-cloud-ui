@@ -48,7 +48,7 @@ export function ServersWrapper({
       <PageHeader title="MCP Server Catalog">
         <ServerFilters
           registries={registries}
-          selectedRegistry={selectedRegistry}
+          selectedRegistry={selectedRegistry || registries[0]?.name || ""}
           onRegistryChange={handleRegistryChange}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
@@ -63,6 +63,7 @@ export function ServersWrapper({
         ) : (
           <Servers
             servers={servers}
+            registryName={selectedRegistry || registries[0]?.name || ""}
             viewMode={viewMode}
             searchQuery={search}
             onClearSearch={handleClearSearch}
