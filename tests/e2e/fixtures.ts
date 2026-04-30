@@ -5,7 +5,7 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 async function login(page: Page): Promise<void> {
   await page.goto(`${BASE_URL}/signin`);
 
-  const signInButton = page.getByRole("button", { name: /oidc|okta/i });
+  const signInButton = page.getByRole("button", { name: /sign in/i });
   await expect(signInButton).toBeVisible({ timeout: 5000 });
   await signInButton.click();
 
