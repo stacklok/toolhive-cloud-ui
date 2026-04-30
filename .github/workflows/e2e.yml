@@ -26,7 +26,7 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: test-only-not-a-real-better-auth-secret
       USE_E2E_MODEL: "true"
-      E2E_MODEL_NAME: qwen2.5:1.5b
+      E2E_MODEL_NAME: qwen3:1.7b
       OLLAMA_BASE_URL: http://localhost:11434
     steps:
       - name: Checkout
@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: /home/runner/.ollama/models
-          key: ollama-qwen2.5-1.5b-v3
+          key: ollama-qwen3-1.7b-v1
 
       - name: Start Ollama via Docker
         run: |
@@ -53,7 +53,7 @@ jobs:
           done
 
       - name: Pull Ollama model
-        run: docker exec ollama ollama pull qwen2.5:1.5b
+        run: docker exec ollama ollama pull qwen3:1.7b
 
       - name: Setup
         uses: ./.github/actions/setup

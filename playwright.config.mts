@@ -54,7 +54,7 @@ export default defineConfig({
           BETTER_AUTH_RATE_LIMIT: "100",
           // Always use testing model for E2E tests to avoid needing OpenRouter API keys
           USE_E2E_MODEL: "true",
-          E2E_MODEL_NAME: process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b",
+          E2E_MODEL_NAME: process.env.E2E_MODEL_NAME ?? "qwen3:1.7b",
           OLLAMA_BASE_URL:
             process.env.OLLAMA_BASE_URL ?? "http://localhost:11434",
         },
