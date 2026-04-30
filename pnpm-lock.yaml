@@ -168,7 +168,7 @@ importers:
         specifier: 0.94.5
         version: 0.94.5(magicast@0.5.2)(typescript@6.0.2)
       '@mswjs/http-middleware':
-        specifier: ^0.10.2
+        specifier: ^0.10.3
         version: 0.10.3(msw@2.12.13(@types/node@24.12.0)(typescript@6.0.2))
       '@playwright/test':
         specifier: ^1.56.1
