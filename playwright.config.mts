@@ -45,7 +45,6 @@ export default defineConfig({
           OIDC_ISSUER_URL: "http://localhost:4000",
           OIDC_CLIENT_ID: "better-auth-dev",
           OIDC_CLIENT_SECRET: "dev-secret-change-in-production",
-          OIDC_PROVIDER_ID: "okta",
           BETTER_AUTH_URL: "http://localhost:3000",
           BETTER_AUTH_SECRET: "e2e-test-secret-at-least-32-chars-long",
           // Better Auth rate limits sign-in to 3 requests per 10 seconds by default.

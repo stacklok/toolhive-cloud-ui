@@ -125,8 +125,6 @@ When making an API call:
 OIDC_ISSUER_URL=https://your-okta-domain.okta.com
 OIDC_CLIENT_ID=your-client-id
 OIDC_CLIENT_SECRET=your-client-secret
-OIDC_PROVIDER_ID=okta
-
 # Better Auth
 BETTER_AUTH_URL=http://localhost:3000
 BETTER_AUTH_SECRET=your-secret-key

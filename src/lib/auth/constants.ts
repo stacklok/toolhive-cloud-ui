@@ -4,10 +4,11 @@
 
 // Environment configuration
 /**
- * OIDC Provider ID (e.g., "oidc", "okta")
- * Server-side only - not exposed to the client.
+ * OIDC Provider ID - Better Auth's internal identifier for the OIDC provider.
+ * This is used in the callback URL path (e.g., /api/auth/oauth2/callback/oidc)
+ * and is not related to any specific identity provider.
  */
-export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
+export const OIDC_PROVIDER_ID = "oidc";
 const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";
