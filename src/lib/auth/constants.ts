@@ -3,11 +3,11 @@
  */
 
 // Environment configuration
-/**
- * OIDC Provider ID (e.g., "oidc", "okta")
- * Server-side only - not exposed to the client.
- */
-export const OIDC_PROVIDER_ID = process.env.OIDC_PROVIDER_ID || "oidc";
+// Hardcoded Better Auth provider identifier. This value is part of the
+// OAuth callback URL (/api/auth/oauth2/callback/oidc) and is stored in
+// the account table when DATABASE_URL is set. Changing it will invalidate
+// existing sessions and require updating the redirect URI in the IdP.
+export const OIDC_PROVIDER_ID = "oidc";
 const OIDC_ISSUER_URL = process.env.OIDC_ISSUER_URL || "";
 export const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || "";
 export const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || "";

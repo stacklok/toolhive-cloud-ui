@@ -331,7 +331,6 @@ pnpm generate-client  # Fetch swagger.json and regenerate
   - `OIDC_ISSUER_URL` - OIDC provider URL
   - `OIDC_CLIENT_ID` - OAuth2 client ID
   - `OIDC_CLIENT_SECRET` - OAuth2 client secret
-  - `OIDC_PROVIDER_ID` - Provider identifier (e.g., "okta", "oidc") - **Required**, server-side only.
   - `BETTER_AUTH_URL` - Application base URL
   - `BETTER_AUTH_SECRET` - Secret for token encryption
 

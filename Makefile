@@ -192,7 +192,6 @@ kind-setup: kind-create kind-deploy
 ##   OIDC_ISSUER_URL=https://your-org.okta.com
 ##   OIDC_CLIENT_ID=your-client-id
 ##   OIDC_CLIENT_SECRET=your-client-secret
-##   OIDC_PROVIDER_ID=okta
 ##   BETTER_AUTH_SECRET=your-secret
 compose-up:
 	@echo "Starting full stack (UI + Registry Server)..."
