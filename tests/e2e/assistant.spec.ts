@@ -74,10 +74,10 @@ test.describe("Assistant chat", () => {
     await authenticatedPage.keyboard.press("Enter");
 
     // Wait for the assistant's response containing "2".
-    // Any LLM will answer basic arithmetic correctly regardless of model,
-    // thinking mode, or output format. The regex avoids false-positives from
-    // the user message ("1 + 1") by matching a standalone "2".
-    await expect(authenticatedPage.getByText(/\b2\b/)).toBeVisible({
+    // Scope to the assistant sidebar (data-side="right") to avoid matching
+    // unrelated "2" text elsewhere on the page (pagination, counts, etc.).
+    const sidebar = authenticatedPage.locator('[data-side="right"]');
+    await expect(sidebar.getByText(/\b2\b/)).toBeVisible({
       timeout: 60_000,
     });
   });
