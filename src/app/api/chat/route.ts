@@ -17,7 +17,7 @@ import {
 } from "@/lib/mcp/client";
 import { SYSTEM_PROMPT } from "./system-prompt";
 
-const E2E_MODEL_NAME = process.env.E2E_MODEL_NAME ?? "qwen2.5:1.5b";
+const E2E_MODEL_NAME = process.env.E2E_MODEL_NAME ?? "qwen3:1.7b";
 
 export const maxDuration = 60;
 
