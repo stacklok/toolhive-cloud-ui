@@ -29,7 +29,7 @@ describe("SignInPage", () => {
       screen.getByText(/Sign in using your company credentials/i),
     ).toBeDefined();
 
-    expect(screen.getByRole("button", { name: /Oidc/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: /Sign in/i })).toBeDefined();
   });
 
   test("calls authClient.signIn.oauth2 when button is clicked", async () => {
@@ -41,7 +41,7 @@ describe("SignInPage", () => {
 
     render(<SignInPage />);
 
-    const signInButton = screen.getByRole("button", { name: /Oidc/i });
+    const signInButton = screen.getByRole("button", { name: /Sign in/i });
     await user.click(signInButton);
 
     await waitFor(() => {
@@ -62,7 +62,7 @@ describe("SignInPage", () => {
 
     render(<SignInPage />);
 
-    const signInButton = screen.getByRole("button", { name: /Oidc/i });
+    const signInButton = screen.getByRole("button", { name: /Sign in/i });
     await user.click(signInButton);
 
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe("SignInPage", () => {
 
     render(<SignInPage />);
 
-    const signInButton = screen.getByRole("button", { name: /Oidc/i });
+    const signInButton = screen.getByRole("button", { name: /Sign in/i });
     await user.click(signInButton);
 
     await waitFor(() => {
@@ -98,7 +98,7 @@ describe("SignInPage", () => {
 
     render(<SignInPage />);
 
-    const signInButton = screen.getByRole("button", { name: /Oidc/i });
+    const signInButton = screen.getByRole("button", { name: /Sign in/i });
     await user.click(signInButton);
 
     await waitFor(() => {
@@ -124,7 +124,7 @@ describe("SignInPage", () => {
     });
 
     render(<SignInPage />);
-    await user.click(screen.getByRole("button", { name: /Oidc/i }));
+    await user.click(screen.getByRole("button", { name: /Sign in/i }));
 
     await waitFor(() => {
       expect(authClient.signOut).toHaveBeenCalledOnce();
@@ -133,7 +133,7 @@ describe("SignInPage", () => {
     });
   });
 
-  test("signin with okta provider", async () => {
+  test("signin with custom provider id", async () => {
     const user = userEvent.setup();
     vi.mocked(authClient.signIn.oauth2).mockResolvedValue({
       data: { url: "http://example.com", redirect: true },
@@ -142,10 +142,9 @@ describe("SignInPage", () => {
 
     render(<SignInButton providerId="okta" />);
 
-    expect(screen.getByRole("button", { name: "Okta" })).toBeDefined();
-
-    const oktaButton = screen.getByRole("button", { name: /Okta/i });
-    await user.click(oktaButton);
+    // Button always shows "Sign in" regardless of provider ID
+    const signInButton = screen.getByRole("button", { name: /Sign in/i });
+    await user.click(signInButton);
 
     await waitFor(() => {
       expect(authClient.signIn.oauth2).toHaveBeenCalledWith({

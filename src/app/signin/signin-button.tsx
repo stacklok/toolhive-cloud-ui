@@ -2,14 +2,11 @@
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { OktaIcon } from "@/components/brand-icons";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 
 export function SignInButton({ providerId }: { providerId: string }) {
   const [isLoading, setIsLoading] = useState(false);
-  const isOktaProvider = providerId === "okta" || providerId === "oidc";
-  const providerName = providerId.charAt(0).toUpperCase() + providerId.slice(1);
 
   const handleOIDCSignIn = async () => {
     setIsLoading(true);
@@ -59,10 +56,7 @@ export function SignInButton({ providerId }: { providerId: string }) {
       {isLoading ? (
         <Loader2 className="text-muted-foreground size-4 animate-spin" />
       ) : (
-        <>
-          {isOktaProvider && <OktaIcon className="size-4 shrink-0" />}
-          <span>{providerName}</span>
-        </>
+        "Sign in"
       )}
     </Button>
   );
