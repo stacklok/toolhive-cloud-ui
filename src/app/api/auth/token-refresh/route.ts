@@ -30,7 +30,9 @@ const BASE_ORIGIN = new URL(BASE_URL).origin;
  *
  * Both GET and POST are exported: Next.js `redirect()` outside a Server Action uses
  * 307 (method-preserving), so a redirect triggered from a Server Component render
- * that follows a Server Action POST reaches this route as a POST.
+ * that follows a Server Action POST reaches this route as a POST. For the same
+ * reason, the outbound redirects below use 303 See Other (forces the browser to
+ * follow with GET) — a default 307 would re-POST `/catalog` or `/signin` and 405.
  */
 async function handler(request: NextRequest) {
   // Validate redirect target to prevent open redirects.
@@ -64,6 +66,7 @@ async function handler(request: NextRequest) {
 
     const redirectResponse = NextResponse.redirect(
       new URL(safeRedirect, BASE_URL),
+      { status: 303 },
     );
 
     // Copy Set-Cookie headers from Better Auth's internal response directly
@@ -88,7 +91,9 @@ async function handler(request: NextRequest) {
 async function signOutAndRedirect(
   requestHeaders: Headers,
 ): Promise<NextResponse> {
-  const response = NextResponse.redirect(new URL("/signin", BASE_URL));
+  const response = NextResponse.redirect(new URL("/signin", BASE_URL), {
+    status: 303,
+  });
   try {
     const signOutResponse = await auth.api.signOut({
       headers: requestHeaders,

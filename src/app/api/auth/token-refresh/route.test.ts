@@ -231,4 +231,23 @@ describe("GET /api/auth/token-refresh", () => {
       );
     });
   });
+
+  describe("redirect uses 303 See Other (forces GET on follow-up)", () => {
+    it("success redirect to safeRedirect is 303", async () => {
+      mockRefreshSuccess();
+      const response = await GET(
+        makeRequest(`${INTERNAL_URL}?redirect=%2Fcatalog`),
+      );
+      // 303 prevents a POST that arrived at this route (via 307 from a Server
+      // Action) from being replayed as a POST against /catalog.
+      expect(response.status).toBe(303);
+    });
+
+    it("failure redirect to /signin is 303", async () => {
+      vi.spyOn(console, "warn").mockImplementation(() => {});
+      mockRefreshFailure();
+      const response = await GET(makeRequest(INTERNAL_URL));
+      expect(response.status).toBe(303);
+    });
+  });
 });
