@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/stacklok-toolhive-cloud-ui-badge.png)](https://mseep.ai/app/stacklok-toolhive-cloud-ui)
+
 > [!NOTE]
 > This is a lightweight version of ToolHive Cloud for viewing your MCP servers.
 > Interested in enterprise capabilities? [Reach out to us](https://stacklok.com/demo/).
