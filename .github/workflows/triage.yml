@@ -1,0 +1,11 @@
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    uses: stacklok/.github/.github/workflows/needs-triage.yml@f02175d2fdecb7fc4b23f89aa492fa6b481aa226  # v1
+
