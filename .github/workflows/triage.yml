@@ -1,3 +1,5 @@
+name: Needs Triage
+
 on:
   issues:
     types: [opened, reopened]
